@@ -17,6 +17,7 @@ import Front_java.Configuration.SoudureInformationsCodeB;
 import Front_java.Loading.LoadingController;
 import Front_java.Modeles.OperateurInfo;
 import Front_java.Modeles.SoudureDTO;
+import Front_java.SoudureUltrason.CodeB.RemplirQuantitieAtteintAvantCodeB;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
@@ -110,7 +111,36 @@ public class Dashboard2Controller {
 	@FXML
 	private ComboBox<String> distanceCombo;
 
-	private TextField activeTextField;
+
+	public TextField activeTextField;
+	
+	public TextField getActiveTextField() {
+		return activeTextField;
+	}
+	public void setActiveOnFocus(TextField textField) {
+		textField.focusedProperty().addListener((obs, oldVal, newVal) -> {
+			if (newVal) {
+				activeTextField = textField;
+			}
+		});
+	}
+	  @FXML
+	    public void handleButtonClick(ActionEvent event) {
+	        if (activeTextField != null) {
+	            Button clickedButton = (Button) event.getSource();
+	            String buttonText = clickedButton.getText();
+	            activeTextField.appendText(buttonText);
+	            System.out.println("Texte ajouté : " + buttonText);
+	        }
+	    }
+
+	    // Méthode pour définir le TextField actif
+	    public void setActiveTextField(TextField textField) {
+	        this.activeTextField = textField;
+	    }
+
+	
+	
 	@FXML
 	private TextField tractionField, x1Pleage, x2Pleage, x3Pleage, x4Pleage, x5Pleage, quantiteField, kanbanField,
 			grandeurField, nbrNoeudField;
@@ -151,19 +181,11 @@ public class Dashboard2Controller {
 		setActiveOnFocus(kanbanField);
 		setActiveOnFocus(grandeurField);
 		setActiveOnFocus(nbrNoeudField);
+		
+
 	}
 
-	private void setActiveOnFocus(TextField textField) {
-		textField.focusedProperty().addListener((obs, oldVal, newVal) -> {
-			if (newVal) {
-				activeTextField = textField;
-			}
-		});
-	}
 
-	public void setActiveTextField(TextField textField) {
-		this.activeTextField = textField;
-	}
 
 	@FXML
 	private void close(ActionEvent event) {
@@ -178,36 +200,7 @@ public class Dashboard2Controller {
 	}
 	@FXML
 	private void scanne(ActionEvent event) {
-	 /*   try {
-	        FXMLLoader loader = new FXMLLoader(getClass().getResource("/Front_java/Loading/Loading.fxml"));
-	        Scene loadingScene = new Scene(loader.load());
-
-	        // Appliquer le fichier CSS
-	        String cssPath = "/Front_java/Loading/Loading.css"; // Assure-toi du bon chemin
-	        if (getClass().getResource(cssPath) != null) {
-	            loadingScene.getStylesheets().add(getClass().getResource(cssPath).toExternalForm());
-	        } else {
-	            System.out.println("❌ Fichier CSS introuvable : " + cssPath);
-	        }
-
-	        // Obtenir le contrôleur de la fenêtre chargée
-	        LoadingController loadingController = loader.getController();
-
-	        // Passer l'instance actuelle du Dashboard2Controller au LoadingController
-	        loadingController.setParentController(this);
-
-	        Stage parentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-	        Stage loadingStage = new Stage();
-	        loadingStage.setScene(loadingScene);
-	        loadingStage.initStyle(StageStyle.UNDECORATED);
-	        loadingStage.initModality(Modality.APPLICATION_MODAL);
-	        loadingStage.initOwner(parentStage);
-	        loadingStage.show();
-	    } catch (IOException ex) {
-	        System.out.println("❌ Erreur lors du chargement de la fenêtre de chargement : " + ex.getMessage());
-	        ex.printStackTrace();
-	    }
-	    */
+	
 	}
 	private boolean checkOtherFields() {
 	    // Check if all the relevant fields are not empty
@@ -293,8 +286,8 @@ public class Dashboard2Controller {
                     	    // Affichage de la nouvelle fenêtre
                     	    resultStage.show();
                     	    // Fermeture de la fenêtre actuelle
-                    	    Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-                    	    currentStage.close();
+                    	    Stage currentStage = (Stage) btnSuivant.getScene().getWindow();
+                            currentStage.close();
 	                    } catch (IOException ex) {
 	                        System.out.println("Erreur lors du chargement de la fenêtre verification : " + ex.getMessage());
 	                        ex.printStackTrace();
@@ -310,7 +303,7 @@ public class Dashboard2Controller {
                 	SoudureInformations.codeControleSelectionner =AppInformations.codeControleSelectionner;
                 	SoudureInformations.pliage = pliageCombo.getValue() ;
                 	SoudureInformations.distanceBC = distanceCombo.getValue() ; 
-                	SoudureInformations.traction =tractionField.getText()+"N" ; 
+                	SoudureInformations.traction =tractionField.getText() ; 
                 	SoudureInformations.numeroKanban = Integer.parseInt(kanbanField.getText()) ; 
                 	SoudureInformations.grandeurLot = Integer.parseInt(grandeurField.getText()) ; 
                 	SoudureInformations.numNoeud = nbrNoeudField.getText() ; 
@@ -344,7 +337,7 @@ public class Dashboard2Controller {
 	                            	SoudureInformations.codeControleSelectionner =AppInformations.codeControleSelectionner;
 	                            	SoudureInformations.pliage = pliageCombo.getValue() ;
 	                            	SoudureInformations.distanceBC = distanceCombo.getValue() ; 
-	                            	SoudureInformations.traction =tractionField.getText()+"N" ; 
+	                            	SoudureInformations.traction =tractionField.getText() ; 
 	                            	SoudureInformations.numeroKanban = Integer.parseInt(kanbanField.getText()) ; 
 	                            	SoudureInformations.grandeurLot = Integer.parseInt(grandeurField.getText()) ; 
 	                            	SoudureInformations.numNoeud = nbrNoeudField.getText() ; 
@@ -367,8 +360,8 @@ public class Dashboard2Controller {
 	                        	    resultStage.show();
 
 	                        	    // Fermeture de la fenêtre actuelle
-	                        	    Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-	                        	    currentStage.close();
+	                        	    Stage currentStage = (Stage) btnSuivant.getScene().getWindow();
+	                                currentStage.close();
 
 	                        	} catch (IOException ex) {
 	                        	    System.out.println("Erreur lors du chargement de la fenêtre SoudureResultat : " + ex.getMessage());
@@ -493,14 +486,7 @@ public class Dashboard2Controller {
 		timeline.play(); // Démarrer l'animation
 	}
 
-	@FXML
-	public void handleButtonClick(ActionEvent event) {
-		if (activeTextField != null) {
-			Button clickedButton = (Button) event.getSource();
-			String buttonText = clickedButton.getText();
-			activeTextField.appendText(buttonText);
-		}
-	}
+
 
 	private void getPelageFromApi() {
 		String token = AppInformations.token;

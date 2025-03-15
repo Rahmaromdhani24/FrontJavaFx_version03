@@ -38,7 +38,6 @@ public class LoginController {
 
     @FXML
     private Label loginLabel;
-    
     @FXML
     private Label matriculeLabel;
     
@@ -120,7 +119,6 @@ public class LoginController {
     }
        
        private void loadLanguage(Locale locale) {
-        System.out.println("🔍 Chargement de la langue : " + locale);
         try {
             ResourceBundle bundle = ResourceBundle.getBundle("lang", locale);
             
@@ -188,15 +186,13 @@ public class LoginController {
             Platform.runLater(() -> {
                 if (res.statusCode() == 200) {
                     String token = TokenExtractor.extractToken(res.body());
-                    System.out.println("Token reçu : " + token);
                     AppInformations.token = token;
 
                     getOperateurInfo(matricule, token).thenAccept(userInfo -> {
                         if (userInfo != null) {
                             AppInformations.operateurInfo = userInfo;
-                            System.out.println("Informations de l'opérateur : " + userInfo);
-
                             Platform.runLater(() -> {
+                            	if(userInfo.getOperation().equals("Soudure")) {
                                 try {
                                     FXMLLoader loader = new FXMLLoader(getClass().getResource("/Front_java/FXML/dashboard1.fxml"));
                                     Scene dashboardScene = new Scene(loader.load());
@@ -216,6 +212,27 @@ public class LoginController {
                                     System.out.println("Erreur lors du chargement de la fenêtre dashboard : " + e.getMessage());
                                     showErrorDialog( "Erreur lors du chargement du tableau de bord !" , "Erreur");
                                 }
+                            } else if(userInfo.getOperation().equals("Torsadage")) {
+                                try {
+                                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/Front_java/Torsadage/SelectionInitiale.fxml"));
+                                    Scene dashboardScene = new Scene(loader.load());
+                                    dashboardScene.getStylesheets().add(getClass().getResource("/Front_java/Torsadage/SelectionInitiale.css").toExternalForm());
+
+                                    Stage dashboardStage = new Stage();
+                                    dashboardStage.setScene(dashboardScene);
+                                    dashboardStage.setMaximized(true);
+                                    dashboardStage.initStyle(StageStyle.UNDECORATED);
+                                    Image icon = new Image("/logo_app.jpg");
+                                    dashboardStage.getIcons().add(icon);
+                                    dashboardStage.show();
+
+                                    Stage currentStage = (Stage) loginBtn.getScene().getWindow();
+                                    currentStage.close();
+                                } catch (IOException e) {
+                                    System.out.println("Erreur lors du chargement de la fenêtre dashboard : " + e.getMessage());
+                                    showErrorDialog( "Erreur lors du chargement du tableau de bord !" , "Erreur");
+                                }
+                            }
                             });
                         }
                     }).exceptionally(e -> {

@@ -454,17 +454,16 @@ private void ajouterPdekAvecSoudure() {
 
 				// Récupération des valeurs saisies et création de l'objet SoudureDTO
 				SoudureDTO soudure = new SoudureDTO();
-				int x1 = SoudureInformations.pelageX1;
-				int x2 = SoudureInformations.pelageX2;
-				int x3 = SoudureInformations.pelageX3;
-				int x4 = SoudureInformations.pelageX4;
-				int x5 = SoudureInformations.pelageX5;
+				int x1 = SoudureInformationsCodeB.pelageX1;
+				int x2 = 0;
+				int x3 = 0;
+				int x4 = 0;
+				int x5 = 0;
 
 				// Calcul des valeurs max et min
 				int maxValue = Math.max(Math.max(Math.max(x1, x2), Math.max(x3, x4)), x5);
 				int minValue = Math.min(Math.min(Math.min(x1, x2), Math.min(x3, x4)), x5);
-				int moy = (x1 + x2 + x3 + x4 + x5) / 5;
-				int R = maxValue - minValue;
+			
 
 				// Remplir l'objet SoudureDTO avec les valeurs
 				soudure.setCode(SoudureInformationsCodeB.codecontroleselectionner );
@@ -475,7 +474,7 @@ private void ajouterPdekAvecSoudure() {
 				SoudureInformations.nbrPelage = AppInformations.nbrPelage;
 				soudure.setPliage(SoudureInformations.pliage);
 				soudure.setDistanceBC(SoudureInformations.distanceBC);
-				soudure.setTraction(SoudureInformations.traction);
+				soudure.setTraction(SoudureInformations.traction +"N");
 				soudure.setPelageX1(x1);
 				soudure.setPelageX2(x2);
 				soudure.setPelageX3(x3);
@@ -575,7 +574,7 @@ void terminerRemplirFormCodeB(ActionEvent event) {
     	SoudureInformationsCodeB.pelageX5 = null ;
     	SoudureInformationsCodeB.pliage =SoudureInformations.pliage ;
     	SoudureInformationsCodeB.distanceBC  =SoudureInformations.distanceBC; 
-    	SoudureInformationsCodeB.traction =SoudureInformations.traction+"N" ; 
+    	SoudureInformationsCodeB.traction =SoudureInformations.traction; 
  
      
         try {
@@ -606,7 +605,7 @@ void terminerRemplirFormCodeB(ActionEvent event) {
                     	SoudureInformationsCodeB.pelageX5 = null ;
                     	SoudureInformationsCodeB.pliage =SoudureInformations.pliage ;
                     	SoudureInformationsCodeB.distanceBC  =SoudureInformations.distanceBC; 
-                    	SoudureInformationsCodeB.traction =SoudureInformations.traction+"N" ; 
+                    	SoudureInformationsCodeB.traction =SoudureInformations.traction ; 
 
                         FXMLLoader loader2 = new FXMLLoader(getClass().getResource("/Front_java/FXML/SoudureResultat.fxml"));
                         Scene resultScene = new Scene(loader2.load());

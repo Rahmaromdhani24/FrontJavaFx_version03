@@ -18,7 +18,8 @@
 <?import javafx.scene.text.Font?>
 <?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon?>
 
-<StackPane fx:id="stackPane" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Front_java.Controller.SoudureResultat">
+<StackPane fx:id="stackPane" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1"
+ fx:controller="Front_java.Controller.SoudureResultat">
            
                <BorderPane fx:id="rootPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1360.0">
 
@@ -36,9 +37,9 @@
                   <Pane layoutY="38.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="75.0" prefWidth="1055.0" style="-fx-background-color: #D9D9D9;">
                      <children>
                         <Button layoutX="5.0" layoutY="18.0" mnemonicParsing="false" prefWidth="30.0" styleClass="nomPrenom">
-                         <!--graphic>
+                         <graphic>
                         <FontAwesomeIcon glyphName="USER" size="2.7em" />
-                     </graphic-->
+                     </graphic>
                         </Button>
                         <Label fx:id="nomPrenomUser" layoutX="42.0" layoutY="30.0" text="">
                            <font>
@@ -85,12 +86,6 @@
                               <Font name="System Bold" size="16.0" />
                            </font>
                         </Label>
-            
-                       <Button fx:id="btnClose" layoutX="990.0" layoutY="-30.0" mnemonicParsing="false" onAction="#close" prefHeight="24.0" prefWidth="57.0" styleClass="close">
-                         <!-- graphic>
-                        <FontAwesomeIcon glyphName="CLOSE" size="1.5em" />
-                     </graphic> -->
-                     </Button>
                         <Label layoutX="528.0" layoutY="30.0" text="Segment :">
                            <font>
                               <Font name="System Bold" size="16.0" />
@@ -100,12 +95,7 @@
                            <font>
                               <Font name="System Bold" size="16.0" />
                            </font>
-                        </Label>                       
-                        <Button fx:id="btnLogout" layoutX="994.0" layoutY="25.0" mnemonicParsing="false" onAction="#logout" prefWidth="50.0" styleClass="logout">
-                         <graphic>
-                        <FontAwesomeIcon glyphName="SIGN_OUT" size="2.5em" />
-                     </graphic>
-                     </Button>
+                        </Label>
                      </children>
                   </Pane>
                </children>
@@ -130,11 +120,6 @@
                   </Label>
                </children>
             </Pane>
-               <Button fx:id="btnSuivant" layoutX="700.0" layoutY="100.0" mnemonicParsing="false" onAction="#suivantCycle" prefHeight="50.0" prefWidth="150.0" style="-fx-alignment: center;" styleClass="suivant-btn" text="Suivant">
-               <font>
-                  <Font name="System Bold" size="18.0" />
-               </font>
-            </Button>
          </children>
       </Pane>
    </bottom>
@@ -358,6 +343,26 @@
                                  </Pane>
                               </children>
                            </VBox>
+                        <!--  <Button fx:id="btnMinimize" layoutX="450.0" layoutY="-310.0" mnemonicParsing="false" onAction="#minimize" prefHeight="24.0" prefWidth="57.0" styleClass="minimize" >
+		                   <graphic>
+		                      <FontAwesomeIcon glyphName="MINUS" size="1.5em" />
+		                  </graphic>
+		                  </Button>                          
+                           Button fx:id="btnClose" layoutX="600.0" layoutY="-310.0" mnemonicParsing="false" onAction="#close" prefHeight="24.0" prefWidth="57.0" styleClass="close" >
+                             <graphic>
+                              <FontAwesomeIcon glyphName="CLOSE" size="1.5em" />
+                            </graphic>
+                           </Button-->
+                           <Button fx:id="btnLogout" layoutX="600.0" layoutY="-155.0" mnemonicParsing="false" onAction="#logout" prefWidth="50.0" styleClass="logout" >
+                               <graphic>
+                                 <FontAwesomeIcon glyphName="SIGN_OUT" size="2.5em" />
+		                        </graphic>
+		                     </Button>
+                                 <Button fx:id="btnSuivant" layoutX="10.0" layoutY="480.0" mnemonicParsing="false" onAction="#submit" prefHeight="50.0" prefWidth="150.0" style="-fx-alignment: center;" styleClass="suivant-btn" text="Suivant">
+                                 <font>
+                                    <Font name="System Bold" size="18.0" />
+                                 </font>
+                              </Button>
                         </children>
                      </Pane>
                   </center></BorderPane>

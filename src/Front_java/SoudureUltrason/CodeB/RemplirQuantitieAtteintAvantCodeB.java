@@ -8,28 +8,20 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
-import java.time.Instant;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXDialog;
 import com.jfoenix.controls.JFXDialogLayout;
-
 import Front_java.Configuration.AppInformations;
 import Front_java.Configuration.SoudureInformations;
 import Front_java.Modeles.SoudureDTO;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.*;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -51,7 +43,7 @@ public class RemplirQuantitieAtteintAvantCodeB {
  
     
     @FXML
-    private StackPane rootPane; 
+    private StackPane stackPane; 
     
     @FXML
     private Button closeButton;
@@ -66,7 +58,7 @@ public class RemplirQuantitieAtteintAvantCodeB {
     @FXML
     private TextField quantiteAtteintAncien;
 
-    
+
 
 
     @FXML
@@ -76,9 +68,12 @@ public class RemplirQuantitieAtteintAvantCodeB {
     }
 
     @FXML
-    private void initialize() {
-    	numCycleAncien.setText(SoudureInformations.numeroCycle+1+"");
+    public void initialize() {
+
+        numCycleAncien.setText(SoudureInformations.numeroCycle +"");
     }
+
+
     @FXML
     private void annuler(ActionEvent event ) {
     	  try {
@@ -143,7 +138,7 @@ public class RemplirQuantitieAtteintAvantCodeB {
             showErrorDialog("Veuillez remplir le champ de quantité atteinte avant de continuer !", "Champs obligatoires");
             return; // Arrêter la méthode si un champ est vide
         }
-
+        SoudureInformations.quantiteAtteint= Integer.parseInt(quantiteAtteintAncien.getText()) ;
         // 2. Si le champ n'est pas vide, appeler la méthode ajouterPdekAvecSoudure()
         ajouterPdekAvecSoudure();
 
@@ -241,7 +236,7 @@ private void showErrorDialog(String title, String message) {
 	content.setActions(closeButton);
 
 	// Utilisation de stackPane ici
-	JFXDialog dialog = new JFXDialog(rootPane, content, JFXDialog.DialogTransition.CENTER);
+	JFXDialog dialog = new JFXDialog(stackPane, content, JFXDialog.DialogTransition.CENTER);
 	closeButton.setOnAction(e -> dialog.close());
 
 	dialog.show();
@@ -258,7 +253,7 @@ private void showErrorDialog(String title, String message) {
 public void afficherNotificationSucces(String message) {
     System.out.println(" Affichage d'une notification : " + message);
 
-    if (rootPane == null) {
+    if (stackPane == null) {
         System.out.println("❌ Erreur : stackPane est null.");
         return;
     }
@@ -302,7 +297,7 @@ public void afficherNotificationSucces(String message) {
     // Ajout du bouton centré dans la boîte de dialogue
   //  content.setActions(buttonBox);
 
-    JFXDialog dialog = new JFXDialog(rootPane, content, JFXDialog.DialogTransition.CENTER);
+    JFXDialog dialog = new JFXDialog(stackPane, content, JFXDialog.DialogTransition.CENTER);
 
     closeButton.setOnAction(e -> {
         dialog.close();

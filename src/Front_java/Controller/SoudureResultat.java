@@ -53,6 +53,8 @@ public class SoudureResultat{
 	@FXML
 	private Button btnSuivant;
 
+	@FXML
+	private Button btnLogout ;
     @FXML
     private Label dateSystem;
 
@@ -234,13 +236,21 @@ public class SoudureResultat{
 		Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
 		stage.close();
 	}
+	@FXML
+	private void minimize(ActionEvent event) {
+		Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+		stage.setIconified(true);
+	}
 
 	@FXML
 	void logout(ActionEvent event) {
-
-		Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-		stage.close();
-
+		
+		AppInformations.reset();
+    	SoudureInformations.reset();
+    	SoudureInformationsCodeB.reset();
+    	
+    	Stage currentStage = (Stage) btnLogout.getScene().getWindow();
+        currentStage.close();
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/Front_java/Login.fxml"));
 			Scene loginScene = new Scene(loader.load());
@@ -260,10 +270,56 @@ public class SoudureResultat{
 	}
 
     @FXML
-    void suivantCycle(ActionEvent event) {  
+    void submit(ActionEvent event) {  
     	
+    	AppInformations.testTerminitionCommande = 0 ; 
+    	SoudureInformations.quantiteAtteint = 0 ; 
+    	SoudureInformations.numeroKanban = 0 ; 
+    	//SoudureInformations.numerCyclePDEK = SoudureInformations.numerCyclePDEK+1 ;
+    	SoudureInformations.pliage = null ; 
+    	SoudureInformations.distanceBC= null ; 
+    	SoudureInformations.traction= null ; 
+    	SoudureInformations.pelageX1=0 ; 
+    	SoudureInformations.pelageX2=0 ; 
+    	SoudureInformations.pelageX3=0 ; 
+    	SoudureInformations.pelageX4=0 ; 
+    	SoudureInformations.pelageX5=0 ; 
+    	SoudureInformations.grandeurLot=0 ; 
+    	SoudureInformations.numNoeud= null ;
+    	SoudureInformations.moyenne = 0 ;
+    	SoudureInformations.etendu=0 ;
+    	SoudureInformations.EtenduValueMax=0 ; 
+    	SoudureInformations.MoyenneVertMin=0 ; 
+    	SoudureInformationsCodeB.codecontroleselectionner = null ; 
+    	SoudureInformationsCodeB.quantiteAtteintCodeB = 0 ; 
+    	SoudureInformationsCodeB.testTerminitionCommandeCodeB = 0 ; 
+    	SoudureInformationsCodeB.pelageX1 = 0 ; 
+    	SoudureInformationsCodeB.pliage = null ; 
+    	SoudureInformationsCodeB.distanceBC = null ; 
+    	SoudureInformationsCodeB.traction = null ; 
     	
-    	System.out.println("Bouton suivant cliquéé !!!!");
+        try {
+        	AppInformations.sectionFilSelectionner = null ; 
+        	AppInformations.codeControleSelectionner = null  ; 
+        	AppInformations.projetSelectionner = null ; 
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Front_java/FXML/dashboard1.fxml"));
+            Scene dashboardScene = new Scene(loader.load());
+            dashboardScene.getStylesheets().add(getClass().getResource("/Front_java/CSS/dashboard1.css").toExternalForm());
+
+            Stage dashboardStage = new Stage();
+            dashboardStage.setScene(dashboardScene);
+            dashboardStage.setMaximized(true);
+            dashboardStage.initStyle(StageStyle.UNDECORATED);
+            Image icon = new Image("/logo_app.jpg");
+            dashboardStage.getIcons().add(icon);
+            dashboardStage.show();
+
+            Stage currentStage = (Stage) btnSuivant.getScene().getWindow();
+            currentStage.close();
+        } catch (IOException e) {
+            System.out.println("Erreur lors du chargement de la fenêtre dashboard : " + e.getMessage());
+            showErrorDialog( "Erreur lors du chargement du tableau de bord !" , "Erreur");
+        }
        }
     	
 

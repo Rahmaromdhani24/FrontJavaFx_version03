@@ -10,8 +10,7 @@ public class Main extends Application {
     public void start(Stage primaryStage) {
     	
     	 Image icon = new Image("/logo_app.jpg"); 
-    	 primaryStage.getIcons().add(icon);
-    	 
+    	 primaryStage.getIcons().add(icon);    	 
 	     Login fenetre1 = new Login();
 	     fenetre1.showWindow(primaryStage);	     
     }

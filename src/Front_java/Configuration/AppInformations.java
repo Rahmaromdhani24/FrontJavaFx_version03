@@ -13,6 +13,7 @@ public class AppInformations {
 
     public static int testTerminitionCommande = 0; 
 
+
     // Méthode pour réinitialiser toutes les variables statiques
     public static void reset() {
         token = null;

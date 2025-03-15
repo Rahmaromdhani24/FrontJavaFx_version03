@@ -131,7 +131,28 @@ private void terminerChargement(ActionEvent event ) {
         ex.printStackTrace();
     }
 }else {
-    showErrorDialog("Veuillez choisir le code de contrôle B lorsque vous prenez une pause.", "Erreur" );
+    try {
+    	AppInformations.sectionFilSelectionner = null ; 
+    	AppInformations.codeControleSelectionner = null  ; 
+    	AppInformations.projetSelectionner = null ; 
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/Front_java/FXML/dashboard1.fxml"));
+        Scene dashboardScene = new Scene(loader.load());
+        dashboardScene.getStylesheets().add(getClass().getResource("/Front_java/CSS/dashboard1.css").toExternalForm());
+
+        Stage dashboardStage = new Stage();
+        dashboardStage.setScene(dashboardScene);
+        dashboardStage.setMaximized(true);
+        dashboardStage.initStyle(StageStyle.UNDECORATED);
+        Image icon = new Image("/logo_app.jpg");
+        dashboardStage.getIcons().add(icon);
+        dashboardStage.show();
+
+        Stage currentStage = (Stage) btnTerminer.getScene().getWindow();
+        currentStage.close();
+    } catch (IOException e) {
+        System.out.println("Erreur lors du chargement de la fenêtre dashboard : " + e.getMessage());
+        showErrorDialog( "Erreur lors du chargement du tableau de bord !" , "Erreur");
+    }
 
 }
 	    }
