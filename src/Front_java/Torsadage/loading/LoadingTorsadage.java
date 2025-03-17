@@ -115,7 +115,7 @@ public class LoadingTorsadage {
         // Vérifier si le parentController n'est pas null avant d'appeler la mise à jour
         if (parentController != null) {
             parentController.actualiserFenetreMere();
-            parentController.afficherNotification("Veuillez remplir tous les champs obligatoires , afin de terminer la commande..");
+            parentController.afficherNotification("Veuillez remplir tous les champs obligatoires , afin de terminer la commande.");
         }
 
         // Fermer la fenêtre fille

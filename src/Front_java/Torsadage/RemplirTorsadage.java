@@ -1,9 +1,6 @@
 package Front_java.Torsadage;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -13,6 +10,7 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import Front_java.Configuration.AppInformations;
 import Front_java.Modeles.OperateurInfo;
+import Front_java.Modeles.TorsadageDTO;
 import Front_java.Torsadage.loading.LoadingTorsadage;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
@@ -173,7 +171,8 @@ public class RemplirTorsadage {
 
 	    @FXML
 	    private StackPane stackPane;
-
+	    
+	
 
 		public TextField activeTextField;
 		
@@ -216,12 +215,12 @@ public class RemplirTorsadage {
 		
 		afficherDateSystem();
 		afficherHeureSystem();
-		//loadNumeroCycleMax();
-		/*clearImage.setOnMouseClicked(event -> {
+		loadNumeroCycleMax();
+		clearImage.setOnMouseClicked(event -> {
 			if (activeTextField != null) {
 				activeTextField.clear();
 			}
-		});*/
+		});
 
 		setActiveOnFocus(numCommande);
 		setActiveOnFocus(longueurFinalDebutCde);
@@ -252,7 +251,7 @@ public class RemplirTorsadage {
 	        @Override
 	        protected ObservableList<String> call() {
 	            return FXCollections.observableArrayList(
-	                "3Q/3R", "7B/7A", "5B/5A", "5E/5D", "2I/2K 23", "5B/5A", "2AD/2AR"
+	                "3Q/3R", "7B/7A", "5B/5A", "5E/5D", "2I/2K", "2AD/2AR"
 	            );
 	        }
 	    };
@@ -311,6 +310,9 @@ public class RemplirTorsadage {
 	            numFils.getValue() != null ;
 	}
 
+
+
+
 	@FXML
 	public void suivant(ActionEvent event) {
 		 // 1. Vérification des champs obligatoires
@@ -332,30 +334,37 @@ public class RemplirTorsadage {
 
             // Appeler la méthode showConfirmationDialog
             showConfirmationDialog(message, "Confirmation", () -> {
-            	
-            	TorsadageInformations.numCommande = numCommande.getText(); 
-            	TorsadageInformations.longueurFinalDebutCde = longueurFinalDebutCde.getText(); 
-            	TorsadageInformations.lognueurBoutDebutC1 = lognueurBoutDebutC1.getText(); 
-            	TorsadageInformations.lognueurBoutDebutC2 = lognueurBoutDebutC2.getText(); 
-            	TorsadageInformations.lognueurBoutFinC1 = lognueurBoutFinC1.getText(); 
-            	TorsadageInformations.lognueurBoutFinC2 = lognueurBoutFinC2.getText(); 
-            	TorsadageInformations.decalageDebutC1 = decalageDebutC1.getText();
-            	TorsadageInformations.decalageDebutC2 = decalageDebutC2.getText(); 
-            	TorsadageInformations.decalageFinC1 = decalageFinC1.getText(); 
-            	TorsadageInformations.decalageFinC2 = decalageFinC2.getText(); 
-            	TorsadageInformations.numFils =numFils.getValue() ; 
-            	TorsadageInformations.longueurFinalFinCde = longueurFinalFinCde.getText() ; 
-            	TorsadageInformations.longueurPasFinCde = longueurFinalFinCde.getText() ; 
-            	TorsadageInformations.ech1 = ech1.getText() ; 
-            	TorsadageInformations.ech2 = ech2.getText() ; 
-            	TorsadageInformations.ech3 = ech3.getText() ; 
-            	TorsadageInformations.ech4 = ech4.getText() ; 
-            	TorsadageInformations.ech5 = ech5.getText() ; 
-            	TorsadageInformations.quantiteTotal  = quantiteTotal.getText() ; 
-            	TorsadageInformations.quantiteAtteint = quantiteAtteint.getText() ; 
-            	TorsadageInformations.numCourant = nbrCycle.getText() ; 
-                // Si l'utilisateur confirme, exécuter la méthode ajoutPDEK()
-            	ajouterPdekAvecSoudure();
+             	
+            	    TorsadageInformations.longueurFinalFinCde = longueurFinalFinCde.getText();
+            	    TorsadageInformations.longueurPasFinCde = longueurPasFinCde.getText();
+            	    TorsadageInformations.decalageFinC1 = decalageFinC1.getText();
+            	    TorsadageInformations.decalageFinC2 = decalageFinC2.getText();
+            	    TorsadageInformations.quantiteAtteint = quantiteAtteint.getText();
+            	    
+            		TorsadageInformations.numCommande = numCommande.getText(); 
+                	TorsadageInformations.longueurFinalDebutCde = longueurFinalDebutCde.getText(); 
+                	TorsadageInformations.lognueurBoutDebutC1 = lognueurBoutDebutC1.getText(); 
+                	TorsadageInformations.lognueurBoutDebutC2 = lognueurBoutDebutC2.getText(); 
+                	TorsadageInformations.lognueurBoutFinC1 = lognueurBoutFinC1.getText(); 
+                	TorsadageInformations.lognueurBoutFinC2 = lognueurBoutFinC2.getText(); 
+                	TorsadageInformations.decalageDebutC1 = decalageDebutC1.getText();
+                	TorsadageInformations.decalageDebutC2 = decalageDebutC2.getText(); 
+                	TorsadageInformations.decalageFinC1 = decalageFinC1.getText(); 
+                	TorsadageInformations.decalageFinC2 = decalageFinC2.getText(); 
+                	TorsadageInformations.numFils =numFils.getValue() ; 
+                	TorsadageInformations.longueurFinalFinCde = longueurFinalFinCde.getText() ; 
+                	TorsadageInformations.longueurPasFinCde = longueurFinalFinCde.getText() ; 
+                	TorsadageInformations.ech1 = ech1.getText() ; 
+                	TorsadageInformations.ech2 = ech2.getText() ; 
+                	TorsadageInformations.ech3 = ech3.getText() ; 
+                	TorsadageInformations.ech4 = ech4.getText() ; 
+                	TorsadageInformations.ech5 = ech5.getText() ; 
+                	TorsadageInformations.quantiteTotal  = quantiteTotal.getText() ; 
+                	TorsadageInformations.quantiteAtteint = quantiteAtteint.getText() ; 
+                	TorsadageInformations.numCourant = Integer.parseInt( nbrCycle.getText() ) ; 
+
+              ajouterPDEKTorsadage()  ; 
+
 
                 // Affichage direct de la fenêtre SoudureResultat
                 try {
@@ -381,7 +390,7 @@ public class RemplirTorsadage {
                 }
             });
         } else {
-            // Si les champs ne sont pas remplis ou si "quantité atteinte" est vide, afficher la fenêtre de chargement
+            // Si les champs ne sont pas remplis ou si "quantité atteinte" est vide, afficher la fenêtre de chargement     	
         	TorsadageInformations.numCommande = numCommande.getText(); 
         	TorsadageInformations.longueurFinalDebutCde = longueurFinalDebutCde.getText(); 
         	TorsadageInformations.lognueurBoutDebutC1 = lognueurBoutDebutC1.getText(); 
@@ -390,22 +399,14 @@ public class RemplirTorsadage {
         	TorsadageInformations.lognueurBoutFinC2 = lognueurBoutFinC2.getText(); 
         	TorsadageInformations.decalageDebutC1 = decalageDebutC1.getText();
         	TorsadageInformations.decalageDebutC2 = decalageDebutC2.getText(); 
-        	TorsadageInformations.decalageFinC1 = decalageFinC1.getText(); 
-        	TorsadageInformations.decalageFinC2 = decalageFinC2.getText(); 
         	TorsadageInformations.numFils =numFils.getValue() ; 
-        	TorsadageInformations.longueurFinalFinCde = longueurFinalFinCde.getText() ; 
-        	TorsadageInformations.longueurPasFinCde = longueurFinalFinCde.getText() ; 
         	TorsadageInformations.ech1 = ech1.getText() ; 
         	TorsadageInformations.ech2 = ech2.getText() ; 
         	TorsadageInformations.ech3 = ech3.getText() ; 
         	TorsadageInformations.ech4 = ech4.getText() ; 
         	TorsadageInformations.ech5 = ech5.getText() ; 
         	TorsadageInformations.quantiteTotal  = quantiteTotal.getText() ; 
-        	TorsadageInformations.quantiteAtteint = quantiteAtteint.getText() ; 
-        	TorsadageInformations.numCourant = nbrCycle.getText() ; 
-
-        	
-
+        	TorsadageInformations.numCourant = Integer.parseInt( nbrCycle.getText() ) ; 
         	
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/Front_java/Torsadage/loading/LoadingTorsadage.fxml"));
@@ -433,6 +434,7 @@ public class RemplirTorsadage {
                     if (checkOtherFields()) {
                     	try {
                     	    // Vérification et conversion des valeurs
+                    	
                     		TorsadageInformations.numCommande = numCommande.getText(); 
                         	TorsadageInformations.longueurFinalDebutCde = longueurFinalDebutCde.getText(); 
                         	TorsadageInformations.lognueurBoutDebutC1 = lognueurBoutDebutC1.getText(); 
@@ -441,20 +443,15 @@ public class RemplirTorsadage {
                         	TorsadageInformations.lognueurBoutFinC2 = lognueurBoutFinC2.getText(); 
                         	TorsadageInformations.decalageDebutC1 = decalageDebutC1.getText();
                         	TorsadageInformations.decalageDebutC2 = decalageDebutC2.getText(); 
-                        	TorsadageInformations.decalageFinC1 = decalageFinC1.getText(); 
-                        	TorsadageInformations.decalageFinC2 = decalageFinC2.getText(); 
                         	TorsadageInformations.numFils =numFils.getValue() ; 
-                        	TorsadageInformations.longueurFinalFinCde = longueurFinalFinCde.getText() ; 
-                        	TorsadageInformations.longueurPasFinCde = longueurFinalFinCde.getText() ; 
                         	TorsadageInformations.ech1 = ech1.getText() ; 
                         	TorsadageInformations.ech2 = ech2.getText() ; 
                         	TorsadageInformations.ech3 = ech3.getText() ; 
                         	TorsadageInformations.ech4 = ech4.getText() ; 
                         	TorsadageInformations.ech5 = ech5.getText() ; 
                         	TorsadageInformations.quantiteTotal  = quantiteTotal.getText() ; 
-                        	TorsadageInformations.quantiteAtteint = quantiteAtteint.getText() ; 
-                        	TorsadageInformations.numCourant = nbrCycle.getText() ; 
-
+                        	TorsadageInformations.numCourant = Integer.parseInt( nbrCycle.getText() ) ; 
+                        	
                     	    // Chargement de la nouvelle fenêtre
                     	    FXMLLoader loader2 = new FXMLLoader(getClass().getResource("/Front_java/Torsadage/ResultatTorsadage.fxml"));
                     	    Scene resultScene = new Scene(loader2.load());
@@ -499,8 +496,107 @@ public class RemplirTorsadage {
         }
 }
 	
+/*
+	@FXML
+	public void suivant(ActionEvent event) {
+	    // Vérification des champs obligatoires initiaux
+	    if (numCommande.getText().isEmpty() || longueurFinalDebutCde.getText().isEmpty() || lognueurBoutDebutC1.getText().isEmpty()
+	            || lognueurBoutDebutC2.getText().isEmpty() || lognueurBoutFinC1.getText().isEmpty() || lognueurBoutFinC2.getText().isEmpty()
+	            || decalageDebutC1.getText().isEmpty() || decalageDebutC2.getText().isEmpty()
+	            || ech1.getText().isEmpty() || ech2.getText().isEmpty() || ech3.getText().isEmpty() || ech4.getText().isEmpty() || ech5.getText().isEmpty()
+	            || quantiteTotal.getText().isEmpty() || numFils.getValue() == null) {
 
-	    
+	        showErrorDialog("Veuillez remplir tous les champs avant de continuer !", "Champs obligatoires");
+	        return;
+	    }
+
+	    // Vérification des champs supplémentaires pour passer directement à la fenêtre de résultats
+	    if (checkOtherFields() && !decalageFinC1.getText().isEmpty() && !decalageFinC2.getText().isEmpty()
+	            && !longueurFinalFinCde.getText().isEmpty() && !longueurPasFinCde.getText().isEmpty() && !quantiteAtteint.getText().isEmpty()) {
+
+	        showConfirmationDialog("Veuillez confirmer les données saisies ? \n\n", "Confirmation", () -> {
+	            ajouterPDEKTorsadage() ; 
+	            ouvrirFenetreResultat();
+	        });
+
+	    } else {
+	     
+	        // Ouvrir la fenêtre de chargement
+	        try {
+	            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Front_java/Torsadage/loading/LoadingTorsadage.fxml"));
+	            Scene loadingScene = new Scene(loader.load());
+	            String cssPath = "/Front_java/Torsadage/loading/LoadingTorsadage.css";
+	            if (getClass().getResource(cssPath) != null) {
+	                loadingScene.getStylesheets().add(getClass().getResource(cssPath).toExternalForm());
+	            }
+
+	            LoadingTorsadage loadingController = loader.getController();
+	            loadingController.setParentController(this);
+
+	            // Action lors de la fermeture du LoadingTorsadage
+	            loadingController.setOnTerminerAction(() -> {
+	            	   // Activer les champs désactivés
+	    	        longueurFinalFinCde.setDisable(false);
+	    	        longueurPasFinCde.setDisable(false);
+	    	        decalageFinC1.setDisable(false);
+	    	        decalageFinC2.setDisable(false);
+	    	        quantiteAtteint.setDisable(false);
+
+	                // Vérifier si les champs activés sont bien remplis
+	                if (longueurFinalFinCde.getText().isEmpty() || longueurPasFinCde.getText().isEmpty()
+	                        || decalageFinC1.getText().isEmpty() || decalageFinC2.getText().isEmpty() || quantiteAtteint.getText().isEmpty()) {
+
+	                    showErrorDialog("Veuillez remplir tous les champs activés avant de continuer !", "Champs manquants");
+	                } else {
+	                    ajouterPDEKTorsadage() ; 
+	                    ouvrirFenetreResultat();
+	                }
+	            });
+
+	            // Affichage de la fenêtre de chargement
+	            Stage parentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+	            Stage loadingStage = new Stage();
+	            loadingStage.setScene(loadingScene);
+	            loadingStage.initStyle(StageStyle.UNDECORATED);
+	            loadingStage.initModality(Modality.APPLICATION_MODAL);
+	            loadingStage.initOwner(parentStage);
+	            loadingStage.show();
+
+	        } catch (IOException ex) {
+	            System.out.println("❌ Erreur lors du chargement de la fenêtre de chargement : " + ex.getMessage());
+	            ex.printStackTrace();
+	        }
+	    }
+	}
+
+
+	private void ouvrirFenetreResultat() {
+	    try {
+	        FXMLLoader loader2 = new FXMLLoader(getClass().getResource("/Front_java/Torsadage/ResultatTorsadage.fxml"));
+	        Scene resultScene = new Scene(loader2.load());
+	        resultScene.getStylesheets().add(getClass().getResource("/Front_java/Torsadage/ResultatTorsadage.css").toExternalForm());
+
+	        Stage resultStage = new Stage();
+	        resultStage.setScene(resultScene);
+	        resultStage.setMaximized(true);
+	        resultStage.initStyle(StageStyle.UNDECORATED);
+
+	        // Ajout de l'icône
+	        Image icon = new Image("/logo_app.jpg");
+	        resultStage.getIcons().add(icon);
+
+	        resultStage.show();
+
+	        // Fermer la fenêtre actuelle
+	        Stage currentStage = (Stage) btnSuivant.getScene().getWindow();
+	        currentStage.close();
+
+	    } catch (IOException ex) {
+	        System.out.println("❌ Erreur lors du chargement de la fenêtre ResultatTorsadage : " + ex.getMessage());
+	        ex.printStackTrace();
+	    }
+	}
+*/
 	@FXML
 	void precedant(ActionEvent event) {
 		try {
@@ -569,8 +665,9 @@ public class RemplirTorsadage {
 			posteUser.setText(operateurInfo.getPoste());
 			segementUser.setText(operateurInfo.getSegment());
 			nomProjet.setText(TorsadageInformations.projetSelectionner);
-			specificationsMesure.setText(TorsadageInformations.specificationsMesure);
-			nbrEch.setText("5 Piéces");
+			specificationsMesure.setText(TorsadageInformations.specificationsMesure +" +/- 2 mm");
+			nbrEch.setText("3 Piéces");
+			nbrEch.getStyleClass().add("bold-label");
 			codeControleSelectionner.setText(TorsadageInformations.codeControleSelectionner);
 
 		} else {
@@ -604,17 +701,16 @@ public class RemplirTorsadage {
 	    String token = AppInformations.token;
 
 	    // Encodage correct des paramètres pour éviter tout problème
-	    String encodedSectionFil = URLEncoder.encode(AppInformations.sectionFilSelectionner, StandardCharsets.UTF_8);
-	    String encodedNomProjet = URLEncoder.encode(AppInformations.projetSelectionner, StandardCharsets.UTF_8);
+	    String encodedSpecificationMesure = URLEncoder.encode(TorsadageInformations.specificationsMesure, StandardCharsets.UTF_8);
+	    String encodedNomProjet = URLEncoder.encode(TorsadageInformations.projetSelectionner, StandardCharsets.UTF_8);
 	    String encodedSegmentPDEK = URLEncoder.encode(String.valueOf(AppInformations.operateurInfo.getSegment()), StandardCharsets.UTF_8);
 	    String encodedPlantPDEK = URLEncoder.encode(AppInformations.operateurInfo.getPlant(), StandardCharsets.UTF_8);
 
-	    String url = "http://localhost:8281/operations/soudure/numCycleMax?sectionFil=" + encodedSectionFil 
+	    String url = "http://localhost:8281/operations/torsadage/numCycleMax?specificationMesure=" + encodedSpecificationMesure 
 	            + "&segment=" + encodedSegmentPDEK
 	            + "&nomPlant=" + encodedPlantPDEK  // Correction ici
 	            + "&nomProjet=" + encodedNomProjet;
 
-	    System.out.println("URL API : " + url); // Debugging pour vérifier l'URL générée
 
 	    HttpRequest request = HttpRequest.newBuilder()
 	            .uri(URI.create(url))
@@ -639,7 +735,7 @@ public class RemplirTorsadage {
 	}
 
 
-/*	private void loadNumeroCycleMax() {
+	private void loadNumeroCycleMax() {
 		Task<Integer> task = new Task<>() {
 			@Override
 			protected Integer call() throws Exception {
@@ -649,20 +745,25 @@ public class RemplirTorsadage {
 
 		task.setOnSucceeded(event -> {
 			int numeroCycleMax = task.getValue();
-			valeurNumeroCycle.setText(String.valueOf(numeroCycleMax + 1));
-			SoudureInformations.numeroCycle = numeroCycleMax + 1;
+			if(numeroCycleMax == 25) {
+				nbrCycle.setText(String.valueOf( 1));
+			}
+			else if(numeroCycleMax < 25) {
+				nbrCycle.setText(String.valueOf(numeroCycleMax + 1));
+			}
+			TorsadageInformations.numCourant = numeroCycleMax + 1;
 			System.out.println("Numéro de cycle max récupéré : " + numeroCycleMax);
 		});
 
 		task.setOnFailed(event -> {
 			Throwable e = task.getException();
-			valeurNumeroCycle.setText("Erreur");
+			nbrCycle.setText("Erreur");
 			System.out.println("Erreur lors de la récupération du numéro de cycle : " + e.getMessage());
 		});
 
 		// Lance la tâche dans un thread séparé
 		new Thread(task).start();
-	}*/
+	}
 
 	/*********************************          Alerts        ***************************************/
 
@@ -815,10 +916,7 @@ public class RemplirTorsadage {
 			}
 		});
 	}
-	/********************************************* Ajout PDEK  ***************************************************************/
-	private void ajouterPdekAvecSoudure() {
-	
-	}
+
 	
 	/****************** Extraire valeur depuis section fil ****************/
 	public double extraireValeurNumerique(String sectionFil) {
@@ -922,4 +1020,110 @@ public class RemplirTorsadage {
         });
     }
 
+	/********************************************* Ajout PDEK  ***************************************************************/
+    private void ajouterPdekAvecTorsadage(String torsadageJson) {
+        Task<Void> task = new Task<>() {
+            @Override
+            protected Void call() throws Exception {
+                try {
+                    // Code pour l'ajout du PDEK
+                    String token = AppInformations.token;
+                    String encodedProjet = URLEncoder.encode(TorsadageInformations.projetSelectionner, StandardCharsets.UTF_8);
+
+                    String url = "http://localhost:8281/operations/torsadage/ajouterPDEK" + "?matriculeOperateur="
+                            + AppInformations.operateurInfo.getMatricule() + "&projet=" + encodedProjet;
+
+                    // Vérification si le JSON est vide ou invalide, et gestion des erreurs si nécessaire
+                    if (torsadageJson == null || torsadageJson.isEmpty()) {
+                        throw new Exception("Le JSON du torsadage est vide ou invalide.");
+                    }
+
+                    // Envoi de la requête avec le JSON passé en paramètre
+                    HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url))
+                            .header("Authorization", "Bearer " + token)
+                            .header("Content-Type", "application/json")
+                            .POST(HttpRequest.BodyPublishers.ofString(torsadageJson))
+                            .build();
+
+                    HttpClient client = HttpClient.newHttpClient();
+                    HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+                    if (response.statusCode() == 200) {
+                        System.out.println("Succès Ajout PDEK : " + response.body());
+                    } else {
+                        System.out.println("Erreur dans l'ajout PDEK, code : " + response.statusCode() + ", message : "
+                                + response.body());
+                        throw new Exception("Erreur dans l'ajout PDEK : " + response.body());
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    throw new Exception("Erreur dans la méthode ajouterPdekAvecSoudure : " + e.getMessage());
+                }
+                return null;
+            }
+        };
+
+        task.setOnFailed(event -> {
+            Throwable exception = task.getException();
+            System.out.println("Erreur lors de l'ajout du PDEK : " + exception.getMessage());
+            showErrorDialog("Erreur", "Erreur lors de l'ajout du PDEK : " + exception.getMessage());
+        });
+
+        new Thread(task).start();
+    }
+
+  private void ajouterPDEKTorsadage() {
+
+
+					// Récupération des valeurs saisies et création de l'objet SoudureDTO
+					TorsadageDTO torsadage = new TorsadageDTO();
+					int x1 = Integer.parseInt(ech1.getText());
+					int x2 = Integer.parseInt(ech2.getText());
+					int x3 = Integer.parseInt(ech3.getText());
+					int x4 = Integer.parseInt(ech4.getText());
+					int x5 = Integer.parseInt(ech5.getText());
+
+					// Calcul des valeurs max et min
+					int maxValue = Math.max(Math.max(Math.max(x1, x2), Math.max(x3, x4)), x5);
+					int minValue = Math.min(Math.min(Math.min(x1, x2), Math.min(x3, x4)), x5);
+					int moy = (x1 + x2 + x3 + x4 + x5) / 5;
+					int R = maxValue - minValue;
+
+					// Remplir l'objet SoudureDTO avec les valeurs
+					torsadage.setCode(TorsadageInformations.codeControleSelectionner);
+					torsadage.setNumeroCycle(TorsadageInformations.numCourant );
+					torsadage.setSpecificationMesure(TorsadageInformations.specificationsMesure);
+					torsadage.setDecalageMaxDebutCdec1(Integer.parseInt( decalageDebutC1.getText())); 					
+					torsadage.setDecalageMaxDebutCdec2(Integer.parseInt( decalageDebutC2.getText())); 					
+					torsadage.setDecalageMaxFinCdec1(Integer.parseInt(TorsadageInformations.decalageFinC1 )); 					
+					torsadage.setDecalageMaxFinCdec2(Integer.parseInt(TorsadageInformations.decalageFinC2 )); 									
+					torsadage.setEch1(x1);
+					torsadage.setEch2(x2);
+					torsadage.setEch3(x3);
+					torsadage.setEch4(x4 );
+					torsadage.setEch5(x5);		
+					torsadage.setMoyenne(moy);
+					TorsadageInformations.moyenne = moy;
+					torsadage.setEtendu(R);
+					TorsadageInformations.ettendu = R;
+					LocalDate dateActuelle = Instant.now().atZone(ZoneId.systemDefault()).toLocalDate();
+					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+					torsadage.setDate(dateActuelle.format(formatter));
+					torsadage.setQuantiteAtteint(Integer.parseInt(TorsadageInformations.quantiteAtteint));
+					TorsadageInformations.quantiteAtteint = quantiteAtteint.getText();
+					torsadage.setQuantiteTotale(Integer.parseInt(quantiteTotal.getText()));
+					TorsadageInformations.quantiteTotal = quantiteTotal.getText();
+					torsadage.setNumerofil(numFils.getValue());
+					torsadage.setNumCommande(Integer.parseInt( numCommande.getText()));
+					torsadage.setLongueurBoutDebutCdeC1(Integer.parseInt( lognueurBoutDebutC1.getText()));
+					torsadage.setLongueurBoutDebutCdeC2(Integer.parseInt( lognueurBoutDebutC2.getText()));
+					torsadage.setLongueurBoutFinCdeC1(Integer.parseInt( lognueurBoutFinC1.getText()));
+					torsadage.setLongueurBoutFinCdeC2(Integer.parseInt( lognueurBoutFinC2.getText()));
+					torsadage.setLongueurFinalDebutCde(Integer.parseInt(longueurFinalDebutCde.getText()));
+					torsadage.setLongueurFinalFinCde(Integer.parseInt(TorsadageInformations.longueurFinalFinCde));
+					torsadage.setLongueurPasFinCde(Integer.parseInt(TorsadageInformations.longueurPasFinCde ));
+
+				
+	}
 }

@@ -216,42 +216,42 @@
                      <ComboBox fx:id="numFils" prefWidth="150.0" styleClass="combo" GridPane.columnIndex="3" />
                   </children>
                </GridPane>
-               <Label layoutX="108.0" layoutY="36.0" text="Projet :">
+               <Label layoutX="130.0" layoutY="36.0" text="Projet :">
                 <font>
                               <Font name="System" size="16.0" />
                            </font>
                         </Label>
-               <Label fx:id="nomProjet" layoutX="160.0" layoutY="36.0">
+               <Label fx:id="nomProjet" layoutX="190.0" layoutY="36.0">
                 <font>
                               <Font name="System Bold" size="16.0" />
                            </font>
                         </Label>
-               <Label layoutX="320.0" layoutY="36.0" text="Spécification de mesure :">
+               <Label layoutX="360.0" layoutY="36.0" text="Spécification de mesure :">
                 <font>
                               <Font name="System" size="16.0" />
                            </font>
                         </Label>
-               <Label fx:id="specificationsMesure" layoutX="505.0" layoutY="36.0">
+               <Label fx:id="specificationsMesure" layoutX="545.0" layoutY="36.0">
                 <font>
                               <Font name="System Bold" size="16.0" />
                            </font>
                         </Label>
-               <Label layoutX="1100.0" layoutY="36.0" text="Code de controle : ">
+               <Label layoutX="1050.0" layoutY="36.0" text="Code de controle : ">
                 <font>
                               <Font name="System" size="16.0" />
                            </font>
                         </Label>
-               <Label fx:id="codeControleSelectionner" layoutX="1250.0" layoutY="36.0">
+               <Label fx:id="codeControleSelectionner" layoutX="1190.0" layoutY="36.0">
                 <font>
                               <Font name="System Bold" size="16.0" />
                            </font>
                         </Label>
-               <Label layoutX="805.0" layoutY="36.0" text="nombre des echantillons :">
+               <Label layoutX="750.0" layoutY="36.0" text="nombre des echantillons :">
                 <font>
                                <Font name="System" size="16.0" />
                            </font>
                         </Label>
-               <Label fx:id="nbrEch" layoutX="1000.0" layoutY="36.0" text="">
+               <Label fx:id="nbrEch" layoutX="945.0" layoutY="36.0" text="">
                 <font>
                     <Font name="System  Bold" size="16.0" />
                  </font>
@@ -303,11 +303,6 @@
          </GridPane>
                <Label layoutX="381.0" layoutY="73.0" styleClass="matrix-grid-title" text="Numéro Courant : " />
                <Label fx:id="nbrCycle" layoutX="600.0" layoutY="73.0" styleClass="matrix-grid-title" text="Label" />
-               <Label layoutX="635.0" layoutY="36.0" text="Section de fil : ">
-                  <font>
-                     <Font size="16.0" />
-                  </font>
-               </Label>
                <Label layoutX="740.0" layoutY="36.0">
                   <font>
                      <Font name="System Bold" size="16.0" />

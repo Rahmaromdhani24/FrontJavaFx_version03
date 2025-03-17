@@ -30,9 +30,9 @@ public class TorsadageInformations {
     public static String quantiteTotal ;
     public static String quantiteAtteint ;
 	public static String numFils;
-	public static String numCourant;
-	
+	public static int numCourant;
+    public static String date; 
 	public static double moyenne ; 
-	public static int ettendu ; 
+	public static int ettendu ;
 
 }

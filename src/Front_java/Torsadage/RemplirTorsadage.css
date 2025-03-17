@@ -233,3 +233,6 @@
     -fx-border-width: 2px;
     -fx-border-radius: 5px;
 }
+.bold-label {
+    -fx-font-weight: bold;
+}

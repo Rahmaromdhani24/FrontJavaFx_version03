@@ -226,3 +226,6 @@
     
     -fx-background-insets: 5px; /* Décalage du fond */
 }
+.bold-label {
+    -fx-font-weight: bold;
+}

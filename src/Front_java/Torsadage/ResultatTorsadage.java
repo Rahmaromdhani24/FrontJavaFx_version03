@@ -1,24 +1,47 @@
 package Front_java.Torsadage;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
+
 import Front_java.Configuration.AppInformations;
 import Front_java.Configuration.SoudureInformations;
 import Front_java.Modeles.OperateurInfo;
+import Front_java.Modeles.TorsadageDTO;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.event.*;
 import javafx.fxml.*;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.*;
 import javafx.scene.chart.StackedAreaChart;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.*;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
+import java.util.concurrent.CompletableFuture;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXDialog;
+import com.jfoenix.controls.JFXDialogLayout;
+
 import Front_java.Configuration.TorsadageInformations;
 import javafx.animation.KeyFrame;
+import javafx.animation.PauseTransition;
 import javafx.util.Duration;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
@@ -165,7 +188,9 @@ public class ResultatTorsadage {
 	@FXML
 	public void initialize() {
 	
+
 		initialiserDonneesPDEKEnregistrer() ; 
+		ajouterPdekAvecTorsadage() ; 		
 		afficherInfosOperateur();
 		AppInformations.testTerminitionCommande = 0 ; 
 		
@@ -174,14 +199,9 @@ public class ResultatTorsadage {
 		createAndAddChartDataEttendu(chartEttendu);
 	    createAndAddChartDataMoyenne(chartMoyenne);
 	    addPointToChart(chartEttendu);
-		//loadNumeroCycleMax();
-		/*clearImage.setOnMouseClicked(event -> {
-			if (activeTextField != null) {
-				activeTextField.clear();
-			}
-		});*/
-
 	
+		testerMoyenne(TorsadageInformations.moyenne) ; 
+		testerEtendu(TorsadageInformations.ettendu) ; 
 	}
 
 
@@ -207,6 +227,32 @@ public class ResultatTorsadage {
 	@FXML
 	public void suivant(ActionEvent event) {
 	
+		TorsadageInformations.projetSelectionner= null ; 
+		TorsadageInformations.codeControleSelectionner= null ; 
+		TorsadageInformations.specificationsMesure = null ; 
+		try {
+			// Charger la scène de Dashboard1
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/Front_java/Torsadage/SelectionInitiale.fxml"));
+			Scene dashboard1Scene = new Scene(loader.load());
+			dashboard1Scene.getStylesheets()
+					.add(getClass().getResource("/Front_java/Torsadage/SelectionInitiale.css").toExternalForm());
+
+			// Créer une nouvelle fenêtre (Stage)
+			Stage dashboard1Stage = new Stage();
+			dashboard1Stage.setScene(dashboard1Scene);
+			dashboard1Stage.setMaximized(true);
+			dashboard1Stage.initStyle(StageStyle.UNDECORATED); // Supprimer le titre et les boutons
+			Image icon = new Image("/logo_app.jpg");
+			dashboard1Stage.getIcons().add(icon);
+			dashboard1Stage.show();
+
+			// Fermer la fenêtre actuelle (Dashboard2)
+			Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+			currentStage.close();
+
+		} catch (IOException e) {
+			System.out.println("Erreur lors du chargement de la fenêtre dashboard1 : " + e.getMessage());
+		}
 	}
 	
 
@@ -253,8 +299,9 @@ public class ResultatTorsadage {
 			posteUser.setText(operateurInfo.getPoste());
 			segementUser.setText(operateurInfo.getSegment());
 			nomProjet.setText(TorsadageInformations.projetSelectionner);
-			specificationsMesure.setText(TorsadageInformations.specificationsMesure);
-			nbrEch.setText("5 Piéces");
+			specificationsMesure.setText(TorsadageInformations.specificationsMesure +" +/- 2 mm");
+			nbrEch.setText("3 Piéces");
+			nbrEch.getStyleClass().add("bold-label");
 			codeControleSelectionner.setText(TorsadageInformations.codeControleSelectionner);
 
 		} else {
@@ -282,7 +329,7 @@ public class ResultatTorsadage {
 		timeline.play(); // Démarrer l'animation
 	}
 	public void initialiserDonneesPDEKEnregistrer() {
-		
+		nbrCycle.setText(TorsadageInformations.numCourant+"");
 		numCommande.setText(TorsadageInformations.numCommande ); 
 		longueurfinalDebutCde.setText(TorsadageInformations.longueurFinalDebutCde ); 
 		longueurBoutDebutC1.setText(TorsadageInformations.lognueurBoutDebutC1 ); 
@@ -448,5 +495,245 @@ public class ResultatTorsadage {
 		    });
 		}
 
+	 private void ajouterPdekAvecTorsadage() {
+			Task<Void> task = new Task<>() {
+				@Override
+				protected Void call() throws Exception {
+					try {
+						// Code pour l'ajout du PDEK
+						String token = AppInformations.token;
+						String encodedProjet = URLEncoder.encode(TorsadageInformations.projetSelectionner,
+								StandardCharsets.UTF_8);
+
+						String url = "http://localhost:8281/operations/torsadage/ajouterPDEK" + "?matriculeOperateur="
+								+ AppInformations.operateurInfo.getMatricule() + "&projet=" + encodedProjet;
+
+						// Récupération des valeurs saisies et création de l'objet SoudureDTO
+						TorsadageDTO torsadage = new TorsadageDTO();
+						int x1 = Integer.parseInt(TorsadageInformations.ech1);
+						int x2=  Integer.parseInt(TorsadageInformations.ech2);
+						int x3 = Integer.parseInt(TorsadageInformations.ech3);
+						int x4 = Integer.parseInt(TorsadageInformations.ech4);
+						int x5 = Integer.parseInt(TorsadageInformations.ech5);
+
+						// Calcul des valeurs max et min
+						int maxValue = Math.max(Math.max(Math.max(x1, x2), Math.max(x3, x4)), x5);
+						int minValue = Math.min(Math.min(Math.min(x1, x2), Math.min(x3, x4)), x5);
+						double moy = (x1 + x2 + x3 + x4 + x5) / 5.0;
+						int R = maxValue - minValue;
+
+						
+			
+		
+						
+						// Remplir l'objet SoudureDTO avec les valeurs
+						torsadage.setCode(TorsadageInformations.codeControleSelectionner);
+						torsadage.setNumeroCycle(TorsadageInformations.numCourant );
+						torsadage.setSpecificationMesure(TorsadageInformations.specificationsMesure);
+						torsadage.setDecalageMaxDebutCdec1(Integer.parseInt(TorsadageInformations.decalageDebutC1)); 					
+						torsadage.setDecalageMaxDebutCdec2(Integer.parseInt(TorsadageInformations.decalageDebutC2)); 		
+						torsadage.setDecalageMaxFinCdec1(Integer.parseInt(TorsadageInformations.decalageFinC1 )); 					
+						torsadage.setDecalageMaxFinCdec2(Integer.parseInt(TorsadageInformations.decalageFinC2 )); 									
+						torsadage.setEch1(x1);
+						torsadage.setEch2(x2);
+						torsadage.setEch3(x3);
+						torsadage.setEch4(x4 );
+						torsadage.setEch5(x5);		
+						torsadage.setMoyenne(moy);
+						torsadage.setEtendu(R);
+						ZoneId zoneId = ZoneId.of("Europe/Paris"); // Remplace par ton fuseau horaire
+						LocalDate dateActuelle = Instant.now().atZone(zoneId).toLocalDate();
+						DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+						torsadage.setDate(dateActuelle.format(formatter));
+						torsadage.setQuantiteAtteint(Integer.parseInt(TorsadageInformations.quantiteAtteint));
+						torsadage.setQuantiteTotale(Integer.parseInt(TorsadageInformations.quantiteTotal));
+						torsadage.setNumerofil(TorsadageInformations.numFils);
+						torsadage.setNumCommande(Integer.parseInt(TorsadageInformations.numCommande));
+						torsadage.setLongueurBoutDebutCdeC1(Integer.parseInt(TorsadageInformations.lognueurBoutDebutC1));
+						torsadage.setLongueurBoutDebutCdeC2(Integer.parseInt(TorsadageInformations.lognueurBoutDebutC2));
+						torsadage.setLongueurBoutFinCdeC1(Integer.parseInt(TorsadageInformations.lognueurBoutFinC1));
+						torsadage.setLongueurBoutFinCdeC2(Integer.parseInt(TorsadageInformations.lognueurBoutFinC2));
+						torsadage.setLongueurFinalDebutCde(Integer.parseInt(TorsadageInformations.longueurFinalDebutCde));
+						torsadage.setLongueurFinalFinCde(Integer.parseInt(TorsadageInformations.longueurFinalFinCde));
+						torsadage.setLongueurPasFinCde(Integer.parseInt(TorsadageInformations.longueurPasFinCde));
+
+						// Conversion de l'objet SoudureDTO en JSON
+						ObjectMapper objectMapper = new ObjectMapper();
+						String torsadageJson = objectMapper.writeValueAsString(torsadage);
+
+						HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url))
+								.header("Authorization", "Bearer " + token).header("Content-Type", "application/json")
+								.POST(HttpRequest.BodyPublishers.ofString(torsadageJson)).build();
+
+						HttpClient client = HttpClient.newHttpClient();
+						HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+						if (response.statusCode() == 200) {
+							System.out.println("Succès Ajout PDEK : " + response.body());
+						} else {
+							System.out.println("Erreur dans l'ajout PDEK, code : " + response.statusCode() + ", message : "
+									+ response.body());
+							throw new Exception("Erreur dans l'ajout PDEK : " + response.body());
+						}
+
+					} catch (Exception e) {
+						e.printStackTrace();
+						throw new Exception("Erreur dans la méthode ajouterPdekAvecSoudure : " + e.getMessage());
+					}
+					return null;
+				}
+			};
+
+			task.setOnFailed(event -> {
+				Throwable exception = task.getException();
+				System.out.println("Erreur lors de l'ajout du PDEK : " + exception.getMessage());
+				showErrorDialog("Erreur", "Erreur lors de l'ajout du PDEK : " + exception.getMessage());
+			});
+
+			new Thread(task).start();
+		}
+	 /*********************************          Alerts        ***************************************/
+
+
+		/*********************************          Alerts        ***************************************/
+
+		private void showErrorDialog(String title, String message) {
+			Image errorIcon = new Image(getClass().getResource("/icone_erreur.png").toExternalForm());
+			ImageView errorImageView = new ImageView(errorIcon);
+			errorImageView.setFitWidth(100);
+			errorImageView.setFitHeight(100);
+
+			VBox iconBox = new VBox(errorImageView);
+			iconBox.setAlignment(Pos.CENTER);
+
+			Label messageLabel = new Label(message);
+			messageLabel.setWrapText(true);
+			messageLabel.setStyle("-fx-font-size: 19px; -fx-font-weight: bold; -fx-text-alignment: center; -fx-text-fill: black;");
+
+			Label titleLabel = new Label(title);
+			titleLabel.setStyle("-fx-font-size: 19px; -fx-text-alignment: center;");
+			VBox titleBox = new VBox(titleLabel);
+			titleBox.setAlignment(Pos.CENTER);
+
+			VBox contentBox = new VBox(10, iconBox, messageLabel, titleBox);
+			contentBox.setAlignment(Pos.CENTER);
+
+			JFXDialogLayout content = new JFXDialogLayout();
+			content.setBody(contentBox);
+			content.setStyle("-fx-background-color: white; -fx-background-radius: 10;");
+
+			JFXButton closeButton = new JFXButton("Fermer");
+			closeButton.setStyle("-fx-font-size: 19px; -fx-padding: 10px 20px;-fx-font-weight: bold;");
+			content.setActions(closeButton);
+
+			// Utilisation de stackPane ici
+			JFXDialog dialog = new JFXDialog(stackPane, content, JFXDialog.DialogTransition.CENTER);
+			closeButton.setOnAction(e -> dialog.close());
+
+			dialog.show();
+
+			Platform.runLater(() -> {
+				StackPane overlayPane = (StackPane) dialog.lookup(".jfx-dialog-overlay-pane");
+				if (overlayPane != null) {
+					overlayPane.setStyle("-fx-background-color: transparent;");
+				}
+			});
+		}
+/************************ test Moyenne et etendu *************/
+		public static int extraireValeur(String input) {
+		    return Integer.parseInt(input.replaceAll("(\\d+)\\s*mm.*", "$1"));
+		}
+
+		public void testerMoyenne(double moyenneEch) {
+		    
+			int pas =  extraireValeur(TorsadageInformations.specificationsMesure) ;  // 20
+			double valeurMaxRougeSuperieur = pas +2; //22
+			double valeurMaxRougeInferieur = pas - 2 ;  //18
+			double debutZoneJaune = (pas -2)-0.8 ;  //18.8==>fin zone jaune et debut zone vert 
+			double finZoneJaune = pas-0.8 ;         //21.2 ==> fin zone vert et debut zone jaune 
+
+		    	if (((moyenneEch >= finZoneJaune )&&(moyenneEch < valeurMaxRougeSuperieur ) ) ||  (moyenneEch < valeurMaxRougeInferieur) && (moyenneEch <=  debutZoneJaune)  ) { // Zone jaune
+		    	    System.out.println("Zone jaune détectée");
+		    	    Platform.runLater(() -> {
+		    	        showWarningDialog("La valeur X dépasse les limites d'alarme (zone jaune). \nL'opérateur " 
+		    	            + AppInformations.operateurInfo.getPrenom() + " " 
+		    	            + AppInformations.operateurInfo.getNom() 
+		    	            + " doit informer son supérieur hiérarchique immédiatement.", "Attention - Limite dépassée");
+		    	    });
+		    	} 
+		        if ((moyenneEch <= valeurMaxRougeInferieur) ||  (moyenneEch >=  valeurMaxRougeSuperieur)) { // Zone rouge
+		            System.out.println("Zone rouge détectée");
+		    	    Platform.runLater(() -> {
+		            showErrorDialog("La valeur X dépasse la limite de contrôle (zone rouge). \nL'opérateur " 
+		                + AppInformations.operateurInfo.getPrenom() + " " 
+		                + AppInformations.operateurInfo.getNom() 
+		                + " doit appliquer l'arrêt 1er défaut.", "Problème détecté");
+		    	    });
+		    	    } else {
+		            System.out.println("Aucune alerte déclenchée");
+		        }
+		   
+		}
+
+		/******************   Recuperer valeur max  de etendu  *****************/
+		
+		
+
+		public void testerEtendu(int etenduEch) {
+		    
+
+		    	if (etenduEch >=  2.4) {
+		    		  Platform.runLater(() -> {
+		  	            showErrorDialog("La valeur X dépasse la limite de contrôle (zone rouge). \nL'opérateur " 
+		  	                + AppInformations.operateurInfo.getPrenom() + " " 
+		  	                + AppInformations.operateurInfo.getNom() 
+		  	                + " doit appliquer l'arrêt 1er défaut.", "Problème détecté");
+		  	    	    });	
+		               }
+                       }
+		
+		/****/
+
+		private void showWarningDialog(String title, String message) {
+			Image warningIcon = new Image(getClass().getResource("/warning.jpg").toExternalForm());
+			ImageView warningImageView = new ImageView(warningIcon);
+			warningImageView.setFitWidth(150);
+			warningImageView.setFitHeight(150);
+
+			VBox iconBox = new VBox(warningImageView);
+			iconBox.setAlignment(Pos.CENTER);
+
+			Label messageLabel = new Label(message);
+			messageLabel.setWrapText(true);
+			messageLabel.setStyle("-fx-font-size: 19px; -fx-font-weight: bold; -fx-text-alignment: center; -fx-text-fill: black;");
+
+			Label titleLabel = new Label(title);
+			titleLabel.setStyle("-fx-font-size: 19px; -fx-text-alignment: center;");
+			VBox titleBox = new VBox(titleLabel);
+			titleBox.setAlignment(Pos.CENTER);
+
+			VBox contentBox = new VBox(10, iconBox, messageLabel, titleBox);
+			contentBox.setAlignment(Pos.CENTER);
+
+			JFXDialogLayout content = new JFXDialogLayout();
+			content.setBody(contentBox);
+			content.setStyle("-fx-background-color: white; -fx-background-radius: 10;");
+
+			JFXButton closeButton = new JFXButton("Fermer");
+			closeButton.setStyle("-fx-font-size: 19px; -fx-padding: 10px 20px; -fx-font-weight: bold;");
+			content.setActions(closeButton);
+
+			JFXDialog dialog = new JFXDialog(stackPane, content, JFXDialog.DialogTransition.CENTER);
+			closeButton.setOnAction(e -> dialog.close());
+
+			dialog.show();
+
+			Platform.runLater(() -> {
+				StackPane overlayPane = (StackPane) dialog.lookup(".jfx-dialog-overlay-pane");
+				if (overlayPane != null) {
+					overlayPane.setStyle("-fx-background-color: transparent;");
+				}
+			});
+		}
 
 }

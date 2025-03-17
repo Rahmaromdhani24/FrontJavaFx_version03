@@ -232,6 +232,46 @@ public class LoginController {
                                     System.out.println("Erreur lors du chargement de la fenêtre dashboard : " + e.getMessage());
                                     showErrorDialog( "Erreur lors du chargement du tableau de bord !" , "Erreur");
                                 }
+                            }else if(userInfo.getOperation().equals("Sertissage_Normal")) {
+                                try {
+                                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/Front_java/SertissageNormal/SelectionSertissageNormal.fxml"));
+                                    Scene dashboardScene = new Scene(loader.load());
+                                    dashboardScene.getStylesheets().add(getClass().getResource("/Front_java/SertissageNormal/SelectionSertissageNormal.css").toExternalForm());
+
+                                    Stage dashboardStage = new Stage();
+                                    dashboardStage.setScene(dashboardScene);
+                                    dashboardStage.setMaximized(true);
+                                    dashboardStage.initStyle(StageStyle.UNDECORATED);
+                                    Image icon = new Image("/logo_app.jpg");
+                                    dashboardStage.getIcons().add(icon);
+                                    dashboardStage.show();
+
+                                    Stage currentStage = (Stage) loginBtn.getScene().getWindow();
+                                    currentStage.close();
+                                } catch (IOException e) {
+                                    System.out.println("Erreur lors du chargement de la fenêtre dashboard : " + e.getMessage());
+                                    showErrorDialog( "Erreur lors du chargement du tableau de bord !" , "Erreur");
+                                }
+                            }else if(userInfo.getOperation().equals("Sertissage_IDC")) {
+                                try {
+                                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/Front_java/SertissageIDC/SelectionSertissageIDC.fxml"));
+                                    Scene dashboardScene = new Scene(loader.load());
+                                    dashboardScene.getStylesheets().add(getClass().getResource("/Front_java/SertissageIDC/SelectionSertissageIDC.css").toExternalForm());
+
+                                    Stage dashboardStage = new Stage();
+                                    dashboardStage.setScene(dashboardScene);
+                                    dashboardStage.setMaximized(true);
+                                    dashboardStage.initStyle(StageStyle.UNDECORATED);
+                                    Image icon = new Image("/logo_app.jpg");
+                                    dashboardStage.getIcons().add(icon);
+                                    dashboardStage.show();
+
+                                    Stage currentStage = (Stage) loginBtn.getScene().getWindow();
+                                    currentStage.close();
+                                } catch (IOException e) {
+                                    System.out.println("Erreur lors du chargement de la fenêtre dashboard : " + e.getMessage());
+                                    showErrorDialog( "Erreur lors du chargement du tableau de bord !" , "Erreur");
+                                }
                             }
                             });
                         }

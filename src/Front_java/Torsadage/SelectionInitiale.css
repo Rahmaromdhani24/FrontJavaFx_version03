@@ -71,6 +71,7 @@
     -fx-font-size: 16px;
     -fx-border-color: #A0A0A0;
     -fx-alignment: center;
+     -fx-pref-width: 200px; 
 }
 
 .liste-projets-combo .list-cell {
@@ -92,6 +93,7 @@
     -fx-padding: 5px;
     -fx-font-size: 16px;
     -fx-border-color: #A0A0A0;
+      -fx-pref-width: 200px; 
 }
 
 .liste-sectionFil-combo .list-cell {
@@ -116,6 +118,7 @@
     -fx-padding: 5px;
     -fx-font-size: 16px;
     -fx-border-color: #A0A0A0;
+      -fx-pref-width: 200px; 
 }
 
 .liste-codeControle-combo .list-cell {
