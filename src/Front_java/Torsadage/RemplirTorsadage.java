@@ -1087,7 +1087,7 @@ public class RemplirTorsadage {
 					// Calcul des valeurs max et min
 					int maxValue = Math.max(Math.max(Math.max(x1, x2), Math.max(x3, x4)), x5);
 					int minValue = Math.min(Math.min(Math.min(x1, x2), Math.min(x3, x4)), x5);
-					int moy = (x1 + x2 + x3 + x4 + x5) / 5;
+					double moy = (x1 + x2 + x3 + x4 + x5) / 5.0;
 					int R = maxValue - minValue;
 
 					// Remplir l'objet SoudureDTO avec les valeurs

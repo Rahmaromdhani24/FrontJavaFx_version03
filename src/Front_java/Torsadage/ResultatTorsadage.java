@@ -22,13 +22,17 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.*;
 import javafx.scene.chart.StackedAreaChart;
+import javafx.scene.chart.StackedBarChart;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.stage.*;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
@@ -43,6 +47,8 @@ import Front_java.Configuration.TorsadageInformations;
 import javafx.animation.KeyFrame;
 import javafx.animation.PauseTransition;
 import javafx.util.Duration;
+import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 
@@ -179,12 +185,22 @@ public class ResultatTorsadage {
     private StackPane stackPane;
 
 
+/****************/
     @FXML
-    private StackedAreaChart<Number, Number> chartEttendu;
+    private StackedBarChart<String, Number> chartMoyenne; // Lier le graphique à l'ID du FXML
+    @FXML
+    private CategoryAxis xAxis; // Lier l'axe X à l'ID du FXML
+    @FXML
+    private NumberAxis yAxis; // Lier l'axe Y à l'ID du FXML
+    @FXML
+    private Pane  paneMoyenne;
+    @FXML
+    private NumberAxis yAxisEtendu;
+    @FXML
+    private NumberAxis xAxisEtendu;
 
     @FXML
-    private StackedAreaChart<Number, Number> chartMoyenne;
-		
+    private LineChart<Number, Number> chartEtendu;
 	@FXML
 	public void initialize() {
 	
@@ -196,12 +212,40 @@ public class ResultatTorsadage {
 		
 		afficherDateSystem();
 		afficherHeureSystem();
-		createAndAddChartDataEttendu(chartEttendu);
-	    createAndAddChartDataMoyenne(chartMoyenne);
-	    addPointToChart(chartEttendu);
+		//createAndAddChartDataEttendu(chartEttendu);
+	   // createAndAddChartDataMoyenne(chartMoyenne);
+	   // addPointToChart(chartEttendu);
 	
 		testerMoyenne(TorsadageInformations.moyenne) ; 
 		testerEtendu(TorsadageInformations.ettendu) ; 
+		setupChartMoyenne() ;
+	      double etenduMax = 2.4 ;
+		  final NumberAxis xAxis = new NumberAxis();
+	      final NumberAxis yAxis = new NumberAxis();
+
+	        final LineChart<Number, Number> lineChart = new LineChart<>(xAxis, yAxis);
+
+	        // Série pour l'étendu (point bleu)
+	        XYChart.Series<Number, Number> seriesEtendu = new XYChart.Series<>();
+	        seriesEtendu.setName("Etendue de numéro de cycle: " + SoudureInformations.numerCyclePDEK);
+	        XYChart.Data<Number, Number> dataPointEtendu = new XYChart.Data<>(15, TorsadageInformations.ettendu);
+	        seriesEtendu.getData().add(dataPointEtendu);
+
+	        // Série pour la ligne rouge (etenduMax)
+	        XYChart.Series<Number, Number> ligneRougeSeries = new XYChart.Series<>();
+	        ligneRougeSeries.setName("Etendu Maximum = " + etenduMax);
+	        ligneRougeSeries.getData().add(new XYChart.Data<>(0, etenduMax));
+	        ligneRougeSeries.getData().add(new XYChart.Data<>(27, etenduMax));
+
+	        // Ajouter les séries au graphique
+	        lineChart.getData().addAll(ligneRougeSeries, seriesEtendu);
+
+	        chartEtendu.getData().clear();  
+	        chartEtendu.getData().addAll(lineChart.getData());
+
+	        Platform.runLater(() -> {
+	            chartEtendu.layout();  // Rafraîchir la disposition du graphique
+	        });
 	}
 
 
@@ -684,7 +728,7 @@ public class ResultatTorsadage {
 
 		    	if (etenduEch >=  2.4) {
 		    		  Platform.runLater(() -> {
-		  	            showErrorDialog("La valeur X dépasse la limite de contrôle (zone rouge). \nL'opérateur " 
+		  	            showErrorDialog("La valeur R dépasse la limite de contrôle (zone rouge). \nL'opérateur " 
 		  	                + AppInformations.operateurInfo.getPrenom() + " " 
 		  	                + AppInformations.operateurInfo.getNom() 
 		  	                + " doit appliquer l'arrêt 1er défaut.", "Problème détecté");
@@ -735,5 +779,90 @@ public class ResultatTorsadage {
 				}
 			});
 		}
+/****************************** chart Moyenne **********************/
+		/************************* chart Moyenne **********************/
+		public void setupChartMoyenne() {
+		    // Configuration des axes
+		    yAxis.setLowerBound(0);
+		    yAxis.setUpperBound(30);
+		    xAxis.setOpacity(0);  // Masquer l'axe X
+		    yAxis.setOpacity(0);  // Masquer l'axe Y
+	        chartMoyenne.setTitle("La moyenne de X ");
+    
+		    // Création des séries de données
+		    XYChart.Series<String, Number> series1 = new XYChart.Series<>();
+		    series1.setName("Zone Rouge"); // Première fois affiché
+		    series1.getData().add(new XYChart.Data<>("A", 10));
 
+		    XYChart.Series<String, Number> series2 = new XYChart.Series<>();
+		    series2.setName("Zone Jaune"); // Première fois affiché
+		    series2.getData().add(new XYChart.Data<>("A", 10));
+
+		    XYChart.Series<String, Number> series3 = new XYChart.Series<>();
+		    series3.setName("Zone Verte"); // Première fois affiché
+		    series3.getData().add(new XYChart.Data<>("A", 10));
+
+		    XYChart.Series<String, Number> series4 = new XYChart.Series<>();
+		    series4.setName(""); // Masquer la légende (car "Zone Jaune" existe déjà)
+		    series4.getData().add(new XYChart.Data<>("A", 10));
+
+		    XYChart.Series<String, Number> series5 = new XYChart.Series<>();
+		    series5.setName(""); // Masquer la légende (car "Zone Rouge" existe déjà)
+		    series5.getData().add(new XYChart.Data<>("A", 10));
+
+		    // Ajout des séries au graphique
+		    chartMoyenne.getData().addAll(series1, series2, series3, series4, series5);
+
+		    // Appliquer les couleurs après le rendu du graphique
+		    Platform.runLater(() -> {
+		        setBarColor(series1, "red");
+		        setBarColor(series2, "yellow");
+		        setBarColor(series3, "green");
+		        setBarColor(series4, "yellow");
+		        setBarColor(series5, "red");
+		    });
+
+		    // Ajout d'un point noir à une valeur spécifique
+		    Platform.runLater(() -> addPointToChart(chartMoyenne, xAxis, yAxis, paneMoyenne, 15));
+		}
+
+		// Nouvelle méthode pour appliquer les couleurs aux barres
+		private void setBarColor(XYChart.Series<String, Number> series, String color) {
+		    Platform.runLater(() -> {
+		        for (XYChart.Data<String, Number> data : series.getData()) {
+		            Node barNode = data.getNode();
+		            if (barNode != null) {
+		                barNode.setStyle("-fx-bar-fill: " + color + ";");
+		            }
+		        }
+		    });
+		}
+
+		// Méthode pour ajouter un point noir au graphique
+		private void addPointToChart(StackedBarChart<String, Number> stackedBarChart, CategoryAxis xAxis, NumberAxis yAxis, Pane overlayPane, double yValue) {
+		    double yPosition = getYPositionForPoint(yValue, yAxis);
+		    double xPosition = xAxis.getDisplayPosition("A");
+
+		    Circle point = new Circle(5);
+		    point.setFill(Color.BLACK);
+		    point.setCenterX(xPosition);
+		    point.setCenterY(yPosition);
+
+		    overlayPane.getChildren().add(point);
+		}
+
+		// Méthode pour calculer la position Y correcte en fonction des tranches de valeurs
+		private double getYPositionForPoint(double value, NumberAxis yAxis) {
+		    double cumulativeHeight = 0;
+
+		    if (value >= 0 && value <= 10) {
+		        cumulativeHeight = value;
+		    } else if (value > 10 && value <= 20) {
+		        cumulativeHeight = 10 + (value - 10);
+		    } else if (value > 20 && value <= 30) {
+		        cumulativeHeight = 20 + (value - 20);
+		    }
+
+		    return yAxis.getDisplayPosition(cumulativeHeight);
+		}
 }

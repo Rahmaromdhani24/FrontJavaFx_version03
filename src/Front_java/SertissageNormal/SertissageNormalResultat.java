@@ -258,7 +258,7 @@ public class SertissageNormalResultat{
         	AppInformations.projetSelectionner = null ; 
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/Front_java/SertissageNormal/SelectionSertissageNormal.fxml"));
             Scene dashboardScene = new Scene(loader.load());
-            dashboardScene.getStylesheets().add(getClass().getResource("/Front_java/SertissageNormal/SelectionSertissageNormal.fxml").toExternalForm());
+            dashboardScene.getStylesheets().add(getClass().getResource("/Front_java/SertissageNormal/SelectionSertissageNormal.css").toExternalForm());
 
             Stage dashboardStage = new Stage();
             dashboardStage.setScene(dashboardScene);
