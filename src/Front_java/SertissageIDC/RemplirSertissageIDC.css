@@ -196,7 +196,6 @@
     -fx-text-fill: #a1a1a1;  /* Texte gris lorsque désactivé */
 }
 
-/*************************************/
 .matrix-grid-title {
     -fx-font-size: 20px;
     -fx-font-weight: bold;
@@ -228,8 +227,25 @@
     
     -fx-background-insets: 5px; /* Décalage du fond */
 }
+.grid-pane .cell[gridpane-columnindex="0"][gridpane-rowindex="0"] {
+    -fx-border-color: transparent;
+}
+
 .textfield-blue-border {
     -fx-border-color: #0007cc;
     -fx-border-width: 2px;
     -fx-border-radius: 5px;
 }
+/*************************************
+.table-bordered {
+    -fx-border-color: black;
+    -fx-border-width: 2px;
+    -fx-border-radius: 5px;
+}
+
+.text-field-cell {
+    -fx-border-color: gray;
+    -fx-border-width: 1px;
+    -fx-alignment: center;
+}
+******/

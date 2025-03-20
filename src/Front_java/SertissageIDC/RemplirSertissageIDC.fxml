@@ -2,7 +2,6 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
@@ -19,8 +18,7 @@
 
 <!--?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon?-->
 
-<StackPane fx:id="stackPane" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="Front_java.SertissageIDC.RemplirSertissageIDC">
+<StackPane fx:id="stackPane" prefHeight="750.0" prefWidth="1360.0" stylesheets="@RemplirSertissageIDC.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Front_java.SertissageIDC.RemplirSertissageIDC">
            
                <BorderPane fx:id="rootPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1360.0">
 
@@ -82,7 +80,7 @@
                               <Font name="System Bold" size="16.0" />
                            </font>
                         </Label>
-                        <Label fx:id="operationUser" layoutX="925.0" layoutY="30.0" text="">
+                        <Label fx:id="operationUser" layoutX="909.0" layoutY="30.0" text="">
                            <font>
                               <Font name="System Bold" size="16.0" />
                            </font>
@@ -150,73 +148,8 @@
       </Pane>
    </bottom>
       <center>
-         <AnchorPane prefHeight="514.0" prefWidth="1300.0" BorderPane.alignment="CENTER">
+         <AnchorPane prefHeight="514.0" prefWidth="1300.0" stylesheets="@RemplirSertissageIDC.css" BorderPane.alignment="CENTER">
             <children>
-               <GridPane layoutX="15.0" layoutY="110.0" prefHeight="411.0" prefWidth="892.0" styleClass="grid-pane-border">
-                 <columnConstraints>
-                   <ColumnConstraints hgrow="SOMETIMES" maxWidth="416.0" minWidth="10.0" prefWidth="416.0" />
-                     <ColumnConstraints hgrow="SOMETIMES" maxWidth="175.0" minWidth="0.0" prefWidth="98.0" />
-                     <ColumnConstraints hgrow="SOMETIMES" maxWidth="345.0" minWidth="10.0" prefWidth="277.0" />
-                   <ColumnConstraints hgrow="SOMETIMES" maxWidth="116.0" minWidth="0.0" prefWidth="97.0" />
-                 </columnConstraints>
-                 <rowConstraints>
-                     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                 </rowConstraints>
-                  <children>
-                     <Label prefHeight="17.0" prefWidth="408.0" styleClass="labelll" text="  Longueur final  du début  de commande " GridPane.rowIndex="1">
-                        <GridPane.margin>
-                           <Insets />
-                        </GridPane.margin></Label>
-                     <Label prefHeight="17.0" prefWidth="421.0" styleClass="labelll" text="  Longueur des bout de fil  non torsadé  au début de Cde C1" GridPane.rowIndex="2" />
-                     <Label prefHeight="17.0" prefWidth="414.0" styleClass="labelll" text="  Longueur des bout de fil  non torsadé  au début de Cde C2" GridPane.rowIndex="3" />
-                     <Label prefHeight="17.0" prefWidth="421.0" styleClass="labelll" text="  Longueur des bout de fil  non torsadé  a la fin  de Cde C1" GridPane.rowIndex="4" />
-                     <Label prefWidth="370.0" styleClass="labelll" text="     Longueur final  a la fin de commande" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-                     <Label prefWidth="370.0" styleClass="labelll" text="      Longueur  de pas a la fin  de la Cde " GridPane.columnIndex="2" GridPane.rowIndex="2" />
-                     <Label styleClass="labelll" text="                           Echantillon X1" GridPane.columnIndex="2" GridPane.rowIndex="3" />
-                     <Label styleClass="labelll" text="                           Echantillon X2" GridPane.columnIndex="2" GridPane.rowIndex="4" />
-                     <Label prefHeight="17.0" prefWidth="423.0" styleClass="labelll" text="  Longueur des bout de fil  non torsadé  a la fin  de Cde C2" GridPane.rowIndex="5" />
-                     <Label styleClass="labelll" text="    Décalage max  au début de   commande C1" GridPane.rowIndex="6" />
-                     <Label styleClass="labelll" text="    Décalage max  au début de   commandeC2" GridPane.rowIndex="7" />
-                     <Label styleClass="labelll" text="    Décalage max  a la fin de   commande C1" GridPane.rowIndex="8" />
-                     <Label styleClass="labelll" text="    Décalage max  a la fin de commande C2" GridPane.rowIndex="9" />
-                     <TextField fx:id="longueurFinalDebutCde" styleClass="text-field-nombre-lot" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                     <TextField fx:id="lognueurBoutDebutC1" styleClass="text-field-nombre-lot" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                     <TextField fx:id="lognueurBoutDebutC2" styleClass="text-field-nombre-lot" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                     <TextField fx:id="lognueurBoutFinC1" styleClass="text-field-nombre-lot" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-                     <TextField fx:id="lognueurBoutFinC2" styleClass="text-field-nombre-lot" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-                     <TextField fx:id="decalageDebutC1" styleClass="text-field-nombre-lot" GridPane.columnIndex="1" GridPane.rowIndex="6" />
-                     <TextField fx:id="decalageDebutC2" styleClass="text-field-nombre-lot" GridPane.columnIndex="1" GridPane.rowIndex="7" />
-                     <TextField fx:id="decalageFinC1" styleClass="text-field-nombre-lot" GridPane.columnIndex="1" GridPane.rowIndex="8" />
-                     <TextField fx:id="decalageFinC2" styleClass="text-field-nombre-lot" GridPane.columnIndex="1" GridPane.rowIndex="9" />
-                     <TextField fx:id="longueurFinalFinCde" prefHeight="25.0" prefWidth="136.0" styleClass="text-field-nombre-lot" GridPane.columnIndex="3" GridPane.rowIndex="1" />
-                     <TextField fx:id="longueurPasFinCde" styleClass="text-field-nombre-lot" GridPane.columnIndex="3" GridPane.rowIndex="2" />
-                     <TextField fx:id="ech1" styleClass="text-field-nombre-lot" GridPane.columnIndex="3" GridPane.rowIndex="3" />
-                     <TextField fx:id="ech2" styleClass="text-field-nombre-lot" GridPane.columnIndex="3" GridPane.rowIndex="4" />
-                     <TextField fx:id="quantiteAtteint" prefHeight="27.0" prefWidth="150.0" styleClass="text-field-nombre-lot" GridPane.columnIndex="3" GridPane.rowIndex="9" />
-                     <TextField fx:id="quantiteTotal" styleClass="text-field-nombre-lot" GridPane.columnIndex="3" GridPane.rowIndex="8" />
-                     <TextField fx:id="ech5" styleClass="text-field-nombre-lot" GridPane.columnIndex="3" GridPane.rowIndex="7" />
-                     <TextField fx:id="ech4" styleClass="text-field-nombre-lot" GridPane.columnIndex="3" GridPane.rowIndex="6" />
-                     <TextField fx:id="ech3" styleClass="text-field-nombre-lot" GridPane.columnIndex="3" GridPane.rowIndex="5" />
-                     <Label styleClass="labelll" text="                           Echantillon X3" GridPane.columnIndex="2" GridPane.rowIndex="5" />
-                     <Label styleClass="labelll" text="                           Echantillon X4" GridPane.columnIndex="2" GridPane.rowIndex="6" />
-                     <Label styleClass="labelll" text="                           Echantillon X5" GridPane.columnIndex="2" GridPane.rowIndex="7" />
-                     <Label styleClass="labelll" text="                         Quantité Totale " GridPane.columnIndex="2" GridPane.rowIndex="8" />
-                     <Label styleClass="labelll" text="                         Quantité Atteint" GridPane.columnIndex="2" GridPane.rowIndex="9" />
-                     <Label prefHeight="17.0" prefWidth="392.0" styleClass="labelll" text="   Numéro de commande " />
-                     <Label prefHeight="17.0" prefWidth="270.0" styleClass="labelll" text="     Numéro de fils  " GridPane.columnIndex="2" />
-                     <TextField fx:id="numCommande" styleClass="text-field-nombre-lot" GridPane.columnIndex="1" />
-                     <ComboBox fx:id="numFils" prefWidth="150.0" styleClass="combo" GridPane.columnIndex="3" />
-                  </children>
-               </GridPane>
                <Label layoutX="108.0" layoutY="36.0" text="Projet :">
                 <font>
                               <Font name="System" size="16.0" />
@@ -297,23 +230,161 @@
 				        <Insets left="20.0" />
 				    </GridPane.margin>
 				</ImageView>
+
+ <!-- TableView -->
+
                   <padding>
                      <Insets left="100.0" />
                   </padding>
-
+        
          </GridPane>
-               <Label layoutX="381.0" layoutY="73.0" styleClass="matrix-grid-title" text="Numéro Courant : " />
-               <Label fx:id="nbrCycle" layoutX="600.0" layoutY="73.0" styleClass="matrix-grid-title" text="Label" />
+               <Label layoutX="500.0" layoutY="73.0" styleClass="matrix-grid-title" text="Numéro Courant : " />
+               <Label fx:id="nbrCycle" layoutX="700.0" layoutY="73.0" styleClass="matrix-grid-title" text="Label" />
                <Label layoutX="635.0" layoutY="36.0" text="Section de fil : ">
                   <font>
                      <Font size="16.0" />
                   </font>
                </Label>
-               <Label layoutX="740.0" layoutY="36.0">
-                  <font>
-                     <Font name="System Bold" size="16.0" />
-                  </font>
-               </Label>
+          <GridPane hgap="2" layoutX="53.0" layoutY="126.0" prefHeight="337.0" prefWidth="873.0" style="-fx-padding: 1px; -fx-border-color: gray; -fx-border-width: 2px; -fx-grid-lines-visible: true;" vgap="2">
+    <padding>
+        <Insets bottom="10" left="10" right="10" top="10" />
+    </padding>
+    <Label prefHeight="17.0" prefWidth="139.0" styleClass="labelll" text="Échantillon 1" GridPane.columnIndex="2">
+                     <font>
+                        <Font name="System Bold" size="16.0" />
+                     </font></Label>
+    <Label prefHeight="17.0" prefWidth="139.0" style="-fx-font-weight: bold;" styleClass="labelll" text=" Échantillon 2" GridPane.columnIndex="3">
+                     <font>
+                        <Font name="System Bold" size="16.0" />
+                     </font></Label>
+    <Label prefHeight="17.0" prefWidth="145.0" style="-fx-font-weight: bold;" styleClass="labelll" text="Échantillon 3" GridPane.columnIndex="4">
+                     <font>
+                        <Font name="System Bold" size="16.0" />
+                     </font></Label>
+    <Label prefHeight="17.0" prefWidth="154.0" style="-fx-font-weight: bold;" styleClass="labelll" text=" Échantillon Fin" GridPane.columnIndex="5">
+                     <font>
+                        <Font name="System Bold" size="16.0" />
+                     </font></Label>
+    <Label prefHeight="17.0" prefWidth="204.0" styleClass="labelll" text="Hauteur de sertissage  (mm)" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                     <font>
+                        <Font name="System Bold" size="15.0" />
+                     </font></Label>
+    <Label prefHeight="36.0" prefWidth="213.0" styleClass="labelll" text="     Force de traction (N) " GridPane.columnIndex="1" GridPane.rowIndex="2">
+                     <font>
+                        <Font name="System Bold" size="15.0" />
+                     </font></Label>
+    <Label prefHeight="36.0" prefWidth="214.0" styleClass="labelll" text="Hauteur de sertissage  (mm)" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                     <font>
+                        <Font name="System Bold" size="15.0" />
+                     </font></Label>
+    <Label prefHeight="36.0" prefWidth="214.0" styleClass="labelll" text="     Force de traction (N) " GridPane.columnIndex="1" GridPane.rowIndex="4">
+                     <font>
+                        <Font name="System Bold" size="15.0" />
+                     </font></Label>
+    <Label styleClass="labelll" text="                     Produit " GridPane.columnIndex="1" GridPane.rowIndex="5" />
+
+    <TextField fx:id="hauteurSertissageEch1C1" styleClass="text-field-nombre-lot" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+    <TextField fx:id="hauteurSertissageEch2C1" styleClass="text-field-nombre-lot" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+    <TextField fx:id="hauteurSertissageEch3C1" styleClass="text-field-nombre-lot" GridPane.columnIndex="4" GridPane.rowIndex="1" />
+    <TextField fx:id="hauteurSertissageEchFinC1" styleClass="text-field-nombre-lot" GridPane.columnIndex="5" GridPane.rowIndex="1" />
+    <TextField fx:id="forceTractionEch1C1" styleClass="text-field-nombre-lot" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+    <TextField fx:id="hauteurSertissageEch1C2" styleClass="text-field-nombre-lot" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+    <TextField fx:id="forceTractionEch1C2" styleClass="text-field-nombre-lot" GridPane.columnIndex="2" GridPane.rowIndex="4" />
+    <Label prefHeight="17.0" prefWidth="205.0" styleClass="labelll" text="                     Série Produite" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+    <Label prefHeight="17.0" prefWidth="194.0" styleClass="labelll" text="                      Numéro machine " GridPane.columnIndex="1" GridPane.rowIndex="7" />
+    <TextField fx:id="forceTractionEch2C1" styleClass="text-field-nombre-lot" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+    <TextField fx:id="forceTractionEch3C1" styleClass="text-field-nombre-lot" GridPane.columnIndex="4" GridPane.rowIndex="2" />
+    <TextField fx:id="hauteurSertissageEch2C2" styleClass="text-field-nombre-lot" GridPane.columnIndex="3" GridPane.rowIndex="3" />
+    <TextField fx:id="forceTractionEch2C2" styleClass="text-field-nombre-lot" GridPane.columnIndex="3" GridPane.rowIndex="4" />
+    <TextField fx:id="forceTractionEchFinC1" styleClass="text-field-nombre-lot" GridPane.columnIndex="5" GridPane.rowIndex="2" />
+    <TextField fx:id="hauteurSertissageEchFinC2" styleClass="text-field-nombre-lot" GridPane.columnIndex="5" GridPane.rowIndex="3" />
+    <TextField fx:id="hauteurSertissageEch3C2" styleClass="text-field-nombre-lot" GridPane.columnIndex="4" GridPane.rowIndex="3" />
+    <TextField fx:id="forceTractionEch3C2" styleClass="text-field-nombre-lot" GridPane.columnIndex="4" GridPane.rowIndex="4" />
+    <TextField fx:id="forceTractionEchFinC2" styleClass="text-field-nombre-lot" GridPane.columnIndex="5" GridPane.rowIndex="4" />
+                  <columnConstraints>
+                     <ColumnConstraints maxWidth="252.0" minWidth="101.0" prefWidth="101.0" />
+                     <ColumnConstraints maxWidth="350.0" minWidth="145.0" prefWidth="227.0" />
+                     <ColumnConstraints maxWidth="144.0" minWidth="37.0" prefWidth="140.0" />
+                     <ColumnConstraints />
+                     <ColumnConstraints />
+                     <ColumnConstraints />
+                  </columnConstraints>
+                  <rowConstraints>
+                     <RowConstraints maxHeight="50.0" minHeight="50.0" prefHeight="50.0" />
+                     <RowConstraints maxHeight="50.0" minHeight="50.0" prefHeight="40.0" />
+                     <RowConstraints maxHeight="40.0" minHeight="50.0" prefHeight="40.0" />
+                     <RowConstraints maxHeight="40.0" minHeight="50.0" prefHeight="40.0" />
+                     <RowConstraints maxHeight="40.0" minHeight="50.0" prefHeight="40.0" />
+                     <RowConstraints maxHeight="40.0" minHeight="50.0" prefHeight="40.0" />
+                     <RowConstraints maxHeight="40.0" minHeight="50.0" prefHeight="40.0" />
+                     <RowConstraints maxHeight="40.0" minHeight="50.0" prefHeight="40.0" />
+                  </rowConstraints>
+
+</GridPane>
+               <Pane layoutX="56.0" layoutY="182.0" prefHeight="290.0" prefWidth="100.0" style="-fx-background-color: #f4f4f4;">
+                  <children>
+                     <Pane layoutX="-2.0" layoutY="103.0" prefHeight="103.0" prefWidth="104.0" style="-fx-border-color: gray; -fx-border-width: 2px;">
+                        <children>
+                           <Label layoutX="38.0" layoutY="40.0" text="C2">
+                              <font>
+                                 <Font name="System Bold" size="18.0" />
+                              </font>
+                           </Label>
+                        </children>
+                     </Pane>
+                  </children></Pane>
+               <Pane layoutX="53.0" layoutY="113.0" prefHeight="66.0" prefWidth="322.0" style="-fx-background-color: #f4f4f4;" />
+               <Pane layoutX="54.0" layoutY="180.0" prefHeight="105.0" prefWidth="104.0" style="-fx-border-color: gray; -fx-border-width: 2px;">
+                  <children>
+                     <Label layoutX="38.0" layoutY="40.0" text="C1">
+                        <font>
+                           <Font name="System Bold" size="18.0" />
+                        </font>
+                     </Label>
+                  </children>
+               </Pane>
+               <Pane layoutX="55.0" layoutY="388.0" prefHeight="53.0" prefWidth="321.0" style="-fx-border-color: gray; -fx-border-width: 2px; -fx-background-color: #f4f4f4;">
+                  <children>
+                     <Label layoutX="85.0" layoutY="13.0" prefHeight="20.0" prefWidth="152.0" text="           Produit ">
+                        <font>
+                           <Font name="System Bold" size="15.0" />
+                        </font>
+                     </Label>
+                  </children>
+               </Pane>
+               <Pane layoutX="55.0" layoutY="440.0" prefHeight="52.0" prefWidth="321.0" style="-fx-background-color: #f4f4f4; -fx-border-width: 2px; -fx-border-color: gray;">
+                  <children>
+                     <Label layoutX="74.0" layoutY="12.0" prefHeight="20.0" prefWidth="175.0" text="         Série Produite ">
+                        <font>
+                           <Font name="System Bold" size="15.0" />
+                        </font>
+                     </Label>
+                  </children>
+               </Pane>
+               <Pane layoutX="55.0" layoutY="492.0" prefHeight="51.0" prefWidth="321.0" style="-fx-background-color: #f4f4f4; -fx-border-width: 2px; -fx-border-color: gray;">
+                  <children>
+                     <Label layoutX="77.0" layoutY="14.0" prefHeight="20.0" prefWidth="177.0" text="        Numéro Machine">
+                        <font>
+                           <Font name="System Bold" size="15.0" />
+                        </font>
+                     </Label>
+                  </children>
+               </Pane>
+               <Pane layoutX="377.0" layoutY="388.0" prefHeight="51.0" prefWidth="546.0" style="-fx-background-color: #f4f4f4; -fx-border-width: 2px; -fx-border-color: gray;">
+                  <children>
+                     <TextField fx:id="produit" layoutX="130.0" layoutY="7.0" minWidth="285.0" prefHeight="35.0" prefWidth="285.0" styleClass="text-field-nombre-lot" />
+                  </children>
+               </Pane>
+               <Pane layoutX="378.0" layoutY="439.0" prefHeight="52.0" prefWidth="544.0" style="-fx-background-color: #f4f4f4; -fx-border-color: gray; -fx-border-width: 2px;">
+                  <children>
+                     <TextField fx:id="serieProduit" layoutX="130.0" layoutY="7.0" minWidth="285.0" prefHeight="35.0" prefWidth="283.0" styleClass="text-field-nombre-lot" />
+                  </children>
+               </Pane>
+               <Pane layoutX="378.0" layoutY="491.0" prefHeight="53.0" prefWidth="545.0" style="-fx-background-color: #f4f4f4; -fx-border-color: gray; -fx-border-width: 2px;">
+                  <children>
+                     <TextField fx:id="numMachine" layoutX="130.0" layoutY="7.0" minWidth="285.0" prefHeight="35.0" prefWidth="283.0" styleClass="text-field-nombre-lot" />
+                  </children>
+               </Pane>
             </children>
          </AnchorPane>
       </center>

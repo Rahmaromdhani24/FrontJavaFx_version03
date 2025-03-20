@@ -107,7 +107,7 @@
 }
 .liste-sectionFil-combo .list-view {
     -fx-pref-width: 150px;
-    -fx-pref-height: 300px; /* Ajustez la hauteur en fonction du nombre d'éléments */
+    -fx-pref-height: 40px; /* Ajustez la hauteur en fonction du nombre d'éléments */
 }
 .liste-codeControle-combo {
     -fx-background-color: #D9D9D9;

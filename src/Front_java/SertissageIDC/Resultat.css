@@ -107,19 +107,17 @@
     -fx-alignment: center;
 }
 
-
-.labelll {
-    -fx-font-size: 14px;
+.labelll2 {
+    -fx-font-size: 16px;
     -fx-font-weight: bold;
-    -fx-text-fill: #333;
+    -fx-text-fill: #0355ba;
     -fx-padding: 8px;
     -fx-alignment: center;
 }
-
-.labelResultat {
-    -fx-font-size: 14px;
+.labelll {
+    -fx-font-size: 18px;
     -fx-font-weight: bold;
-    -fx-text-fill: #0355ba;
+    -fx-text-fill: #333;
     -fx-padding: 8px;
     -fx-alignment: center;
 }
@@ -157,7 +155,7 @@
     -fx-font-size: 16px;
     -fx-font-weight: bold;
     -fx-background-color: #ffffff; /* Fond blanc */
-    -fx-border-color: #828282;  /* Bordure grise */
+    -fx-border-color: #ddd;  /* Bordure grise */
     -fx-border-radius: 5px;  /* Bordure arrondie */
     -fx-padding: 5px;  /* Padding interne */
     -fx-alignment: center-left; /* Alignement du texte à gauche */
@@ -171,7 +169,7 @@
 .text-field-kanban:focused,
 .text-field-lot:focused,
 .text-field-nombre-lot:focused {
-    -fx-border-color: #27c427;  /* Bordure verte lorsqu'il est sélectionné */
+    -fx-border-color: #66cc66;  /* Bordure verte lorsqu'il est sélectionné */
     -fx-background-color: #f0f0f0;  /* Fond légèrement gris */
     -fx-effect: innershadow(gaussian, #66cc66, 5, 0.5, 0, 1); /* Ombre interne verte lors de la sélection */
 }
@@ -191,11 +189,12 @@
 .text-field-kanban:disabled,
 .text-field-lot:disabled,
 .text-field-nombre-lot:disabled {
-    -fx-background-color: #5c5a5a;  /* Fond gris clair lorsque désactivé */
+    -fx-background-color: #f0f0f0;  /* Fond gris clair lorsque désactivé */
     -fx-border-color: #d3d3d3;  /* Bordure grise claire lorsque désactivé */
     -fx-text-fill: #a1a1a1;  /* Texte gris lorsque désactivé */
 }
 
+/*************************************/
 .matrix-grid-title {
     -fx-font-size: 20px;
     -fx-font-weight: bold;
@@ -227,25 +226,6 @@
     
     -fx-background-insets: 5px; /* Décalage du fond */
 }
-.grid-pane .cell[gridpane-columnindex="0"][gridpane-rowindex="0"] {
-    -fx-border-color: transparent;
+.bold-label {
+    -fx-font-weight: bold;
 }
-
-.textfield-blue-border {
-    -fx-border-color: #0007cc;
-    -fx-border-width: 2px;
-    -fx-border-radius: 5px;
-}
-/*************************************
-.table-bordered {
-    -fx-border-color: black;
-    -fx-border-width: 2px;
-    -fx-border-radius: 5px;
-}
-
-.text-field-cell {
-    -fx-border-color: gray;
-    -fx-border-width: 1px;
-    -fx-alignment: center;
-}
-******/

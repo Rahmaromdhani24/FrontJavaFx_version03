@@ -25,7 +25,7 @@ prefWidth="500.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javaf
              </Label>
             <Button fx:id="btnPause" layoutX="130.0" layoutY="400.0" mnemonicParsing="false" onAction="#pauseChargement" text="Pause" />
             <Button fx:id="btnTerminer" layoutX="300.0" layoutY="400.0" mnemonicParsing="false" onAction="#terminerChargement" text="Terminer" />
-            <Button fx:id="close" layoutX="435.0" layoutY="10.0" onAction="#closeFenetre2" mnemonicParsing="false" prefWidth="50.0" styleClass="close" stylesheets="@LoadingTorsadage.css">
+            <Button fx:id="close" layoutX="435.0" layoutY="10.0" onAction="#closeFenetre2" mnemonicParsing="false" prefWidth="50.0" styleClass="close" stylesheets="@LoadingSertissageIDC.css">
               <graphic>
                <FontAwesomeIcon glyphName="CLOSE" size="1.2em" />
                </graphic>

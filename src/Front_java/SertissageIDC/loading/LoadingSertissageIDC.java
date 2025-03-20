@@ -1,9 +1,9 @@
 package Front_java.SertissageIDC.loading;
 
 import java.io.IOException;
-import Front_java.Configuration.TorsadageInformations;
+
+import Front_java.Configuration.SertissageIDCInformations;
 import Front_java.SertissageIDC.RemplirSertissageIDC;
-import Front_java.Torsadage.RemplirTorsadage;
 import javafx.event.ActionEvent;
 import javafx.fxml.*;
 import javafx.scene.control.*;
@@ -111,12 +111,12 @@ public class LoadingSertissageIDC {
     
     @FXML
     public void terminerChargement() {
-        TorsadageInformations.testTerminitionCommande = 1;
+        SertissageIDCInformations.testTerminitionCommande = 1;
 
         // Vérifier si le parentController n'est pas null avant d'appeler la mise à jour
         if (parentController != null) {
             parentController.actualiserFenetreMere();
-            parentController.afficherNotification("Veuillez remplir tous les champs obligatoires , afin de terminer la commande..");
+            parentController.afficherNotification("Veuillez remplir tous les champs obligatoires , afin de terminer la commande .");
         }
 
         // Fermer la fenêtre fille

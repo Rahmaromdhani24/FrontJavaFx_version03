@@ -7,8 +7,7 @@ import javafx.stage.Stage;
 public class Main extends Application {
 
     @Override
-    public void start(Stage primaryStage) {
-    	
+    public void start(Stage primaryStage) {    	
     	 Image icon = new Image("/logo_app.jpg"); 
     	 primaryStage.getIcons().add(icon);    	 
 	     Login fenetre1 = new Login();

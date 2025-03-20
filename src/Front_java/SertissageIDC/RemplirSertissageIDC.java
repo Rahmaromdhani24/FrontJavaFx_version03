@@ -12,15 +12,12 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import Front_java.Configuration.AppInformations;
+import Front_java.Configuration.SertissageIDCInformations;
+import Front_java.Configuration.TorsadageInformations;
 import Front_java.Modeles.OperateurInfo;
 import Front_java.SertissageIDC.loading.LoadingSertissageIDC;
-import Front_java.SertissageNormal.loading.LoadingSertissageNormal;
-import Front_java.Torsadage.loading.LoadingTorsadage;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.concurrent.Task;
 import javafx.event.*;
 import javafx.fxml.*;
 import javafx.geometry.Insets;
@@ -36,10 +33,12 @@ import javafx.scene.layout.VBox;
 import javafx.stage.*;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
+import java.util.List;
+
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXDialog;
 import com.jfoenix.controls.JFXDialogLayout;
-import Front_java.Configuration.TorsadageInformations;
 import javafx.animation.KeyFrame;
 import javafx.animation.PauseTransition;
 import javafx.util.Duration;
@@ -53,7 +52,7 @@ public class RemplirSertissageIDC {
 	private double xOffset = 0;
 	private double yOffset = 0;
  
-	  @FXML
+	 @FXML
 	    private Button btnClose;
 
 	    @FXML
@@ -78,55 +77,55 @@ public class RemplirSertissageIDC {
 	    private Label dateSystem;
 
 	    @FXML
-	    private TextField decalageDebutC1;
+	    private TextField forceTractionEch1C1;
 
 	    @FXML
-	    private TextField decalageDebutC2;
+	    private TextField forceTractionEch1C2;
 
 	    @FXML
-	    private TextField decalageFinC1;
+	    private TextField forceTractionEch2C1;
 
 	    @FXML
-	    private TextField decalageFinC2;
+	    private TextField forceTractionEch2C2;
 
 	    @FXML
-	    private TextField ech1;
+	    private TextField forceTractionEch3C1;
 
 	    @FXML
-	    private TextField ech2;
+	    private TextField forceTractionEch3C2;
 
 	    @FXML
-	    private TextField ech3;
+	    private TextField forceTractionEchFinC1;
 
 	    @FXML
-	    private TextField ech4;
+	    private TextField forceTractionEchFinC2;
 
 	    @FXML
-	    private TextField ech5;
+	    private TextField hauteurSertissageEch1C1;
+
+	    @FXML
+	    private TextField hauteurSertissageEch1C2;
+
+	    @FXML
+	    private TextField hauteurSertissageEch2C1;
+
+	    @FXML
+	    private TextField hauteurSertissageEch2C2;
+
+	    @FXML
+	    private TextField hauteurSertissageEch3C1;
+
+	    @FXML
+	    private TextField hauteurSertissageEch3C2;
+
+	    @FXML
+	    private TextField hauteurSertissageEchFinC1;
+
+	    @FXML
+	    private TextField hauteurSertissageEchFinC2;
 
 	    @FXML
 	    private Label heureSystem;
-
-	    @FXML
-	    private TextField lognueurBoutDebutC1;
-
-	    @FXML
-	    private TextField lognueurBoutDebutC2;
-
-	    @FXML
-	    private TextField lognueurBoutFinC1;
-
-	    @FXML
-	    private TextField lognueurBoutFinC2;
-
-	    @FXML
-	    private TextField longueurFinalDebutCde;
-
-	    @FXML
-	    private TextField longueurFinalFinCde;
-
-	    @FXML
-	    private TextField longueurPasFinCde;
 
 	    @FXML
 	    private Label matriculeUser;
@@ -144,10 +143,7 @@ public class RemplirSertissageIDC {
 	    private Label nomProjet;
 
 	    @FXML
-	    private TextField numCommande;
-
-	    @FXML
-	    private ComboBox<String> numFils;
+	    private TextField numMachine;
 
 	    @FXML
 	    private Label operationUser;
@@ -159,10 +155,7 @@ public class RemplirSertissageIDC {
 	    private Label posteUser;
 
 	    @FXML
-	    private TextField quantiteAtteint;
-
-	    @FXML
-	    private TextField quantiteTotal;
+	    private TextField produit;
 
 	    @FXML
 	    private BorderPane rootPane;
@@ -171,13 +164,21 @@ public class RemplirSertissageIDC {
 	    private Label segementUser;
 
 	    @FXML
+	    private TextField serieProduit;
+
+	    @FXML
 	    private Label specificationsMesure;
 
 	    @FXML
 	    private StackPane stackPane;
 
-
 		public TextField activeTextField;
+		
+		// Définition des bornes
+		final double MIN_HAUTEUR = 10.85;
+		final double MAX_HAUTEUR = 11;
+		final int MIN_TRACTION = 50;
+		final int MAX_TRACTION = 110;
 		
 		public TextField getActiveTextField() {
 			return activeTextField;
@@ -195,7 +196,6 @@ public class RemplirSertissageIDC {
 		            Button clickedButton = (Button) event.getSource();
 		            String buttonText = clickedButton.getText();
 		            activeTextField.appendText(buttonText);
-		            System.out.println("Texte ajouté : " + buttonText);
 		        }
 		    }
 
@@ -206,79 +206,47 @@ public class RemplirSertissageIDC {
 
 	@FXML
 	public void initialize() {
-		quantiteAtteint.setDisable(true); 
-		longueurFinalFinCde.setDisable(true);
-		longueurPasFinCde.setDisable(true);
-		decalageFinC1.setDisable(true);
-		decalageFinC2.setDisable(true);
-
-		loadNumFils();
+		  hauteurSertissageEchFinC1.setDisable(true) ; 
+		  forceTractionEchFinC1.setDisable(true);
+		  hauteurSertissageEchFinC2.setDisable(true);
+		  forceTractionEchFinC2.setDisable(true);
+		  
 		afficherInfosOperateur();
-		AppInformations.testTerminitionCommande = 0 ; 
+		SertissageIDCInformations.testTerminitionCommande = 0 ; 
 		
 		afficherDateSystem();
 		afficherHeureSystem();
 		//loadNumeroCycleMax();
-		/*clearImage.setOnMouseClicked(event -> {
+		clearImage.setOnMouseClicked(event -> {
 			if (activeTextField != null) {
 				activeTextField.clear();
 			}
-		});*/
-
-		setActiveOnFocus(numCommande);
-		setActiveOnFocus(longueurFinalDebutCde);
-		setActiveOnFocus(lognueurBoutDebutC1);
-		setActiveOnFocus(lognueurBoutDebutC2);
-		setActiveOnFocus(lognueurBoutFinC1);
-		setActiveOnFocus(lognueurBoutFinC2);
+		});
+		setActiveOnFocus(hauteurSertissageEch1C1);
+		setActiveOnFocus(hauteurSertissageEch2C1);
+		setActiveOnFocus(hauteurSertissageEch3C1);
+		setActiveOnFocus(forceTractionEch1C1);
+		setActiveOnFocus(forceTractionEch2C1);
+		setActiveOnFocus(forceTractionEch3C1);
 		
+		setActiveOnFocus(hauteurSertissageEch1C2);
+		setActiveOnFocus(hauteurSertissageEch2C2);
+		setActiveOnFocus(hauteurSertissageEch3C2);
+		setActiveOnFocus(forceTractionEch1C2);
+		setActiveOnFocus(forceTractionEch2C2);
+		setActiveOnFocus(forceTractionEch3C2);
+		
+		setActiveOnFocus(forceTractionEchFinC1);
+		setActiveOnFocus(forceTractionEchFinC2);
+		setActiveOnFocus(hauteurSertissageEchFinC1);
+		setActiveOnFocus(hauteurSertissageEchFinC2);
+		
+		setActiveOnFocus(produit);
+		setActiveOnFocus(serieProduit);
+		setActiveOnFocus(numMachine);
+	}
 
-		setActiveOnFocus(decalageDebutC1);
-		setActiveOnFocus(decalageDebutC2);
-		setActiveOnFocus(decalageFinC1);
-		setActiveOnFocus(decalageFinC2);
-		setActiveOnFocus(longueurFinalFinCde);
-		setActiveOnFocus(longueurPasFinCde);
-		setActiveOnFocus(ech1);
-		setActiveOnFocus(ech2);
-		setActiveOnFocus(ech3);
-		setActiveOnFocus(ech4);
-		setActiveOnFocus(ech5);
-		setActiveOnFocus(quantiteTotal);
-		setActiveOnFocus(quantiteAtteint);
 	
-	}
-
-	private void loadNumFils() {
-	    Task<ObservableList<String>> task = new Task<>() {
-	        @Override
-	        protected ObservableList<String> call() {
-	            return FXCollections.observableArrayList(
-	                "3Q/3R", "7B/7A", "5B/5A", "5E/5D", "2I/2K 23", "5B/5A", "2AD/2AR"
-	            );
-	        }
-	    };
-
-	    task.setOnSucceeded(event -> {
-	        numFils.setItems(task.getValue());
-	        numFils.getSelectionModel().clearSelection(); // Désélectionner toute valeur par défaut
-	        numFils.setValue(null); // S'assurer qu'aucune valeur n'est affichée au démarrage
-
-	        numFils.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
-	            if (newValue != null) {
-	                System.out.println("Numéro de fil sélectionné : " + newValue);
-	            }
-	        });
-	    });
-
-	    task.setOnFailed(event -> {
-	        System.out.println("Erreur lors du chargement des numéros de fils : " + task.getException().getMessage());
-	    });
-
-	    new Thread(task).start();
-	}
-
-
 	@FXML
 	private void close(ActionEvent event) {
 		Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
@@ -294,77 +262,171 @@ public class RemplirSertissageIDC {
 	private void scanne(ActionEvent event) {
 	
 	}
-	
 	private boolean checkOtherFields() {
-	    return !numCommande.getText().isEmpty() &&
-	           !longueurFinalDebutCde.getText().isEmpty() &&
-	           !lognueurBoutDebutC1.getText().isEmpty() &&
-	           !lognueurBoutDebutC2.getText().isEmpty() &&
-	           !lognueurBoutFinC1.getText().isEmpty() &&
-	           !lognueurBoutFinC2.getText().isEmpty() &&
-	           !decalageDebutC1.getText().isEmpty() &&
-	           !decalageDebutC2.getText().isEmpty() &&	          	         
-	           !ech1.getText().isEmpty() &&
-	           !ech2.getText().isEmpty() &&
-	           !ech3.getText().isEmpty() &&
-	           !ech4.getText().isEmpty() &&
-	           !ech5.getText().isEmpty() &&
-	           !quantiteTotal.getText().isEmpty() &&
-	            numFils.getValue() != null ;
+	    return !hauteurSertissageEch1C1.getText().isEmpty() &&
+	           !hauteurSertissageEch2C1.getText().isEmpty() &&
+	           !hauteurSertissageEch3C1.getText().isEmpty() &&
+	           !forceTractionEch1C1.getText().isEmpty() &&
+	           !forceTractionEch2C1.getText().isEmpty() &&
+	           !forceTractionEch3C1.getText().isEmpty() &&
+	           !hauteurSertissageEch1C2.getText().isEmpty() &&
+	           !hauteurSertissageEch2C2.getText().isEmpty() &&	          	         
+	           !hauteurSertissageEch3C2.getText().isEmpty() &&
+	           !forceTractionEch1C2.getText().isEmpty() &&
+	           !forceTractionEch2C2.getText().isEmpty() &&
+	           !forceTractionEch3C2.getText().isEmpty() &&
+	           !produit.getText().isEmpty() &&
+	           !serieProduit.getText().isEmpty() &&
+	           !numMachine.getText().isEmpty();
 	}
 
+	  public static boolean areFieldsEqual(TextField f1, TextField f2, TextField f3, TextField f4) {
+	        return f1.getText().equals(f2.getText()) &&
+	               f1.getText().equals(f3.getText()) &&
+	               f1.getText().equals(f4.getText());
+	    }
 	@FXML
 	public void suivant(ActionEvent event) {
+		  centerTextFields(
+			        hauteurSertissageEch1C1, hauteurSertissageEch2C1, hauteurSertissageEch3C1, 
+			        forceTractionEch1C1, forceTractionEch2C1, forceTractionEch3C1, 
+			        hauteurSertissageEch1C2, hauteurSertissageEch2C2, hauteurSertissageEch3C2, 
+			        forceTractionEch1C2, forceTractionEch2C2, forceTractionEch3C2, 
+			        produit, serieProduit, numMachine
+			    );
+		 
 		 // 1. Vérification des champs obligatoires
-	    if (numCommande.getText().isEmpty() || longueurFinalDebutCde.getText().isEmpty() || lognueurBoutDebutC1.getText().isEmpty()
-	            || lognueurBoutDebutC2.getText().isEmpty() || lognueurBoutFinC1.getText().isEmpty() || lognueurBoutFinC2.getText().isEmpty()
-	            || decalageDebutC1.getText().isEmpty() || decalageDebutC2.getText().isEmpty()        
-	            || ech1.getText().isEmpty() || ech2.getText().isEmpty() || ech3.getText().isEmpty()|| ech4.getText().isEmpty()|| ech5.getText().isEmpty()
-	            || quantiteTotal.getText().isEmpty()
-	            || numFils.getValue() == null  ) {
+	    if (hauteurSertissageEch1C1.getText().isEmpty() || hauteurSertissageEch2C1.getText().isEmpty() || hauteurSertissageEch3C1.getText().isEmpty()
+	            || forceTractionEch1C1.getText().isEmpty() || forceTractionEch2C1.getText().isEmpty() || forceTractionEch3C1.getText().isEmpty()
+	            || hauteurSertissageEch1C2.getText().isEmpty() || hauteurSertissageEch2C2.getText().isEmpty()        
+	            || hauteurSertissageEch3C2.getText().isEmpty() || forceTractionEch1C2.getText().isEmpty() || forceTractionEch2C2.getText().isEmpty()
+	            || forceTractionEch3C2.getText().isEmpty()|| produit.getText().isEmpty()
+	            || serieProduit.getText().isEmpty()
+	            || numMachine.getText().isEmpty()  ) {
 
 	        showErrorDialog("Veuillez remplir tous les champs avant de continuer !", "Champs obligatoires");
 	        return; // Arrêt si un champ est vide
 	    }
+	   
 	    // 3. Si tous les champs sont remplis, afficher l'alerte de confirmation
-        if (checkOtherFields() && !decalageFinC1.getText().isEmpty()&& !decalageFinC2.getText().isEmpty() && !longueurFinalFinCde.getText().isEmpty() 
-        		               && !longueurPasFinCde.getText().isEmpty() && !quantiteAtteint.getText().isEmpty()) {
-            // Préparer le message de confirmation avec les données saisies
-            String message = "Veuillez confirmer les données saisies ? \n\n";
+     	    boolean hasError = false;
 
-            // Appeler la méthode showConfirmationDialog
-            showConfirmationDialog(message, "Confirmation", () -> {
-            	
-            	TorsadageInformations.numCommande = numCommande.getText(); 
-            	TorsadageInformations.longueurFinalDebutCde = longueurFinalDebutCde.getText(); 
-            	TorsadageInformations.lognueurBoutDebutC1 = lognueurBoutDebutC1.getText(); 
-            	TorsadageInformations.lognueurBoutDebutC2 = lognueurBoutDebutC2.getText(); 
-            	TorsadageInformations.lognueurBoutFinC1 = lognueurBoutFinC1.getText(); 
-            	TorsadageInformations.lognueurBoutFinC2 = lognueurBoutFinC2.getText(); 
-            	TorsadageInformations.decalageDebutC1 = decalageDebutC1.getText();
-            	TorsadageInformations.decalageDebutC2 = decalageDebutC2.getText(); 
-            	TorsadageInformations.decalageFinC1 = decalageFinC1.getText(); 
-            	TorsadageInformations.decalageFinC2 = decalageFinC2.getText(); 
-            	TorsadageInformations.numFils =numFils.getValue() ; 
-            	TorsadageInformations.longueurFinalFinCde = longueurFinalFinCde.getText() ; 
-            	TorsadageInformations.longueurPasFinCde = longueurFinalFinCde.getText() ; 
-            	TorsadageInformations.ech1 = ech1.getText() ; 
-            	TorsadageInformations.ech2 = ech2.getText() ; 
-            	TorsadageInformations.ech3 = ech3.getText() ; 
-            	TorsadageInformations.ech4 = ech4.getText() ; 
-            	TorsadageInformations.ech5 = ech5.getText() ; 
-            	TorsadageInformations.quantiteTotal  = quantiteTotal.getText() ; 
-            	TorsadageInformations.quantiteAtteint = quantiteAtteint.getText() ; 
-            	//TorsadageInformations.numCourant = nbrCycle.getText() ; 
-                // Si l'utilisateur confirme, exécuter la méthode ajoutPDEK()
-            	ajouterPdekAvecSoudure();
+	    // Vérifier si des champs obligatoires sont vides
+	    if (checkOtherFields() && !hauteurSertissageEchFinC1.getText().isEmpty()&& !forceTractionEchFinC1.getText().isEmpty() 
+	        		               && !hauteurSertissageEchFinC2.getText().isEmpty() && !forceTractionEchFinC2.getText().isEmpty()) {
+	    	
+	    	// Vérification des champs vides
+	    	if (hauteurSertissageEchFinC1.getText().isEmpty() || forceTractionEchFinC1.getText().isEmpty() 
+	     	    || hauteurSertissageEchFinC2.getText().isEmpty() || forceTractionEchFinC2.getText().isEmpty()) {
 
+	     	    showErrorDialog("Veuillez remplir tous les champs avant de continuer !", "Champs obligatoires");
+	     	    return; // Arrêt immédiat si un champ est vide
+	     	}
+
+	        // Vérification des valeurs identiques et coloration des champs
+	        if (areFieldsEqual(hauteurSertissageEch1C1, hauteurSertissageEch2C1, hauteurSertissageEch3C1, hauteurSertissageEchFinC1)) {
+	            colorBorderRed(hauteurSertissageEch1C1, hauteurSertissageEch2C1, hauteurSertissageEch3C1, hauteurSertissageEchFinC1);
+	            showErrorDialog("Les valeurs des échantillons de hauteur de sertissage C1 doivent être différentes.", "");
+	            hasError = true;
+	        }
+	        if (areFieldsEqual(forceTractionEch1C1, forceTractionEch2C1, forceTractionEch3C1, forceTractionEchFinC1)) {
+	            colorBorderRed(forceTractionEch1C1, forceTractionEch2C1, forceTractionEch3C1, forceTractionEchFinC1);
+	            showErrorDialog("Les valeurs des échantillons de force de traction C1 doivent être différentes.", "");
+	            hasError = true;
+	        }
+	        if (areFieldsEqual(hauteurSertissageEch1C2, hauteurSertissageEch2C2, hauteurSertissageEch3C2, hauteurSertissageEchFinC2)) {
+	            colorBorderRed(hauteurSertissageEch1C2, hauteurSertissageEch2C2, hauteurSertissageEch3C2, hauteurSertissageEchFinC2);
+	            showErrorDialog("Les valeurs des échantillons de hauteur de sertissage C2 doivent être différentes.", "");
+	            hasError = true;
+	        }
+	        if (areFieldsEqual(forceTractionEch1C2, forceTractionEch2C2, forceTractionEch3C2, forceTractionEchFinC2)) {
+	            colorBorderRed(forceTractionEch1C2, forceTractionEch2C2, forceTractionEch3C2, forceTractionEchFinC2);
+	            showErrorDialog("Les valeurs des échantillons de force de traction C2 doivent être différentes.", "");
+	            hasError = true;
+	        }
+	     // Vérification des valeurs hors limites
+	        List<TextField> hauteurFields = Arrays.asList(
+	            hauteurSertissageEch1C1, hauteurSertissageEch2C1, hauteurSertissageEch3C1, hauteurSertissageEchFinC1,
+	            hauteurSertissageEch1C2, hauteurSertissageEch2C2, hauteurSertissageEch3C2, hauteurSertissageEchFinC2
+	        );
+	        for (TextField field : hauteurFields) {
+	            try {
+	                double valeur = Double.parseDouble(field.getText());
+	                if (valeur < MIN_HAUTEUR || valeur > MAX_HAUTEUR) {
+	                    colorBorderRed(field);
+	                    showErrorDialog("La valeur " + valeur + " dans  champs de hauteur de sertissage est hors limites. Elle doit être entre " + MIN_HAUTEUR + " et " + MAX_HAUTEUR + ".", "");
+	                    hasError = true;
+	                }
+	            } catch (NumberFormatException e) {
+	                colorBorderRed(field);
+	                showErrorDialog("Veuillez entrer une valeur numérique valide pour " + field.getId() + ".", "");
+	                hasError = true;
+	            }
+	        }
+
+	        // Vérification des valeurs hors limites pour la force de traction
+	        List<TextField> tractionFields = Arrays.asList(
+	            forceTractionEch1C1, forceTractionEch2C1, forceTractionEch3C1, forceTractionEchFinC1,
+	            forceTractionEch1C2, forceTractionEch2C2, forceTractionEch3C2, forceTractionEchFinC2
+	        );
+	        for (TextField field : tractionFields) {
+	            try {
+	                int valeur = Integer.parseInt(field.getText());
+	                if (valeur < MIN_TRACTION || valeur > MAX_TRACTION) {
+	                    colorBorderRed(field);
+	                    showErrorDialog("La valeur " + valeur + " dans champs de traction est hors limites. Elle doit être entre " + MIN_TRACTION + " et " + MAX_TRACTION + ".", "");
+	                    hasError = true;
+	                }
+	            } catch (NumberFormatException e) {
+	                colorBorderRed(field);
+	                showErrorDialog("Veuillez entrer une valeur numérique valide pour " + field.getId() + ".", "");
+	                hasError = true;
+	            }
+	        }
+	        // Si une erreur a été détectée, arrêter l'exécution ici
+	        if (hasError) {
+	            return;
+	        }
+
+	        // Aucune erreur => afficher la confirmation
+	        String message = "Veuillez confirmer les données saisies ? \n\n";
+
+	        showConfirmationDialog(message, "Confirmation", () -> {
+	            // --- Code de sauvegarde et affichage de la nouvelle fenêtre ---
+            	    SertissageIDCInformations.hauteurSertissageC1Ech1 = Double.parseDouble(hauteurSertissageEch1C1.getText());
+            	    SertissageIDCInformations.hauteurSertissageC1Ech2 = Double.parseDouble(hauteurSertissageEch2C1.getText());
+            	    SertissageIDCInformations.hauteurSertissageC1Ech3 = Double.parseDouble(hauteurSertissageEch3C1.getText());
+            	    SertissageIDCInformations.hauteurSertissageC1EchFin =Double.parseDouble( hauteurSertissageEchFinC1.getText());
+            	    
+            	    SertissageIDCInformations.forceTractionEch1C1 = Integer.parseInt(forceTractionEch1C1.getText()); 
+            	    SertissageIDCInformations.forceTractionEch2C1 = Integer.parseInt(forceTractionEch2C1.getText()); 
+            	    SertissageIDCInformations.forceTractionEch3C1 = Integer.parseInt(forceTractionEch3C1.getText()); 
+            	    SertissageIDCInformations.forceTractionEchFinC1 = Integer.parseInt(forceTractionEchFinC1.getText()); 
+            	    
+            	    SertissageIDCInformations.hauteurSertissageC2Ech1 = Double.parseDouble(hauteurSertissageEch1C2.getText());
+            	    SertissageIDCInformations.hauteurSertissageC2Ech2 = Double.parseDouble(hauteurSertissageEch2C2.getText());
+            	    SertissageIDCInformations.hauteurSertissageC2Ech3 = Double.parseDouble(hauteurSertissageEch3C2.getText());
+            	    SertissageIDCInformations.hauteurSertissageC2EchFin =Double.parseDouble( hauteurSertissageEchFinC2.getText());
+            	    
+            	    SertissageIDCInformations.forceTractionEch1C2 = Integer.parseInt( forceTractionEch1C2.getText()); 
+            	    SertissageIDCInformations.forceTractionEch2C2 = Integer.parseInt(forceTractionEch1C2.getText()); 
+            	    SertissageIDCInformations.forceTractionEch3C2 = Integer.parseInt(forceTractionEch3C2.getText());
+            	    SertissageIDCInformations.forceTractionEchFinC2 = Integer.parseInt(forceTractionEchFinC2.getText()); 
+            	    
+            	    SertissageIDCInformations.produit = produit.getText(); 
+            	    SertissageIDCInformations.serieProduit = serieProduit.getText(); 
+            	    SertissageIDCInformations.numeroMachine = Integer.parseInt(numMachine.getText()); 
+            	    
+            	    SertissageIDCInformations.hauteurSertissageMax = 11 ; 
+            	    SertissageIDCInformations.hauteurSertissageMin = 10.85 ; 
+            	    SertissageIDCInformations.forceTraction= "50 N" ; 
+            	    
                 // Affichage direct de la fenêtre SoudureResultat
                 try {
                 	  // Chargement de la nouvelle fenêtre
-            	    FXMLLoader loader2 = new FXMLLoader(getClass().getResource("/Front_java/Torsadage/ResultatTorsadage.fxml"));
+            	    FXMLLoader loader2 = new FXMLLoader(getClass().getResource("/Front_java/SertissageIDC/Resultat.fxml"));
             	    Scene resultScene = new Scene(loader2.load());
-            	    resultScene.getStylesheets().add(getClass().getResource("/Front_java/Torsadage/ResultatTorsadage.css").toExternalForm());                   	    
+            	    resultScene.getStylesheets().add(getClass().getResource("/Front_java/SertissageIDC/Resultat.css").toExternalForm());                   	    
             	    Stage resultStage = new Stage();
             	    resultStage.setScene(resultScene);
             	    resultStage.setMaximized(true);
@@ -382,37 +444,18 @@ public class RemplirSertissageIDC {
                     ex.printStackTrace();
                 }
             });
-        } else {
-            // Si les champs ne sont pas remplis ou si "quantité atteinte" est vide, afficher la fenêtre de chargement
-        	TorsadageInformations.numCommande = numCommande.getText(); 
-        	TorsadageInformations.longueurFinalDebutCde = longueurFinalDebutCde.getText(); 
-        	TorsadageInformations.lognueurBoutDebutC1 = lognueurBoutDebutC1.getText(); 
-        	TorsadageInformations.lognueurBoutDebutC2 = lognueurBoutDebutC2.getText(); 
-        	TorsadageInformations.lognueurBoutFinC1 = lognueurBoutFinC1.getText(); 
-        	TorsadageInformations.lognueurBoutFinC2 = lognueurBoutFinC2.getText(); 
-        	TorsadageInformations.decalageDebutC1 = decalageDebutC1.getText();
-        	TorsadageInformations.decalageDebutC2 = decalageDebutC2.getText(); 
-        	TorsadageInformations.decalageFinC1 = decalageFinC1.getText(); 
-        	TorsadageInformations.decalageFinC2 = decalageFinC2.getText(); 
-        	TorsadageInformations.numFils =numFils.getValue() ; 
-        	TorsadageInformations.longueurFinalFinCde = longueurFinalFinCde.getText() ; 
-        	TorsadageInformations.longueurPasFinCde = longueurFinalFinCde.getText() ; 
-        	TorsadageInformations.ech1 = ech1.getText() ; 
-        	TorsadageInformations.ech2 = ech2.getText() ; 
-        	TorsadageInformations.ech3 = ech3.getText() ; 
-        	TorsadageInformations.ech4 = ech4.getText() ; 
-        	TorsadageInformations.ech5 = ech5.getText() ; 
-        	TorsadageInformations.quantiteTotal  = quantiteTotal.getText() ; 
-        	TorsadageInformations.quantiteAtteint = quantiteAtteint.getText() ; 
-        	//TorsadageInformations.numCourant = nbrCycle.getText() ; 
-
-        	
-
-        	
+        } else {     
+        	  centerTextFields(
+        		        hauteurSertissageEch1C1, hauteurSertissageEch2C1, hauteurSertissageEch3C1, 
+        		        forceTractionEch1C1, forceTractionEch2C1, forceTractionEch3C1, 
+        		        hauteurSertissageEch1C2, hauteurSertissageEch2C2, hauteurSertissageEch3C2, 
+        		        forceTractionEch1C2, forceTractionEch2C2, forceTractionEch3C2, 
+        		        produit, serieProduit, numMachine
+        		    );
             try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/Front_java/Torsadage/loading/LoadingTorsadage.fxml"));
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/Front_java/SertissageIDC/loading/LoadingSertissageIDC.fxml"));
                 Scene loadingScene = new Scene(loader.load());
-                String cssPath = "/Front_java/Torsadage/loading/LoadingTorsadage.css";
+                String cssPath = "/Front_java/SertissageIDC/loading/LoadingSertissageIDC.css";
                 if (getClass().getResource(cssPath) != null) {
                     loadingScene.getStylesheets().add(getClass().getResource(cssPath).toExternalForm());
                 } else {
@@ -425,42 +468,50 @@ public class RemplirSertissageIDC {
                 // Définir l'action à exécuter lorsque le bouton "Terminer" est cliqué
                 loadingController.setOnTerminerAction(() -> {
                     // Rendre le champ "quantité atteinte" activé
-                	longueurFinalFinCde.setDisable(false); 
-                	longueurPasFinCde.setDisable(false);
-                	decalageFinC1.setDisable(false);
-                	decalageFinC2.setDisable(false);            	
-                	quantiteAtteint.setDisable(false);    
-
+                	hauteurSertissageEchFinC1.setDisable(false); 
+                	forceTractionEchFinC1.setDisable(false);
+                	hauteurSertissageEchFinC2.setDisable(false);
+                	forceTractionEchFinC2.setDisable(false);            	
+                	
                     // Si tous les champs sont remplis, passer à la fenêtre de résultats
                     if (checkOtherFields()) {
+                    	
                     	try {
+                    		
                     	    // Vérification et conversion des valeurs
-                    		TorsadageInformations.numCommande = numCommande.getText(); 
-                        	TorsadageInformations.longueurFinalDebutCde = longueurFinalDebutCde.getText(); 
-                        	TorsadageInformations.lognueurBoutDebutC1 = lognueurBoutDebutC1.getText(); 
-                        	TorsadageInformations.lognueurBoutDebutC2 = lognueurBoutDebutC2.getText(); 
-                        	TorsadageInformations.lognueurBoutFinC1 = lognueurBoutFinC1.getText(); 
-                        	TorsadageInformations.lognueurBoutFinC2 = lognueurBoutFinC2.getText(); 
-                        	TorsadageInformations.decalageDebutC1 = decalageDebutC1.getText();
-                        	TorsadageInformations.decalageDebutC2 = decalageDebutC2.getText(); 
-                        	TorsadageInformations.decalageFinC1 = decalageFinC1.getText(); 
-                        	TorsadageInformations.decalageFinC2 = decalageFinC2.getText(); 
-                        	TorsadageInformations.numFils =numFils.getValue() ; 
-                        	TorsadageInformations.longueurFinalFinCde = longueurFinalFinCde.getText() ; 
-                        	TorsadageInformations.longueurPasFinCde = longueurFinalFinCde.getText() ; 
-                        	TorsadageInformations.ech1 = ech1.getText() ; 
-                        	TorsadageInformations.ech2 = ech2.getText() ; 
-                        	TorsadageInformations.ech3 = ech3.getText() ; 
-                        	TorsadageInformations.ech4 = ech4.getText() ; 
-                        	TorsadageInformations.ech5 = ech5.getText() ; 
-                        	TorsadageInformations.quantiteTotal  = quantiteTotal.getText() ; 
-                        	TorsadageInformations.quantiteAtteint = quantiteAtteint.getText() ; 
-                    //    	TorsadageInformations.numCourant = nbrCycle.getText() ; 
-
+                    	
+                    	    SertissageIDCInformations.hauteurSertissageC1Ech1 = Double.parseDouble(hauteurSertissageEch1C1.getText());
+                    	    SertissageIDCInformations.hauteurSertissageC1Ech2 = Double.parseDouble(hauteurSertissageEch2C1.getText());
+                    	    SertissageIDCInformations.hauteurSertissageC1Ech3 = Double.parseDouble(hauteurSertissageEch3C1.getText());
+                    	    SertissageIDCInformations.hauteurSertissageC1EchFin =Double.parseDouble( hauteurSertissageEchFinC1.getText());
+                    	    
+                    	    SertissageIDCInformations.forceTractionEch1C1 = Integer.parseInt(forceTractionEch1C1.getText()); 
+                    	    SertissageIDCInformations.forceTractionEch2C1 = Integer.parseInt(forceTractionEch2C1.getText()); 
+                    	    SertissageIDCInformations.forceTractionEch3C1 = Integer.parseInt(forceTractionEch3C1.getText()); 
+                    	    SertissageIDCInformations.forceTractionEchFinC1 = Integer.parseInt(forceTractionEchFinC1.getText()); 
+                    	    
+                    	    SertissageIDCInformations.hauteurSertissageC2Ech1 = Double.parseDouble(hauteurSertissageEch1C1.getText());
+                    	    SertissageIDCInformations.hauteurSertissageC2Ech2 = Double.parseDouble(hauteurSertissageEch2C1.getText());
+                    	    SertissageIDCInformations.hauteurSertissageC2Ech3 = Double.parseDouble(hauteurSertissageEch3C1.getText());
+                    	    SertissageIDCInformations.hauteurSertissageC2EchFin =Double.parseDouble( hauteurSertissageEchFinC1.getText());
+                    	    
+                    	    SertissageIDCInformations.forceTractionEch1C2 = Integer.parseInt( hauteurSertissageEch1C2.getText()); 
+                    	    SertissageIDCInformations.forceTractionEch2C2 = Integer.parseInt(hauteurSertissageEch2C2.getText()); 
+                    	    SertissageIDCInformations.forceTractionEch3C2 = Integer.parseInt(hauteurSertissageEch3C2.getText());
+                    	    SertissageIDCInformations.forceTractionEchFinC2 = Integer.parseInt(hauteurSertissageEchFinC2.getText()); 
+                    	    
+                    	    SertissageIDCInformations.produit = produit.getText(); 
+                    	    SertissageIDCInformations.serieProduit = serieProduit.getText(); 
+                    	    SertissageIDCInformations.numeroMachine = Integer.parseInt(numMachine.getText()); 
+                    	    
+                    	    SertissageIDCInformations.hauteurSertissageMax = 11 ; 
+                    	    SertissageIDCInformations.hauteurSertissageMin = 10.85 ; 
+                    	    SertissageIDCInformations.forceTraction= "50 N" ; 
+                        	
                     	    // Chargement de la nouvelle fenêtre
-                    	    FXMLLoader loader2 = new FXMLLoader(getClass().getResource("/Front_java/Torsadage/ResultatTorsadage.fxml"));
+                    	    FXMLLoader loader2 = new FXMLLoader(getClass().getResource("/Front_java/SertissageIDC/Resultat.fxml"));
                     	    Scene resultScene = new Scene(loader2.load());
-                    	    resultScene.getStylesheets().add(getClass().getResource("/Front_java/Torsadage/ResultatTorsadage.css").toExternalForm());
+                    	    resultScene.getStylesheets().add(getClass().getResource("/Front_java/SertissageIDC/Resultat.css").toExternalForm());
                     	    
                     	    Stage resultStage = new Stage();
                     	    resultStage.setScene(resultScene);
@@ -479,7 +530,7 @@ public class RemplirSertissageIDC {
                             currentStage.close();
 
                     	} catch (IOException ex) {
-                    	    System.out.println("Erreur lors du chargement de la fenêtre SoudureResultat : " + ex.getMessage());
+                    	    System.out.println("Erreur lors du chargement de la fenêtre Sertissage IDC : " + ex.getMessage());
                     	    ex.printStackTrace();
                     	}
 
@@ -507,10 +558,10 @@ public class RemplirSertissageIDC {
 	void precedant(ActionEvent event) {
 		try {
 			// Charger la scène de Dashboard1
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("/Front_java/Torsadage/SelectionInitiale.fxml"));
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/Front_java/SertissageIDC/SelectionSertissageIDC.fxml"));
 			Scene dashboard1Scene = new Scene(loader.load());
 			dashboard1Scene.getStylesheets()
-					.add(getClass().getResource("/Front_java/Torsadage/SelectionInitiale.css").toExternalForm());
+					.add(getClass().getResource("/Front_java/SertissageIDC/SelectionSertissageIDC.css").toExternalForm());
 
 			// Créer une nouvelle fenêtre (Stage)
 			Stage dashboard1Stage = new Stage();
@@ -534,7 +585,6 @@ public class RemplirSertissageIDC {
 	void logout(ActionEvent event) {
 
     	AppInformations.reset();
-    	//TorsadageInformations.reset();
     
 
 		Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
@@ -570,10 +620,10 @@ public class RemplirSertissageIDC {
 			plantUser.setText(operateurInfo.getPlant());
 			posteUser.setText(operateurInfo.getPoste());
 			segementUser.setText(operateurInfo.getSegment());
-			nomProjet.setText(TorsadageInformations.projetSelectionner);
-			specificationsMesure.setText(TorsadageInformations.specificationsMesure);
+			nomProjet.setText(SertissageIDCInformations.projetSelectionner);
+			specificationsMesure.setText(SertissageIDCInformations.sectionFil);
 			nbrEch.setText("5 Piéces");
-			codeControleSelectionner.setText(TorsadageInformations.codeControleSelectionner);
+			codeControleSelectionner.setText(SertissageIDCInformations.codeControleSelectionner);
 
 		} else {
 			System.out.println("Aucune information d'opérateur disponible.");
@@ -817,10 +867,7 @@ public class RemplirSertissageIDC {
 			}
 		});
 	}
-	/********************************************* Ajout PDEK  ***************************************************************/
-	private void ajouterPdekAvecSoudure() {
-	
-	}
+
 	
 	/****************** Extraire valeur depuis section fil ****************/
 	public double extraireValeurNumerique(String sectionFil) {
@@ -832,18 +879,20 @@ public class RemplirSertissageIDC {
 
 	/****************************************/
 	public void actualiserFenetreMere() {
-	    if (TorsadageInformations.testTerminitionCommande == 1) {
-	        longueurFinalFinCde.setDisable(false); 
-	        longueurFinalFinCde.getStyleClass().add("textfield-blue-border");
-	        longueurPasFinCde.setDisable(false);
-	        longueurPasFinCde.getStyleClass().add("textfield-blue-border");
-	        decalageFinC1.setDisable(false);
-	        decalageFinC1.getStyleClass().add("textfield-blue-border");
-	        decalageFinC2.setDisable(false);
-	        decalageFinC2.getStyleClass().add("textfield-blue-border");
-	        quantiteAtteint.setDisable(false);   
-	        quantiteAtteint.getStyleClass().add("textfield-blue-border");
-	    }
+	    if (SertissageIDCInformations.testTerminitionCommande == 1) {
+	    		hauteurSertissageEchFinC1.setDisable(false); 
+	    		hauteurSertissageEchFinC1.getStyleClass().add("textfield-blue-border");
+	    		
+	    		hauteurSertissageEchFinC2.setDisable(false);
+	    		hauteurSertissageEchFinC2.getStyleClass().add("textfield-blue-border");
+	    		
+	 	        forceTractionEchFinC1.setDisable(false);
+	 	        forceTractionEchFinC1.getStyleClass().add("textfield-blue-border");
+	 	       
+	 	       forceTractionEchFinC2.setDisable(false);
+	 	       forceTractionEchFinC2.getStyleClass().add("textfield-blue-border");
+	 	       
+	 	    }
 	}
 
     public void afficherNotification(String message) {
@@ -922,6 +971,20 @@ public class RemplirSertissageIDC {
                 overlayPane.setStyle("-fx-background-color: transparent;");
             }
         });
+    }
+    
+    private static void colorBorderRed(TextField... fields) {
+        for (TextField field : fields) {
+            field.setStyle("-fx-border-color: red; -fx-border-width: 2px;");
+            field.setOnMouseClicked(event -> field.setStyle("-fx-border-color: red; -fx-border-width: 2px;"));
+
+        }
+    }
+    /***************************************************/
+    public void centerTextFields(TextField... fields) {
+        for (TextField field : fields) {
+            field.setStyle("-fx-alignment: center;"); // Centre le texte dans le champ
+        }
     }
 
 }

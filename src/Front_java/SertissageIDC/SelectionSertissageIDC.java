@@ -5,6 +5,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import Front_java.Configuration.AppInformations;
+import Front_java.Configuration.SertissageIDCInformations;
 import Front_java.Configuration.SoudureInformations;
 import Front_java.Configuration.SoudureInformationsCodeB;
 import Front_java.Modeles.OperateurInfo;
@@ -25,7 +26,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.*;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
-import javafx.fxml.FXML;
+
 import javafx.geometry.Pos;
 import java.util.List;
 import java.util.Map;
@@ -114,16 +115,16 @@ public class SelectionSertissageIDC{
         loadCodesControles() ; 
         loadProjets() ; 
         chargerCodesEtDescriptions(); 
-        if (AppInformations.sectionFilSelectionner != null) {
-            listeSectionFil.setValue(AppInformations.sectionFilSelectionner);
+        if (SertissageIDCInformations.sectionFilSelectionner != null) {
+            listeSectionFil.setValue(SertissageIDCInformations.sectionFilSelectionner);
         }
 
-        if (AppInformations.codeControleSelectionner != null) {
-            listeCodeControle.setValue(AppInformations.codeControleSelectionner);
+        if (SertissageIDCInformations.codeControleSelectionner != null) {
+            listeCodeControle.setValue(SertissageIDCInformations.codeControleSelectionner);
         }
 
-        if (AppInformations.projetSelectionner != null) {
-            listeProjets.setValue(AppInformations.projetSelectionner);
+        if (SertissageIDCInformations.projetSelectionner != null) {
+            listeProjets.setValue(SertissageIDCInformations.projetSelectionner);
         }
     }
     
@@ -139,36 +140,36 @@ public class SelectionSertissageIDC{
     }
     @FXML
     void submit(ActionEvent event) {
-        if (listeCodeControle.getValue() == null ||
-            listeSectionFil.getValue() == null ||
-            listeProjets.getValue() == null) {
+    	/* if (listeCodeControle.getValue() == null ||
+    	            listeSectionFil.getValue() == null ||
+    	            listeProjets.getValue() == null) {
 
-            showErrorDialog("Veuillez sélectionner une valeur pour chaque champ avant de continuer." ,"Champs manquants" );
+    	            showErrorDialog("Veuillez sélectionner une valeur pour chaque champ avant de continuer." ,"Champs manquants" );
 
-        } else {
-            try {       
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/Front_java/FXML/dashboard2.fxml"));
-                Parent dashboard2Root = loader.load();
-                dashboard2Root.getStylesheets().add(getClass().getResource("/Front_java/CSS/dashboard2.css").toExternalForm());
+    	        } else {*/
+    	            try {       
+    	                FXMLLoader loader = new FXMLLoader(getClass().getResource("/Front_java/SertissageIDC/RemplirSertissageIDC.fxml"));
+    	                Parent dashboard2Root = loader.load();
+    	                dashboard2Root.getStylesheets().add(getClass().getResource("/Front_java/SertissageIDC/RemplirSertissageIDC.css").toExternalForm());
 
-                Scene dashboard2Scene = new Scene(dashboard2Root);
+    	                Scene dashboard2Scene = new Scene(dashboard2Root);
 
-                Stage newStage = new Stage();
-                newStage.initStyle(StageStyle.UNDECORATED);
-                newStage.setScene(dashboard2Scene);
-                newStage.setMaximized(true);
-                newStage.getIcons().add(new Image("/logo_app.jpg"));
-                newStage.show();
+    	                Stage newStage = new Stage();
+    	                newStage.initStyle(StageStyle.UNDECORATED);
+    	                newStage.setScene(dashboard2Scene);
+    	                newStage.setMaximized(true);
+    	                newStage.getIcons().add(new Image("/logo_app.jpg"));
+    	                newStage.show();
 
-                // Fermer l'ancien stage
-                Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-                currentStage.close();
+    	                // Fermer l'ancien stage
+    	                Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+    	                currentStage.close();
 
-            } catch (IOException e) {
-                e.printStackTrace();
-                showErrorDialog("Erreur lors du chargement du tableau de bord." ,"Erreur");
-            }
-        }
+    	            } catch (IOException e) {
+    	                e.printStackTrace();
+    	                showErrorDialog("Erreur lors du chargement du tableau de bord." ,"Erreur");
+    	            }
+    	      //  }
     }
 
     @FXML
@@ -258,8 +259,6 @@ public class SelectionSertissageIDC{
             // Si l'API renvoie un tableau de sections, il faut le convertir en liste
             List<String> sections = objectMapper.readValue(response.body(), List.class);
 
-            // Afficher le résultat dans la console
-            System.out.println("Réponse de l'API : " + sections);
 
             return sections;
         } else {
@@ -282,8 +281,7 @@ public class SelectionSertissageIDC{
             listeSectionFil.setItems(observableList);
             listeSectionFil.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
                 if (newValue != null) {
-                    AppInformations.sectionFilSelectionner = newValue;
-                    System.out.println("Section de fil sélectionnée : " + AppInformations.sectionFilSelectionner);
+                    SertissageIDCInformations.sectionFilSelectionner = newValue;
                 }
             });
         });
@@ -317,8 +315,6 @@ public class SelectionSertissageIDC{
             // Convertir la réponse en List<String>
             List<String> codesControles = objectMapper.readValue(response.body(), List.class);
             
-            // Afficher le résultat dans la console
-            System.out.println("Réponse de l'API : " + codesControles);
             
             return codesControles;
         } else {
@@ -340,8 +336,7 @@ public class SelectionSertissageIDC{
 
             listeCodeControle.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
                 if (newValue != null) {
-                    AppInformations.codeControleSelectionner = newValue;
-                    System.out.println("Code de contrôle sélectionné : " + AppInformations.codeControleSelectionner);
+                	SertissageIDCInformations.codeControleSelectionner = newValue;
                 }
             });
         });
@@ -401,8 +396,7 @@ public class SelectionSertissageIDC{
             // Ajouter un listener pour récupérer l'élément sélectionné
             listeProjets.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
                 if (newValue != null) {
-                    AppInformations.projetSelectionner = newValue;
-                    System.out.println("Projet sélectionné : " + AppInformations.projetSelectionner);
+                	SertissageIDCInformations.projetSelectionner = newValue;
                 }
             });
         });

@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.chart.StackedBarChart?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -18,7 +20,7 @@
 
 <!--?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon?-->
 
-<StackPane fx:id="stackPane" prefHeight="750.0" prefWidth="1360.0" stylesheets="@RemplirSertissageIDC.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Front_java.SertissageIDC.RemplirSertissageIDC">
+<StackPane fx:id="stackPane" prefHeight="750.0" prefWidth="1360.0" stylesheets="@RemplirSertissageIDC.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Front_java.SertissageIDC.Resultat">
            
                <BorderPane fx:id="rootPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1360.0">
 
@@ -139,11 +141,6 @@
                   <Font name="System Bold" size="18.0" />
                </font>
             </Button>
-            <Button fx:id="btnPrecedant" layoutX="495.0" layoutY="11.0" mnemonicParsing="false" onAction="#precedant" prefHeight="50.0" prefWidth="150.0" style="-fx-alignment: center;" styleClass="precedant-btn" text="Précedant">
-               <font>
-                  <Font name="System Bold" size="18.0" />
-               </font>
-            </Button>
          </children>
       </Pane>
    </bottom>
@@ -190,54 +187,6 @@
                     <Font name="System  Bold" size="16.0" />
                  </font>
               </Label>
-            <GridPane alignment="CENTER" hgap="10.0" layoutX="900.0" layoutY="135.0" prefHeight="390.0" prefWidth="441.0" vgap="10.0" BorderPane.alignment="CENTER">
-            <columnConstraints>
-               <ColumnConstraints prefWidth="100.0" />
-               <ColumnConstraints prefWidth="100.0" />
-               <ColumnConstraints prefWidth="100.0" />
-            </columnConstraints>
-            <rowConstraints>
-               <RowConstraints prefHeight="100.0" />
-               <RowConstraints prefHeight="100.0" />
-               <RowConstraints prefHeight="100.0" />
-               <RowConstraints prefHeight="100.0" />
-            </rowConstraints>
-
-            <!-- Ligne 1 -->
-            <Button layoutX="1000.0" onAction="#handleButtonClick" styleClass="keypad-button" text="1" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-            <Button onAction="#handleButtonClick" styleClass="keypad-button" text="2" GridPane.columnIndex="1" GridPane.rowIndex="0" />
-            <Button onAction="#handleButtonClick" styleClass="keypad-button" text="3" GridPane.columnIndex="2" GridPane.rowIndex="0" />
-
-            <!-- Ligne 2 -->
-            <Button onAction="#handleButtonClick" styleClass="keypad-button" text="4" GridPane.columnIndex="0" GridPane.rowIndex="1" />
-            <Button onAction="#handleButtonClick" styleClass="keypad-button" text="5" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-            <Button onAction="#handleButtonClick" styleClass="keypad-button" text="6" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-
-            <!-- Ligne 3 -->
-            <Button onAction="#handleButtonClick" styleClass="keypad-button" text="7" GridPane.columnIndex="0" GridPane.rowIndex="2" />
-            <Button onAction="#handleButtonClick" styleClass="keypad-button" text="8" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-            <Button onAction="#handleButtonClick" styleClass="keypad-button" text="9" GridPane.columnIndex="2" GridPane.rowIndex="2" />
-
-            <!-- Ligne 4 -->
-            <Button styleClass="keypad-button" GridPane.columnIndex="0" GridPane.rowIndex="3" />
-            <Button onAction="#handleButtonClick" styleClass="keypad-button" text="0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-            <Button onAction="#handleButtonClick" styleClass="keypad-button" text=". " GridPane.columnIndex="2" GridPane.rowIndex="3" />
-              <ImageView fx:id="clearImage" fitHeight="61.0" fitWidth="59.0" pickOnBounds="true" preserveRatio="true" GridPane.rowIndex="3">
-				    <image>
-				        <Image url="@../../../ressources/echec.png" />
-				    </image>
-				    <GridPane.margin>
-				        <Insets left="20.0" />
-				    </GridPane.margin>
-				</ImageView>
-
- <!-- TableView -->
-
-                  <padding>
-                     <Insets left="100.0" />
-                  </padding>
-        
-         </GridPane>
                <Label layoutX="500.0" layoutY="73.0" styleClass="matrix-grid-title" text="Numéro Courant : " />
                <Label fx:id="nbrCycle" layoutX="700.0" layoutY="73.0" styleClass="matrix-grid-title" text="Label" />
                <Label layoutX="635.0" layoutY="36.0" text="Section de fil : ">
@@ -245,83 +194,82 @@
                      <Font size="16.0" />
                   </font>
                </Label>
-          <GridPane hgap="2" layoutX="53.0" layoutY="126.0" prefHeight="337.0" prefWidth="873.0" style="-fx-padding: 1px; -fx-border-color: gray; -fx-border-width: 2px; -fx-grid-lines-visible: true;" vgap="2">
+          <GridPane hgap="2" layoutX="30.0" layoutY="126.0" prefHeight="337.0" prefWidth="873.0" style="-fx-padding: 1px; -fx-border-color: gray; -fx-border-width: 2px; -fx-grid-lines-visible: true;" vgap="2">
     <padding>
         <Insets bottom="10" left="10" right="10" top="10" />
     </padding>
     <Label prefHeight="17.0" prefWidth="139.0" styleClass="labelll" text="Échantillon 1" GridPane.columnIndex="2">
                      <font>
-                        <Font name="System Bold" size="16.0" />
+                        <Font name="System Bold" size="18.0" />
                      </font></Label>
     <Label prefHeight="17.0" prefWidth="139.0" style="-fx-font-weight: bold;" styleClass="labelll" text=" Échantillon 2" GridPane.columnIndex="3">
                      <font>
-                        <Font name="System Bold" size="16.0" />
+                        <Font name="System Bold" size="18.0" />
                      </font></Label>
     <Label prefHeight="17.0" prefWidth="145.0" style="-fx-font-weight: bold;" styleClass="labelll" text="Échantillon 3" GridPane.columnIndex="4">
                      <font>
-                        <Font name="System Bold" size="16.0" />
+                        <Font name="System Bold" size="18.0" />
                      </font></Label>
     <Label prefHeight="17.0" prefWidth="154.0" style="-fx-font-weight: bold;" styleClass="labelll" text=" Échantillon Fin" GridPane.columnIndex="5">
                      <font>
-                        <Font name="System Bold" size="16.0" />
+                        <Font name="System Bold" size="18.0" />
                      </font></Label>
     <Label prefHeight="17.0" prefWidth="204.0" styleClass="labelll" text="Hauteur de sertissage  (mm)" GridPane.columnIndex="1" GridPane.rowIndex="1">
                      <font>
-                        <Font name="System Bold" size="15.0" />
+                        <Font name="System Bold" size="18.0" />
                      </font></Label>
-    <Label prefHeight="36.0" prefWidth="213.0" styleClass="labelll" text="     Force de traction (N) " GridPane.columnIndex="1" GridPane.rowIndex="2">
+    <Label prefHeight="36.0" prefWidth="213.0" styleClass="labelll" text="Force de traction (N) " GridPane.columnIndex="1" GridPane.rowIndex="2">
                      <font>
-                        <Font name="System Bold" size="15.0" />
+                        <Font name="System Bold" size="18.0" />
                      </font></Label>
     <Label prefHeight="36.0" prefWidth="214.0" styleClass="labelll" text="Hauteur de sertissage  (mm)" GridPane.columnIndex="1" GridPane.rowIndex="3">
                      <font>
-                        <Font name="System Bold" size="15.0" />
+                        <Font name="System Bold" size="18.0" />
                      </font></Label>
-    <Label prefHeight="36.0" prefWidth="214.0" styleClass="labelll" text="     Force de traction (N) " GridPane.columnIndex="1" GridPane.rowIndex="4">
+    <Label prefHeight="36.0" prefWidth="214.0" styleClass="labelll" text=" Force de traction (N) " GridPane.columnIndex="1" GridPane.rowIndex="4">
                      <font>
-                        <Font name="System Bold" size="15.0" />
+                        <Font name="System Bold" size="18.0" />
                      </font></Label>
     <Label styleClass="labelll" text="                     Produit " GridPane.columnIndex="1" GridPane.rowIndex="5" />
-
-    <TextField fx:id="hauteurSertissageEch1C1" styleClass="text-field-nombre-lot" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-    <TextField fx:id="hauteurSertissageEch2C1" styleClass="text-field-nombre-lot" GridPane.columnIndex="3" GridPane.rowIndex="1" />
-    <TextField fx:id="hauteurSertissageEch3C1" styleClass="text-field-nombre-lot" GridPane.columnIndex="4" GridPane.rowIndex="1" />
-    <TextField fx:id="hauteurSertissageEchFinC1" styleClass="text-field-nombre-lot" GridPane.columnIndex="5" GridPane.rowIndex="1" />
-    <TextField fx:id="forceTractionEch1C1" styleClass="text-field-nombre-lot" GridPane.columnIndex="2" GridPane.rowIndex="2" />
-    <TextField fx:id="hauteurSertissageEch1C2" styleClass="text-field-nombre-lot" GridPane.columnIndex="2" GridPane.rowIndex="3" />
-    <TextField fx:id="forceTractionEch1C2" styleClass="text-field-nombre-lot" GridPane.columnIndex="2" GridPane.rowIndex="4" />
     <Label prefHeight="17.0" prefWidth="205.0" styleClass="labelll" text="                     Série Produite" GridPane.columnIndex="1" GridPane.rowIndex="6" />
     <Label prefHeight="17.0" prefWidth="194.0" styleClass="labelll" text="                      Numéro machine " GridPane.columnIndex="1" GridPane.rowIndex="7" />
-    <TextField fx:id="forceTractionEch2C1" styleClass="text-field-nombre-lot" GridPane.columnIndex="3" GridPane.rowIndex="2" />
-    <TextField fx:id="forceTractionEch3C1" styleClass="text-field-nombre-lot" GridPane.columnIndex="4" GridPane.rowIndex="2" />
-    <TextField fx:id="hauteurSertissageEch2C2" styleClass="text-field-nombre-lot" GridPane.columnIndex="3" GridPane.rowIndex="3" />
-    <TextField fx:id="forceTractionEch2C2" styleClass="text-field-nombre-lot" GridPane.columnIndex="3" GridPane.rowIndex="4" />
-    <TextField fx:id="forceTractionEchFinC1" styleClass="text-field-nombre-lot" GridPane.columnIndex="5" GridPane.rowIndex="2" />
-    <TextField fx:id="hauteurSertissageEchFinC2" styleClass="text-field-nombre-lot" GridPane.columnIndex="5" GridPane.rowIndex="3" />
-    <TextField fx:id="hauteurSertissageEch3C2" styleClass="text-field-nombre-lot" GridPane.columnIndex="4" GridPane.rowIndex="3" />
-    <TextField fx:id="forceTractionEch3C2" styleClass="text-field-nombre-lot" GridPane.columnIndex="4" GridPane.rowIndex="4" />
-    <TextField fx:id="forceTractionEchFinC2" styleClass="text-field-nombre-lot" GridPane.columnIndex="5" GridPane.rowIndex="4" />
-                  <columnConstraints>
-                     <ColumnConstraints maxWidth="252.0" minWidth="101.0" prefWidth="101.0" />
-                     <ColumnConstraints maxWidth="350.0" minWidth="145.0" prefWidth="227.0" />
-                     <ColumnConstraints maxWidth="144.0" minWidth="37.0" prefWidth="140.0" />
-                     <ColumnConstraints />
-                     <ColumnConstraints />
-                     <ColumnConstraints />
-                  </columnConstraints>
-                  <rowConstraints>
-                     <RowConstraints maxHeight="50.0" minHeight="50.0" prefHeight="50.0" />
-                     <RowConstraints maxHeight="50.0" minHeight="50.0" prefHeight="40.0" />
-                     <RowConstraints maxHeight="40.0" minHeight="50.0" prefHeight="40.0" />
-                     <RowConstraints maxHeight="40.0" minHeight="50.0" prefHeight="40.0" />
-                     <RowConstraints maxHeight="40.0" minHeight="50.0" prefHeight="40.0" />
-                     <RowConstraints maxHeight="40.0" minHeight="50.0" prefHeight="40.0" />
-                     <RowConstraints maxHeight="40.0" minHeight="50.0" prefHeight="40.0" />
-                     <RowConstraints maxHeight="40.0" minHeight="50.0" prefHeight="40.0" />
-                  </rowConstraints>
+    <Label fx:id="hauteurSertissageEch1C1" prefHeight="17.0" prefWidth="127.0" styleClass="labelll2" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+    <Label fx:id="hauteurSertissageEch2C1" prefHeight="17.0" prefWidth="128.0" styleClass="labelll2" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+    <Label fx:id="forceTractionEch2C1" prefHeight="17.0" prefWidth="133.0" styleClass="labelll2" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+    <Label fx:id="hauteurSertissageEch2C2" prefHeight="17.0" prefWidth="132.0" styleClass="labelll2" GridPane.columnIndex="3" GridPane.rowIndex="3" />
+    <Label fx:id="forceTractionEch2C2" prefHeight="17.0" prefWidth="136.0" styleClass="labelll2" GridPane.columnIndex="3" GridPane.rowIndex="4" />
+    <Label fx:id="forceTractionEch1C1" prefHeight="17.0" prefWidth="128.0" styleClass="labelll2" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+    <Label fx:id="hauteurSertissageEch1C2" prefHeight="17.0" prefWidth="130.0" styleClass="labelll2" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+    <Label fx:id="forceTractionEch1C2" prefHeight="17.0" prefWidth="135.0" styleClass="labelll2" GridPane.columnIndex="2" GridPane.rowIndex="4" />
+    <Label fx:id="hauteurSertissageEch3C1" prefHeight="17.0" prefWidth="137.0" styleClass="labelll2" GridPane.columnIndex="4" GridPane.rowIndex="1" />
+    <Label fx:id="hauteurSertissageEchFinC1" prefHeight="17.0" prefWidth="151.0" styleClass="labelll2" GridPane.columnIndex="5" GridPane.rowIndex="1" />
+    <Label fx:id="forceTractionEchFinC1" prefHeight="17.0" prefWidth="143.0" styleClass="labelll2" GridPane.columnIndex="5" GridPane.rowIndex="2" />
+    <Label fx:id="forceTractionEch3C1" prefHeight="17.0" prefWidth="136.0" styleClass="labelll2" GridPane.columnIndex="4" GridPane.rowIndex="2" />
+    <Label fx:id="hauteurSertissageEchFinC2" prefHeight="17.0" prefWidth="144.0" styleClass="labelll2" GridPane.columnIndex="5" GridPane.rowIndex="3" />
+    <Label fx:id="hauteurSertissageEch3C2" prefHeight="17.0" prefWidth="134.0" styleClass="labelll2" GridPane.columnIndex="4" GridPane.rowIndex="3" />
+    <Label fx:id="forceTractionEchFinC2" prefHeight="17.0" prefWidth="156.0" styleClass="labelll2" GridPane.columnIndex="5" GridPane.rowIndex="4" />
+    <Label fx:id="forceTractionEch3C2" prefHeight="17.0" prefWidth="133.0" styleClass="labelll2" GridPane.columnIndex="4" GridPane.rowIndex="4" />
+    <columnConstraints>
+       <ColumnConstraints maxWidth="252.0" minWidth="101.0" prefWidth="101.0" />
+       <ColumnConstraints maxWidth="350.0" minWidth="145.0" prefWidth="227.0" />
+       <ColumnConstraints maxWidth="144.0" minWidth="37.0" prefWidth="140.0" />
+       <ColumnConstraints />
+       <ColumnConstraints />
+       <ColumnConstraints />
+    </columnConstraints>
+    <rowConstraints>
+       <RowConstraints maxHeight="50.0" minHeight="50.0" prefHeight="50.0" />
+       <RowConstraints maxHeight="50.0" minHeight="50.0" prefHeight="40.0" />
+       <RowConstraints maxHeight="40.0" minHeight="50.0" prefHeight="40.0" />
+       <RowConstraints maxHeight="40.0" minHeight="50.0" prefHeight="40.0" />
+       <RowConstraints maxHeight="40.0" minHeight="50.0" prefHeight="40.0" />
+       <RowConstraints maxHeight="40.0" minHeight="50.0" prefHeight="40.0" />
+       <RowConstraints maxHeight="40.0" minHeight="50.0" prefHeight="40.0" />
+       <RowConstraints maxHeight="40.0" minHeight="50.0" prefHeight="40.0" />
+    </rowConstraints>
 
 </GridPane>
-               <Pane layoutX="56.0" layoutY="182.0" prefHeight="290.0" prefWidth="100.0" style="-fx-background-color: #f4f4f4;">
+               <Pane layoutX="35.0" layoutY="182.0" prefHeight="290.0" prefWidth="100.0" style="-fx-background-color: #f4f4f4;">
                   <children>
                      <Pane layoutX="-2.0" layoutY="103.0" prefHeight="103.0" prefWidth="104.0" style="-fx-border-color: gray; -fx-border-width: 2px;">
                         <children>
@@ -333,8 +281,8 @@
                         </children>
                      </Pane>
                   </children></Pane>
-               <Pane layoutX="53.0" layoutY="113.0" prefHeight="66.0" prefWidth="322.0" style="-fx-background-color: #f4f4f4;" />
-               <Pane layoutX="54.0" layoutY="180.0" prefHeight="105.0" prefWidth="104.0" style="-fx-border-color: gray; -fx-border-width: 2px;">
+               <Pane layoutX="30.0" layoutY="113.0" prefHeight="66.0" prefWidth="322.0" style="-fx-background-color: #f4f4f4;" />
+               <Pane layoutX="32.0" layoutY="180.0" prefHeight="105.0" prefWidth="104.0" style="-fx-border-color: gray; -fx-border-width: 2px;">
                   <children>
                      <Label layoutX="38.0" layoutY="40.0" text="C1">
                         <font>
@@ -343,53 +291,136 @@
                      </Label>
                   </children>
                </Pane>
-               <Pane layoutX="55.0" layoutY="388.0" prefHeight="53.0" prefWidth="321.0" style="-fx-border-color: gray; -fx-border-width: 2px; -fx-background-color: #f4f4f4;">
+               <Pane layoutX="32.0" layoutY="388.0" prefHeight="53.0" prefWidth="321.0" style="-fx-border-color: gray; -fx-border-width: 2px; -fx-background-color: #f4f4f4;">
                   <children>
-                     <Label layoutX="85.0" layoutY="13.0" prefHeight="20.0" prefWidth="152.0" text="           Produit ">
+                     <Label layoutX="85.0" layoutY="13.0" prefHeight="20.0" prefWidth="152.0" text="        Produit ">
                         <font>
-                           <Font name="System Bold" size="15.0" />
+                           <Font name="System Bold" size="18.0" />
                         </font>
                      </Label>
                   </children>
                </Pane>
-               <Pane layoutX="55.0" layoutY="440.0" prefHeight="52.0" prefWidth="321.0" style="-fx-background-color: #f4f4f4; -fx-border-width: 2px; -fx-border-color: gray;">
+               <Pane layoutX="32.0" layoutY="440.0" prefHeight="52.0" prefWidth="321.0" style="-fx-background-color: #f4f4f4; -fx-border-width: 2px; -fx-border-color: gray;">
                   <children>
-                     <Label layoutX="74.0" layoutY="12.0" prefHeight="20.0" prefWidth="175.0" text="         Série Produite ">
+                     <Label layoutX="74.0" layoutY="12.0" prefHeight="20.0" prefWidth="175.0" text="     Série Produite ">
                         <font>
-                           <Font name="System Bold" size="15.0" />
+                           <Font name="System Bold" size="18.0" />
                         </font>
                      </Label>
                   </children>
                </Pane>
-               <Pane layoutX="55.0" layoutY="492.0" prefHeight="51.0" prefWidth="321.0" style="-fx-background-color: #f4f4f4; -fx-border-width: 2px; -fx-border-color: gray;">
+               <Pane layoutX="32.0" layoutY="492.0" prefHeight="51.0" prefWidth="321.0" style="-fx-background-color: #f4f4f4; -fx-border-width: 2px; -fx-border-color: gray;">
                   <children>
-                     <Label layoutX="77.0" layoutY="14.0" prefHeight="20.0" prefWidth="177.0" text="        Numéro Machine">
+                     <Label layoutX="18.0" layoutY="14.0" prefHeight="27.0" prefWidth="294.0" text="              Numéro Machine">
                         <font>
-                           <Font name="System Bold" size="15.0" />
+                           <Font name="System Bold" size="18.0" />
                         </font>
                      </Label>
                   </children>
                </Pane>
-               <Pane layoutX="377.0" layoutY="388.0" prefHeight="51.0" prefWidth="546.0" style="-fx-background-color: #f4f4f4; -fx-border-width: 2px; -fx-border-color: gray;">
+               <Pane layoutX="354.0" layoutY="387.0" prefHeight="55.0" prefWidth="546.0" style="-fx-background-color: #f4f4f4; -fx-border-width: 2px; -fx-border-color: gray;">
                   <children>
-                     <TextField fx:id="produit" layoutX="130.0" layoutY="7.0" minWidth="285.0" prefHeight="35.0" prefWidth="285.0" styleClass="text-field-nombre-lot" />
+                     <Label fx:id="produit" layoutX="14.0" layoutY="8.0" prefHeight="25.0" prefWidth="518.0" styleClass="labelll2" />
                   </children>
                </Pane>
-               <Pane layoutX="378.0" layoutY="439.0" prefHeight="52.0" prefWidth="544.0" style="-fx-background-color: #f4f4f4; -fx-border-color: gray; -fx-border-width: 2px;">
+               <Pane layoutX="354.0" layoutY="442.0" prefHeight="51.0" prefWidth="547.0" style="-fx-background-color: #f4f4f4; -fx-border-color: gray; -fx-border-width: 2px;">
                   <children>
-                     <TextField fx:id="serieProduit" layoutX="130.0" layoutY="7.0" minWidth="285.0" prefHeight="35.0" prefWidth="283.0" styleClass="text-field-nombre-lot" />
+                     <Label fx:id="serieProduit" layoutX="2.0" layoutY="4.0" prefHeight="31.0" prefWidth="527.0" styleClass="labelll2" />
                   </children>
                </Pane>
-               <Pane layoutX="378.0" layoutY="491.0" prefHeight="53.0" prefWidth="545.0" style="-fx-background-color: #f4f4f4; -fx-border-color: gray; -fx-border-width: 2px;">
+               <Pane layoutX="354.0" layoutY="493.0" prefHeight="51.0" prefWidth="545.0" style="-fx-background-color: #f4f4f4; -fx-border-color: gray; -fx-border-width: 2px;">
                   <children>
-                     <TextField fx:id="numMachine" layoutX="130.0" layoutY="7.0" minWidth="285.0" prefHeight="35.0" prefWidth="283.0" styleClass="text-field-nombre-lot" />
+                     <Label fx:id="numMachine" layoutX="2.0" layoutY="5.0" prefHeight="28.0" prefWidth="543.0" styleClass="labelll2" />
                   </children>
                </Pane>
+               <Label layoutX="946.0" layoutY="260.0" text="10.85">
+                  <font>
+                     <Font name="System Bold" size="12.0" />
+                  </font>
+               </Label>
+              <StackedBarChart fx:id="chartHauteurC2" animated="false" horizontalGridLinesVisible="false" layoutX="952.0" layoutY="374.0" legendVisible="true" prefHeight="250.0" prefWidth="400.0" verticalGridLinesVisible="false">
+                <xAxis>
+                  <CategoryAxis opacity="0" side="BOTTOM" tickLabelsVisible="false" tickMarkVisible="false" visible="false" fx:id="xAxis" />
+                </xAxis>
+                <yAxis>
+                   <NumberAxis fx:id="yAxis" opacity="0" side="LEFT" tickLabelsVisible="false" tickMarkVisible="false" visible="false" />
+                </yAxis>
+             </StackedBarChart>
+               <Label layoutX="963.0" layoutY="542.0" text="60">
+                  <font>
+                     <Font name="System Bold" size="12.0" />
+                  </font>
+               </Label>
+               <Label layoutX="962.0" layoutY="512.0" text="70">
+                  <font>
+                     <Font name="System Bold" size="12.0" />
+                  </font>
+               </Label>
+               <Label layoutX="962.0" layoutY="486.0" text="80">
+                  <font>
+                     <Font name="System Bold" size="12.0" />
+                  </font>
+               </Label>
+               <Label layoutX="963.0" layoutY="569.0" text="50">
+                  <font>
+                     <Font name="System Bold" size="12.0" />
+                  </font>
+               </Label>
+               <Label layoutX="960.0" layoutY="460.0" text="90">
+                  <font>
+                     <Font name="System Bold" size="12.0" />
+                  </font>
+               </Label>
+               <Label layoutX="955.0" layoutY="432.0" text="100">
+                  <font>
+                     <Font name="System Bold" size="12.0" />
+                  </font>
+               </Label>
             </children>
          </AnchorPane>
       </center>
- 
- 
+  <Pane fx:id="paneHauteurSertissageC1" layoutX="1070.0" layoutY="82.0" prefHeight="400.0" prefWidth="200.0">
+        <children>
+           <StackedBarChart fx:id="chartHauteurC1" animated="false" horizontalGridLinesVisible="false" layoutX="-110.0" layoutY="100.0" legendVisible="true" prefHeight="250.0" prefWidth="400.0" verticalGridLinesVisible="false">
+             <xAxis>
+               <CategoryAxis opacity="0" side="BOTTOM" tickLabelsVisible="false" tickMarkVisible="false" visible="false" fx:id="xAxis" />
+             </xAxis>
+             <yAxis>
+                <NumberAxis fx:id="yAxis" opacity="0" side="LEFT" tickLabelsVisible="false" tickMarkVisible="false" visible="false" />
+             </yAxis>
+          </StackedBarChart>
+            <Label layoutX="-38.0" layoutY="400.0" prefHeight="17.0" prefWidth="251.0" text="             Force de traction">
+               <font>
+                  <Font name="System Bold" size="16.0" />
+               </font>
+            </Label>
+            <Label layoutX="-124.0" layoutY="215.0" text="10.97">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
+      </children>
+ </Pane>
+                         
+  <Pane fx:id="paneHauteurSertissageC2" layoutX="1070.0" layoutY="82.0" prefHeight="400.0" prefWidth="200.0">
+        <children>
+            <Label layoutX="-38.0" layoutY="120.0" prefHeight="17.0" prefWidth="251.0" text="          Hauteur Sertissage ">
+               <font>
+                  <Font name="System Bold" size="16.0" />
+               </font>
+            </Label>
+            <Label layoutX="-124.0" layoutY="250.0" text="10.88">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
+            <Label layoutX="-124.0" layoutY="180.0" text="11.00">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
+      </children>
+ </Pane>
 
 </BorderPane>
 </StackPane>
