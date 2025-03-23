@@ -10,25 +10,21 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 
 import Front_java.Configuration.AppInformations;
+import Front_java.Configuration.SertissageIDCData;
 import Front_java.Configuration.SertissageIDCInformations;
-import Front_java.Configuration.SoudureInformations;
 import Front_java.Modeles.OperateurInfo;
-import Front_java.Modeles.TorsadageDTO;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.*;
 import javafx.fxml.*;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.*;
-import javafx.scene.chart.StackedAreaChart;
 import javafx.scene.chart.StackedBarChart;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -37,19 +33,13 @@ import javafx.scene.shape.Circle;
 import javafx.stage.*;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
-import java.util.concurrent.CompletableFuture;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXDialog;
 import com.jfoenix.controls.JFXDialogLayout;
-
-import Front_java.Configuration.TorsadageInformations;
 import javafx.animation.KeyFrame;
-import javafx.animation.PauseTransition;
 import javafx.util.Duration;
 import javafx.scene.chart.CategoryAxis;
-import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 
@@ -80,6 +70,12 @@ public class Resultat {
     private Label dateSystem;
 
     @FXML
+    private Label nbrEch;
+
+    @FXML
+    private Label forceTraction;
+
+    @FXML
     private Label forceTractionEch1C1;
 
     @FXML
@@ -102,6 +98,9 @@ public class Resultat {
 
     @FXML
     private Label forceTractionEchFinC2;
+
+    @FXML
+    private Label hauteurSertissage;
 
     @FXML
     private Label hauteurSertissageEch1C1;
@@ -137,9 +136,6 @@ public class Resultat {
     private Label nbrCycle;
 
     @FXML
-    private Label nbrEch;
-
-    @FXML
     private Label nomPrenomUser;
 
     @FXML
@@ -164,18 +160,18 @@ public class Resultat {
     private BorderPane rootPane;
 
     @FXML
+    private Label sectionFil;
+
+    @FXML
     private Label segementUser;
 
     @FXML
     private Label serieProduit;
 
     @FXML
-    private Label specificationsMesure;
-
+    private Label quantiteCycle ; 
     @FXML
     private StackPane stackPane;
-
-
 
 /*********** Chart HauteurSertissage C1 *****/
     @FXML
@@ -198,7 +194,7 @@ public class Resultat {
 	@FXML
 	public void initialize() {
 	
-
+		ajouterPdekAvecSertissageIDC() ; 
 		initialiserDonneesPDEKEnregistrer() ; 
 		afficherInfosOperateur();
 		AppInformations.testTerminitionCommande = 0 ; 
@@ -232,15 +228,15 @@ public class Resultat {
 	@FXML
 	public void suivant(ActionEvent event) {
 	
-		TorsadageInformations.projetSelectionner= null ; 
-		TorsadageInformations.codeControleSelectionner= null ; 
-		TorsadageInformations.specificationsMesure = null ; 
+		SertissageIDCInformations.projetSelectionner= null ; 
+		SertissageIDCInformations.codeControleSelectionner= null ; 
+		SertissageIDCInformations.sectionFilSelectionner = null ; 
 		try {
 			// Charger la scène de Dashboard1
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("/Front_java/Torsadage/SelectionInitiale.fxml"));
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/Front_java/SertissageIDC/SelectionSertissageIDC.fxml"));
 			Scene dashboard1Scene = new Scene(loader.load());
 			dashboard1Scene.getStylesheets()
-					.add(getClass().getResource("/Front_java/Torsadage/SelectionInitiale.css").toExternalForm());
+					.add(getClass().getResource("/Front_java/SertissageIDC/SelectionSertissageIDC.css").toExternalForm());
 
 			// Créer une nouvelle fenêtre (Stage)
 			Stage dashboard1Stage = new Stage();
@@ -267,7 +263,7 @@ public class Resultat {
 	void logout(ActionEvent event) {
 
     	AppInformations.reset();
-    	//TorsadageInformations.reset();
+    	SertissageIDCInformations.reset() ; 
     
 
 		Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
@@ -303,11 +299,8 @@ public class Resultat {
 			plantUser.setText(operateurInfo.getPlant());
 			posteUser.setText(operateurInfo.getPoste());
 			segementUser.setText(operateurInfo.getSegment());
-			nomProjet.setText(TorsadageInformations.projetSelectionner);
-			specificationsMesure.setText(TorsadageInformations.specificationsMesure +" +/- 2 mm");
-			nbrEch.setText("3 Piéces");
-			nbrEch.getStyleClass().add("bold-label");
-			codeControleSelectionner.setText(TorsadageInformations.codeControleSelectionner);
+			nomProjet.setText(SertissageIDCInformations.projetSelectionner);
+			codeControleSelectionner.setText(SertissageIDCInformations.codeControleSelectionner);
 
 		} else {
 			System.out.println("Aucune information d'opérateur disponible.");
@@ -335,6 +328,7 @@ public class Resultat {
 	}
 	public void initialiserDonneesPDEKEnregistrer() {
 		
+		nbrCycle.setText(SertissageIDCInformations.numCycle);
 		hauteurSertissageEch1C1.setText(SertissageIDCInformations.hauteurSertissageC1Ech1+ " ");
 		hauteurSertissageEch2C1.setText(SertissageIDCInformations.hauteurSertissageC1Ech2+ "");
 		hauteurSertissageEch3C1.setText(SertissageIDCInformations.hauteurSertissageC1Ech3+ "");
@@ -358,247 +352,10 @@ public class Resultat {
 		produit.setText(SertissageIDCInformations.produit+ "");
 		serieProduit.setText(SertissageIDCInformations.serieProduit+ "");
 		numMachine.setText(SertissageIDCInformations.numeroMachine +"");
+		quantiteCycle.setText(SertissageIDCInformations.quantiteCycle +"");
 				
 	}
 
-	private void createAndAddChartDataMoyenne(StackedAreaChart<Number, Number> chart) {
-		    // Fixer les axes
-		    NumberAxis xAxis = (NumberAxis) chart.getXAxis();
-		    NumberAxis yAxis = (NumberAxis) chart.getYAxis();
-		    
-		    yAxis.setAutoRanging(false);
-		    yAxis.setLowerBound(0);
-		    yAxis.setUpperBound(30); // Diviser en 3 zones égales
-		    yAxis.setTickUnit(10);
-
-		    // Création des séries pour chaque zone
-		    XYChart.Series<Number, Number> seriesRed = new XYChart.Series<>();
-		    XYChart.Series<Number, Number> seriesYellow = new XYChart.Series<>();
-		    XYChart.Series<Number, Number> seriesGreen = new XYChart.Series<>();
-
-		    for (int i = 0; i <= 4; i++) {
-		        seriesRed.getData().add(new XYChart.Data<>(i, 10));    // Rouge : 0 - 10
-		        seriesYellow.getData().add(new XYChart.Data<>(i, 10)); // Jaune commence à 10
-		        seriesGreen.getData().add(new XYChart.Data<>(i, 10));  // Vert commence à 10+10 = 20
-		    }
-
-		    // Ajouter les séries
-		    chart.getData().addAll(seriesRed, seriesYellow, seriesGreen);
-
-		    // Appliquer les styles
-		    Platform.runLater(() -> {
-		        chart.lookupAll(".chart-series-area-fill").forEach(node -> {
-		            if (node.getStyleClass().contains("series0")) {
-		                node.setStyle("-fx-fill: #f5c6cb;"); // Rouge
-		            } else if (node.getStyleClass().contains("series1")) {
-		                node.setStyle("-fx-fill: #ffeeba;"); // Jaune
-		            } else if (node.getStyleClass().contains("series2")) {
-		                node.setStyle("-fx-fill: #d4edda;"); // Vert
-		            }
-		        });
-
-		        // Supprimer les points visibles des zones
-		        for (XYChart.Series<Number, Number> series : chart.getData()) {
-		            for (XYChart.Data<Number, Number> data : series.getData()) {
-		                data.getNode().setStyle("-fx-background-color: transparent;");
-		            }
-		        }
-		    });
-		}
-
-	private void addPointToChart(StackedAreaChart<Number, Number> chart) {
-	    int xValue = 2;  // Milieu du graphique
-	    double yValue = 20; // Dans la zone jaune
-
-	    XYChart.Series<Number, Number> pointSeries = new XYChart.Series<>();
-	    XYChart.Data<Number, Number> pointData = new XYChart.Data<>(xValue, yValue);
-	    pointSeries.getData().add(pointData);
-
-	    chart.getData().add(pointSeries);
-
-	    // Forcer l'affichage après le rendu du graphique
-	    Platform.runLater(() -> {
-	        if (pointData.getNode() != null) {
-	            pointData.getNode().setStyle(
-	                "-fx-background-color: black; " +
-	                "-fx-border-color: black; " +
-	                "-fx-shape: 'M 0 0 L 4 4 L 8 0 L 4 -4 Z';" + // Assurer un losange bien visible
-	                "-fx-padding: 5px;" // Augmenter la taille du point
-	            );
-	        } else {
-	            System.out.println("Le nœud du point est NULL !");
-	        }
-	    });
-	}
-
-	private void createAndAddChartDataEttendu(StackedAreaChart<Number, Number> chart) {
-
-		    // Création de l'axe X (masqué)
-		    NumberAxis xAxis = new NumberAxis();
-		    xAxis.setVisible(false);
-		    xAxis.setTickLabelsVisible(false);
-		    xAxis.setTickMarkVisible(false);
-		    xAxis.setOpacity(0);
-
-		    // Création de l'axe Y (masqué)
-		    NumberAxis yAxis = new NumberAxis();
-		    yAxis.setVisible(false);
-		    yAxis.setTickLabelsVisible(false);
-		    yAxis.setTickMarkVisible(false);
-		    yAxis.setOpacity(0);
-
-		    // Création du StackedAreaChart avec les axes
-		    chart.setTitle("L'etendu R");
-		    chart.setStyle("-fx-font-weight: bold; -fx-font-size: 14px; -fx-fill: black;");
-		    chart.setLegendVisible(false); // Désactive la légende automatique
-		    chart.setHorizontalGridLinesVisible(false);
-		    chart.setVerticalGridLinesVisible(false);
-		    chart.setAnimated(false);
-
-		    // Série 1 (Par défaut)
-		    XYChart.Series<Number, Number> series1 = new XYChart.Series<>();
-		    series1.getData().add(new XYChart.Data<>(0, 26));
-		    series1.getData().add(new XYChart.Data<>(1, 26));
-		    series1.getData().add(new XYChart.Data<>(2, 26));
-		    series1.getData().add(new XYChart.Data<>(3, 26));
-		    series1.getData().add(new XYChart.Data<>(4, 26));
-
-		    // Série 2 (Jaune)
-		    XYChart.Series<Number, Number> series2 = new XYChart.Series<>();
-		    series2.getData().add(new XYChart.Data<>(0, 26));
-		    series2.getData().add(new XYChart.Data<>(1, 26)); // Valeur modifiée pour la série 2
-		    series2.getData().add(new XYChart.Data<>(2, 26));
-		    series2.getData().add(new XYChart.Data<>(3, 26));
-		    series2.getData().add(new XYChart.Data<>(4, 26));
-
-		    // Série 3 (Par défaut)
-		    XYChart.Series<Number, Number> series3 = new XYChart.Series<>();
-		    series3.getData().add(new XYChart.Data<>(0, 26));
-		    series3.getData().add(new XYChart.Data<>(1, 26));
-		    series3.getData().add(new XYChart.Data<>(2, 26));
-		    series3.getData().add(new XYChart.Data<>(3, 26));
-		    series3.getData().add(new XYChart.Data<>(4, 26));
-
-		    // Ajouter les séries au graphique
-		    chart.getData().addAll(series1, series2, series3);
-
-		    // Utiliser Platform.runLater pour s'assurer que les styles sont appliqués après la création du graphique
-		    Platform.runLater(() -> {
-		        // Appliquer les styles sur les séries
-		        chart.lookupAll(".chart-series-line").forEach(node -> {
-		            if (node.getId() != null && node.getId().contains("series2")) {
-		                node.setStyle("-fx-stroke: yellow; -fx-fill: #ffd103;");
-		            }
-		        });
-
-		        // Masquer les nœuds des données (les points sur les lignes)
-		        for (XYChart.Series<Number, Number> series : chart.getData()) {
-		            for (XYChart.Data<Number, Number> data : series.getData()) {
-		                // Cache le nœud de chaque point (symbole de la série)
-		                data.getNode().setStyle("-fx-background-color: transparent; -fx-border-color: transparent;");
-		            }
-		        }
-		    });
-		}
-
-	 private void ajouterPdekAvecTorsadage() {
-			Task<Void> task = new Task<>() {
-				@Override
-				protected Void call() throws Exception {
-					try {
-						// Code pour l'ajout du PDEK
-						String token = AppInformations.token;
-						String encodedProjet = URLEncoder.encode(TorsadageInformations.projetSelectionner,
-								StandardCharsets.UTF_8);
-
-						String url = "http://localhost:8281/operations/torsadage/ajouterPDEK" + "?matriculeOperateur="
-								+ AppInformations.operateurInfo.getMatricule() + "&projet=" + encodedProjet;
-
-						// Récupération des valeurs saisies et création de l'objet SoudureDTO
-						TorsadageDTO torsadage = new TorsadageDTO();
-						int x1 = Integer.parseInt(TorsadageInformations.ech1);
-						int x2=  Integer.parseInt(TorsadageInformations.ech2);
-						int x3 = Integer.parseInt(TorsadageInformations.ech3);
-						int x4 = Integer.parseInt(TorsadageInformations.ech4);
-						int x5 = Integer.parseInt(TorsadageInformations.ech5);
-
-						// Calcul des valeurs max et min
-						int maxValue = Math.max(Math.max(Math.max(x1, x2), Math.max(x3, x4)), x5);
-						int minValue = Math.min(Math.min(Math.min(x1, x2), Math.min(x3, x4)), x5);
-						double moy = (x1 + x2 + x3 + x4 + x5) / 5.0;
-						int R = maxValue - minValue;
-
-						
-			
-		
-						
-						// Remplir l'objet SoudureDTO avec les valeurs
-						torsadage.setCode(TorsadageInformations.codeControleSelectionner);
-						torsadage.setNumeroCycle(TorsadageInformations.numCourant );
-						torsadage.setSpecificationMesure(TorsadageInformations.specificationsMesure);
-						torsadage.setDecalageMaxDebutCdec1(Integer.parseInt(TorsadageInformations.decalageDebutC1)); 					
-						torsadage.setDecalageMaxDebutCdec2(Integer.parseInt(TorsadageInformations.decalageDebutC2)); 		
-						torsadage.setDecalageMaxFinCdec1(Integer.parseInt(TorsadageInformations.decalageFinC1 )); 					
-						torsadage.setDecalageMaxFinCdec2(Integer.parseInt(TorsadageInformations.decalageFinC2 )); 									
-						torsadage.setEch1(x1);
-						torsadage.setEch2(x2);
-						torsadage.setEch3(x3);
-						torsadage.setEch4(x4 );
-						torsadage.setEch5(x5);		
-						torsadage.setMoyenne(moy);
-						torsadage.setEtendu(R);
-						ZoneId zoneId = ZoneId.of("Europe/Paris"); // Remplace par ton fuseau horaire
-						LocalDate dateActuelle = Instant.now().atZone(zoneId).toLocalDate();
-						DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-						torsadage.setDate(dateActuelle.format(formatter));
-						torsadage.setQuantiteAtteint(Integer.parseInt(TorsadageInformations.quantiteAtteint));
-						torsadage.setQuantiteTotale(Integer.parseInt(TorsadageInformations.quantiteTotal));
-						torsadage.setNumerofil(TorsadageInformations.numFils);
-						torsadage.setNumCommande(Integer.parseInt(TorsadageInformations.numCommande));
-						torsadage.setLongueurBoutDebutCdeC1(Integer.parseInt(TorsadageInformations.lognueurBoutDebutC1));
-						torsadage.setLongueurBoutDebutCdeC2(Integer.parseInt(TorsadageInformations.lognueurBoutDebutC2));
-						torsadage.setLongueurBoutFinCdeC1(Integer.parseInt(TorsadageInformations.lognueurBoutFinC1));
-						torsadage.setLongueurBoutFinCdeC2(Integer.parseInt(TorsadageInformations.lognueurBoutFinC2));
-						torsadage.setLongueurFinalDebutCde(Integer.parseInt(TorsadageInformations.longueurFinalDebutCde));
-						torsadage.setLongueurFinalFinCde(Integer.parseInt(TorsadageInformations.longueurFinalFinCde));
-						torsadage.setLongueurPasFinCde(Integer.parseInt(TorsadageInformations.longueurPasFinCde));
-
-						// Conversion de l'objet SoudureDTO en JSON
-						ObjectMapper objectMapper = new ObjectMapper();
-						String torsadageJson = objectMapper.writeValueAsString(torsadage);
-
-						HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url))
-								.header("Authorization", "Bearer " + token).header("Content-Type", "application/json")
-								.POST(HttpRequest.BodyPublishers.ofString(torsadageJson)).build();
-
-						HttpClient client = HttpClient.newHttpClient();
-						HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-						if (response.statusCode() == 200) {
-							System.out.println("Succès Ajout PDEK : " + response.body());
-						} else {
-							System.out.println("Erreur dans l'ajout PDEK, code : " + response.statusCode() + ", message : "
-									+ response.body());
-							throw new Exception("Erreur dans l'ajout PDEK : " + response.body());
-						}
-
-					} catch (Exception e) {
-						e.printStackTrace();
-						throw new Exception("Erreur dans la méthode ajouterPdekAvecSoudure : " + e.getMessage());
-					}
-					return null;
-				}
-			};
-
-			task.setOnFailed(event -> {
-				Throwable exception = task.getException();
-				System.out.println("Erreur lors de l'ajout du PDEK : " + exception.getMessage());
-				showErrorDialog("Erreur", "Erreur lors de l'ajout du PDEK : " + exception.getMessage());
-			});
-
-			new Thread(task).start();
-		}
-	 /*********************************          Alerts        ***************************************/
 
 
 		/*********************************          Alerts        ***************************************/
@@ -645,136 +402,38 @@ public class Resultat {
 				}
 			});
 		}
-/************************ test Moyenne et etendu *************/
-		public static int extraireValeur(String input) {
-		    return Integer.parseInt(input.replaceAll("(\\d+)\\s*mm.*", "$1"));
-		}
 
-		public void testerMoyenne(double moyenneEch) {
-		    
-			int pas =  extraireValeur(TorsadageInformations.specificationsMesure) ;  // 20
-			double valeurMaxRougeSuperieur = pas +2; //22
-			double valeurMaxRougeInferieur = pas - 2 ;  //18
-			double debutZoneJaune = (pas -2)-0.8 ;  //18.8==>fin zone jaune et debut zone vert 
-			double finZoneJaune = pas-0.8 ;         //21.2 ==> fin zone vert et debut zone jaune 
-
-		    	if (((moyenneEch >= finZoneJaune )&&(moyenneEch < valeurMaxRougeSuperieur ) ) ||  (moyenneEch < valeurMaxRougeInferieur) && (moyenneEch <=  debutZoneJaune)  ) { // Zone jaune
-		    	    System.out.println("Zone jaune détectée");
-		    	    Platform.runLater(() -> {
-		    	        showWarningDialog("La valeur X dépasse les limites d'alarme (zone jaune). \nL'opérateur " 
-		    	            + AppInformations.operateurInfo.getPrenom() + " " 
-		    	            + AppInformations.operateurInfo.getNom() 
-		    	            + " doit informer son supérieur hiérarchique immédiatement.", "Attention - Limite dépassée");
-		    	    });
-		    	} 
-		        if ((moyenneEch <= valeurMaxRougeInferieur) ||  (moyenneEch >=  valeurMaxRougeSuperieur)) { // Zone rouge
-		            System.out.println("Zone rouge détectée");
-		    	    Platform.runLater(() -> {
-		            showErrorDialog("La valeur X dépasse la limite de contrôle (zone rouge). \nL'opérateur " 
-		                + AppInformations.operateurInfo.getPrenom() + " " 
-		                + AppInformations.operateurInfo.getNom() 
-		                + " doit appliquer l'arrêt 1er défaut.", "Problème détecté");
-		    	    });
-		    	    } else {
-		            System.out.println("Aucune alerte déclenchée");
-		        }
-		   
-		}
-
-		/******************   Recuperer valeur max  de etendu  *****************/
-		
-		
-
-		public void testerEtendu(int etenduEch) {
-		    
-
-		    	if (etenduEch >=  2.4) {
-		    		  Platform.runLater(() -> {
-		  	            showErrorDialog("La valeur R dépasse la limite de contrôle (zone rouge). \nL'opérateur " 
-		  	                + AppInformations.operateurInfo.getPrenom() + " " 
-		  	                + AppInformations.operateurInfo.getNom() 
-		  	                + " doit appliquer l'arrêt 1er défaut.", "Problème détecté");
-		  	    	    });	
-		               }
-                       }
-		
-		/****/
-
-		private void showWarningDialog(String title, String message) {
-			Image warningIcon = new Image(getClass().getResource("/warning.jpg").toExternalForm());
-			ImageView warningImageView = new ImageView(warningIcon);
-			warningImageView.setFitWidth(150);
-			warningImageView.setFitHeight(150);
-
-			VBox iconBox = new VBox(warningImageView);
-			iconBox.setAlignment(Pos.CENTER);
-
-			Label messageLabel = new Label(message);
-			messageLabel.setWrapText(true);
-			messageLabel.setStyle("-fx-font-size: 19px; -fx-font-weight: bold; -fx-text-alignment: center; -fx-text-fill: black;");
-
-			Label titleLabel = new Label(title);
-			titleLabel.setStyle("-fx-font-size: 19px; -fx-text-alignment: center;");
-			VBox titleBox = new VBox(titleLabel);
-			titleBox.setAlignment(Pos.CENTER);
-
-			VBox contentBox = new VBox(10, iconBox, messageLabel, titleBox);
-			contentBox.setAlignment(Pos.CENTER);
-
-			JFXDialogLayout content = new JFXDialogLayout();
-			content.setBody(contentBox);
-			content.setStyle("-fx-background-color: white; -fx-background-radius: 10;");
-
-			JFXButton closeButton = new JFXButton("Fermer");
-			closeButton.setStyle("-fx-font-size: 19px; -fx-padding: 10px 20px; -fx-font-weight: bold;");
-			content.setActions(closeButton);
-
-			JFXDialog dialog = new JFXDialog(stackPane, content, JFXDialog.DialogTransition.CENTER);
-			closeButton.setOnAction(e -> dialog.close());
-
-			dialog.show();
-
-			Platform.runLater(() -> {
-				StackPane overlayPane = (StackPane) dialog.lookup(".jfx-dialog-overlay-pane");
-				if (overlayPane != null) {
-					overlayPane.setStyle("-fx-background-color: transparent;");
-				}
-			});
-		}
 /****************************** chart Hauteur Sertissage C1 **********************/
+		// Configuration du graphique et des axes
 		public void setupChartHauteur() {
 		    // Configuration des axes
 		    yAxis.setLowerBound(0);
 		    yAxis.setUpperBound(30);
 		    xAxis.setOpacity(0);  // Masquer l'axe X
 		    yAxis.setOpacity(0);  // Masquer l'axe Y
-	       // chartMoyenne.setTitle("Hauteur Sertissage Coté 1");
-    
+
 		    // Création des séries de données
 		    XYChart.Series<String, Number> series1 = new XYChart.Series<>();
-		    //series1.setName("Zone Rouge"); // Première fois affiché
 		    series1.getData().add(new XYChart.Data<>("A", 10));
 
 		    XYChart.Series<String, Number> series2 = new XYChart.Series<>();
-		   // series2.setName("Zone Jaune"); // Première fois affiché
 		    series2.getData().add(new XYChart.Data<>("A", 10));
 
 		    XYChart.Series<String, Number> series3 = new XYChart.Series<>();
-		  //  series3.setName("Zone Verte"); // Première fois affiché
 		    series3.getData().add(new XYChart.Data<>("A", 10));
 
 		    XYChart.Series<String, Number> series4 = new XYChart.Series<>();
-		   // series4.setName(""); // Masquer la légende (car "Zone Jaune" existe déjà)
 		    series4.getData().add(new XYChart.Data<>("A", 10));
 
 		    XYChart.Series<String, Number> series5 = new XYChart.Series<>();
-		   // series5.setName(""); // Masquer la légende (car "Zone Rouge" existe déjà)
 		    series5.getData().add(new XYChart.Data<>("A", 10));
 
 		    // Ajout des séries au graphique
 		    chartHauteurC1.getData().addAll(series1, series2, series3, series4, series5);
+
 		    // Masquer la légende
-		    chartHauteurC1.setLegendVisible(false); // Masque la légende avec les rectangles
+		    chartHauteurC1.setLegendVisible(false);
+
 		    // Appliquer les couleurs après le rendu du graphique
 		    Platform.runLater(() -> {
 		        setBarColor(series1, "red");
@@ -784,11 +443,15 @@ public class Resultat {
 		        setBarColor(series5, "red");
 		    });
 
-		    // Ajout d'un point noir à une valeur spécifique
-		    Platform.runLater(() -> addPointToChart(chartHauteurC1, xAxis, yAxis, paneHauteurSertissageC1, 15));
+		    // Ajout des points sur le graphique
+		    /*Platform.runLater(() -> {
+		        addPointToChart(chartHauteurC1, xAxis, yAxis, paneHauteurSertissageC1, 12, -250); // Décale de 15 pixels à droite
+		        addPointToChart(chartHauteurC1, xAxis, yAxis, paneHauteurSertissageC1, 11, -200); // Décale de 15 pixels à droite
+		        addPointToChart(chartHauteurC1, xAxis, yAxis, paneHauteurSertissageC1, 10.80, -150); // Décale de 15 pixels à droite
+		    });*/
 		}
 
-		// Nouvelle méthode pour appliquer les couleurs aux barres
+		// Applique les couleurs aux barres de la série
 		private void setBarColor(XYChart.Series<String, Number> series, String color) {
 		    Platform.runLater(() -> {
 		        for (XYChart.Data<String, Number> data : series.getData()) {
@@ -800,33 +463,70 @@ public class Resultat {
 		    });
 		}
 
-		// Méthode pour ajouter un point noir au graphique
-		private void addPointToChart(StackedBarChart<String, Number> stackedBarChart, CategoryAxis xAxis, NumberAxis yAxis, Pane overlayPane, double yValue) {
-		    double yPosition = getYPositionForPoint(yValue, yAxis);
-		    double xPosition = xAxis.getDisplayPosition("A");
+		private void addPointToChart(StackedBarChart<String, Number> stackedBarChart, 
+                CategoryAxis xAxis, 
+                NumberAxis yAxis, 
+                Pane overlayPane, 
+                double yValue, 
+                double xOffset) {
+    // Vérification de la série à laquelle le point appartient
+    int seriesIndex = getSeriesIndexForValue(yValue);
+    
+    if (seriesIndex == -1) {
+        // Si la valeur n'appartient à aucune série valide, ne pas ajouter de point
+        return;
+    }
 
-		    Circle point = new Circle(5);
-		    point.setFill(Color.BLACK);
-		    point.setCenterX(xPosition);
-		    point.setCenterY(yPosition);
+    // Calcul de la position Y correcte
+    double yPosition = getYPositionForPoint(yValue, yAxis);
 
-		    overlayPane.getChildren().add(point);
+    // Ajustement de la position X pour la série spécifique
+    double xPosition = xAxis.getDisplayPosition("A") + (seriesIndex * 15) + xOffset;
+
+    // Création du point
+    Circle point = new Circle(5);
+    point.setFill(Color.BLACK);
+    point.setCenterX(xPosition);
+    point.setCenterY(yPosition);
+
+    // Ajouter le point à l'overlayPane
+    overlayPane.getChildren().add(point);
+}
+
+		// Détermine dans quelle série ajouter le point en fonction de la valeur Y
+		private int getSeriesIndexForValue(double value) {
+		    if (value >= 0 && value <= 10.85) {
+		        return 0; // Série 1 (Rouge)
+		    } else if (value > 10.85 && value <= 10.88) {
+		        return 1; // Série 2 (Jaune)
+		    } else if (value > 10.88 && value <= 10.97) {
+		        return 2; // Série 3 (Vert)
+		    } else if (value > 10.97 && value <= 11) {
+		        return 3; // Série 4 (Jaune)
+		    } else if (value > 11) {
+		        return 4; // Série 5 (Rouge)
+		    }
+		    return -1; // Valeur par défaut (non valide)
 		}
-
-		// Méthode pour calculer la position Y correcte en fonction des tranches de valeurs
+		// Calcule la position Y correcte en fonction des tranches de valeurs
 		private double getYPositionForPoint(double value, NumberAxis yAxis) {
 		    double cumulativeHeight = 0;
 
-		    if (value >= 0 && value <= 10) {
+		    if (value >= 0 && value <= 10.85) {
 		        cumulativeHeight = value;
-		    } else if (value > 10 && value <= 20) {
-		        cumulativeHeight = 10 + (value - 10);
-		    } else if (value > 20 && value <= 30) {
-		        cumulativeHeight = 20 + (value - 20);
+		    } else if (value > 10.85 && value <= 10.88) {
+		        cumulativeHeight = 10.85 + (value - 10.85);
+		    } else if (value > 10.88 && value <= 10.97) {
+		        cumulativeHeight = 10.88 + (value - 10.88); // Correction ici
+		    } else if (value > 10.97 && value <= 11) {
+		        cumulativeHeight = 10.97 + (value - 10.97); // Correction ici
+		    } else if (value > 11 && value <= 20) {
+		        cumulativeHeight = 11 + (value - 11); // Correction ici
 		    }
 
 		    return yAxis.getDisplayPosition(cumulativeHeight);
 		}
+
 		/****************************** chart Hauteur Sertissage C2 **********************/
 		public void setupChartTraction() {
 		    // Configuration des axes
@@ -875,9 +575,90 @@ public class Resultat {
 		    });
 
 		    // Ajout d'un point noir à une valeur spécifique
-		    Platform.runLater(() -> addPointToChart(chartHauteurC2, xAxis, yAxis, paneHauteurSertissageC2, 15));
+		  //  Platform.runLater(() -> addPointToChart(chartHauteurC2, xAxis, yAxis, paneHauteurSertissageC2, 15));
 		}
 
+/**********************************   Ajouter Sertissage IDC *****************************************************/
+		 private void ajouterPdekAvecSertissageIDC() {
+				Task<Void> task = new Task<>() {
+					@Override
+					protected Void call() throws Exception {
+						try {
+							// Code pour l'ajout du PDEK
+							String token = AppInformations.token;
+							String encodedProjet = URLEncoder.encode(SertissageIDCInformations.projetSelectionner,
+									StandardCharsets.UTF_8);
 
+							String url = "http://localhost:8281/operations/SertissageIDC/ajouterPdekSertissageIDC" + "?matricule="
+									+ AppInformations.operateurInfo.getMatricule() + "&nomProjet=" + encodedProjet;
+
+							// Récupération des valeurs saisies et création de l'objet SoudureDTO
+							SertissageIDCData sertissageIDC = new SertissageIDCData();							
+
+							sertissageIDC.setSectionFil(SertissageIDCInformations.sectionFilSelectionner);
+							sertissageIDC.setForceTraction("50 N");
+							sertissageIDC.setHauteurSertissageMax(11);
+							sertissageIDC.setHauteurSertissageMin(10.85); 	
+							LocalDate dateActuelle = LocalDate.now();
+							DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+							sertissageIDC.setDate(dateActuelle.format(formatter)); 									
+							sertissageIDC.setHauteurSertissageC1Ech1(SertissageIDCInformations.hauteurSertissageC1Ech1);
+							sertissageIDC.setHauteurSertissageC1Ech2(SertissageIDCInformations.hauteurSertissageC1Ech2);
+							sertissageIDC.setHauteurSertissageC1Ech3(SertissageIDCInformations.hauteurSertissageC1Ech3);
+							sertissageIDC.setHauteurSertissageC1EchFin(SertissageIDCInformations.hauteurSertissageC1EchFin);
+							sertissageIDC.setHauteurSertissageC2Ech1(SertissageIDCInformations.hauteurSertissageC2Ech1);		
+							sertissageIDC.setHauteurSertissageC2Ech2(SertissageIDCInformations.hauteurSertissageC2Ech2);
+							sertissageIDC.setHauteurSertissageC2Ech3(SertissageIDCInformations.hauteurSertissageC2Ech3);					
+							sertissageIDC.setHauteurSertissageC2EchFin(SertissageIDCInformations.hauteurSertissageC2EchFin);
+							sertissageIDC.setCodeControle(SertissageIDCInformations.codeControleSelectionner);
+							sertissageIDC.setProduit(SertissageIDCInformations.produit);
+							sertissageIDC.setSerieProduit(SertissageIDCInformations.serieProduit);
+							sertissageIDC.setQuantiteCycle(SertissageIDCInformations.quantiteCycle);
+							sertissageIDC.setNumeroMachine(SertissageIDCInformations.numeroMachine );
+							sertissageIDC.setForceTractionC1Ech1(SertissageIDCInformations.forceTractionEch1C1);
+							sertissageIDC.setForceTractionC1Ech2(SertissageIDCInformations.forceTractionEch2C1);
+							sertissageIDC.setForceTractionC1Ech3(SertissageIDCInformations.forceTractionEch3C1);
+							sertissageIDC.setForceTractionC1EchFin(SertissageIDCInformations.forceTractionEchFinC1);
+							sertissageIDC.setForceTractionC2Ech1(SertissageIDCInformations.forceTractionEch1C2);
+							sertissageIDC.setForceTractionC2Ech2(SertissageIDCInformations.forceTractionEch2C2);
+							sertissageIDC.setForceTractionC2Ech3(SertissageIDCInformations.forceTractionEch3C2);
+							sertissageIDC.setForceTractionC2EchFin(SertissageIDCInformations.forceTractionEchFinC2);
+                            sertissageIDC.setQuantiteCycle(SertissageIDCInformations.quantiteCycle) ; 
+                            
+							// Conversion de l'objet SoudureDTO en JSON
+							ObjectMapper objectMapper = new ObjectMapper();
+							String sertissageIDCJson = objectMapper.writeValueAsString(sertissageIDC);
+
+							HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url))
+									.header("Authorization", "Bearer " + token).header("Content-Type", "application/json")
+									.POST(HttpRequest.BodyPublishers.ofString(sertissageIDCJson)).build();
+
+							HttpClient client = HttpClient.newHttpClient();
+							HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+							if (response.statusCode() == 201) {
+								System.out.println("Succès Ajout PDEK : " + response.body());
+							} else {
+								System.out.println("Erreur dans l'ajout PDEK, code : " + response.statusCode() + ", message : "
+										+ response.body());
+								throw new Exception("Erreur dans l'ajout PDEK : " + response.body());
+							}
+
+						} catch (Exception e) {
+							e.printStackTrace();
+							throw new Exception("Erreur dans la méthode ajouterPdekAvecSoudure : " + e.getMessage());
+						}
+						return null;
+					}
+				};
+
+				task.setOnFailed(event -> {
+					Throwable exception = task.getException();
+					System.out.println("Erreur lors de l'ajout du PDEK : " + exception.getMessage());
+					showErrorDialog("Erreur", "Erreur lors de l'ajout du PDEK : " + exception.getMessage());
+				});
+
+				new Thread(task).start();
+			}
 	
 }

@@ -1,44 +1,45 @@
 package Front_java.Configuration;
 
-import javafx.scene.control.TextField;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@NoArgsConstructor
 public class SertissageIDCData {
-    private final String param;
-    private final TextField echantillon1;
-    private final TextField echantillon2;
-    private final TextField echantillon3;
-    private final TextField echantillonFin;
+  
+	   private  String  sectionFil;
+	   private  String forceTraction;
+	   private  double hauteurSertissageMax;
+	   private  double hauteurSertissageMin;
+	   private  int segment ; 
+	   private  String date;
+	   private  double hauteurSertissageC1Ech1;
+	   private  double hauteurSertissageC1Ech2;
+	   private  double hauteurSertissageC1Ech3;
+	   private  double hauteurSertissageC1EchFin;
+	   private  double hauteurSertissageC2Ech1;
+	   private  double hauteurSertissageC2Ech2;
+	   private  double hauteurSertissageC2Ech3;
+	   private  double hauteurSertissageC2EchFin;
+	   private  int numCycle ; 
+	   private  String codeControle ; 
+	   private  String produit ; 
+	   private  String serieProduit  ; 
+	   private  int quantiteCycle ; 
+	   private  int numeroMachine ; 
+	   private  double forceTractionC1Ech1; 
+	   private  double forceTractionC1Ech2 ; 
+	   private  double forceTractionC1Ech3 ; 
+	   private  double forceTractionC1EchFin ; 
 
-    public SertissageIDCData(String param) {
-        this.param = param;
-        this.echantillon1 = new TextField();
-        this.echantillon2 = new TextField();
-        this.echantillon3 = new TextField();
-        this.echantillonFin = new TextField();
+	   private  double forceTractionC2Ech1 ; 
+	   private  double forceTractionC2Ech2 ; 	
+	   private  double forceTractionC2Ech3 ; 	
+	   private  double forceTractionC2EchFin ; 	
 
-        this.echantillon1.setPromptText("Valeur 1");
-        this.echantillon2.setPromptText("Valeur 2");
-        this.echantillon3.setPromptText("Valeur 3");
-        this.echantillonFin.setPromptText("Valeur Fin");
-    }
 
-    public String getParam() {
-        return param;
-    }
 
-    public TextField getEchantillon1() {
-        return echantillon1;
-    }
-
-    public TextField getEchantillon2() {
-        return echantillon2;
-    }
-
-    public TextField getEchantillon3() {
-        return echantillon3;
-    }
-
-    public TextField getEchantillonFin() {
-        return echantillonFin;
-    }
 }

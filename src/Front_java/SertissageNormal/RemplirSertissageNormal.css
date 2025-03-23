@@ -274,8 +274,35 @@
 }
 .liste-codeControle-combo .list-view {
     -fx-pref-width: 150px;
+    -fx-max-height: 30px; /* Limite la hauteur pour éviter qu'elle ne monte trop */
+    -fx-translate-y: 100px; /* Décale légèrement vers le bas */
+        
+    
+}  
+.liste-produits-combo {
+    -fx-background-color: #D9D9D9;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+    -fx-padding: 5px;
+    -fx-font-size: 16px;
+    -fx-border-color: #A0A0A0;
+}
+
+.liste-produits-combo .list-cell {
+    -fx-font-weight: bold;
+    -fx-alignment: center;
+    -fx-padding: 5px;
+}
+
+.liste-produits-combo .text {
+    -fx-font-weight: bold;
+    -fx-text-alignment: center;
+    -fx-alignment: center;
+}
+.liste-produits-combo .list-view {
+    -fx-pref-width: 150px;
         -fx-max-height: 150px; /* Limite la hauteur pour éviter qu'elle ne monte trop */
-            -fx-translate-y: 120px; /* Décale légèrement vers le bas */
+            /*-fx-translate-y: 120px; /* Décale légèrement vers le bas */
         
     
 }  

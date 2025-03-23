@@ -140,13 +140,13 @@ public class SelectionSertissageIDC{
     }
     @FXML
     void submit(ActionEvent event) {
-    	/* if (listeCodeControle.getValue() == null ||
+    	 if (listeCodeControle.getValue() == null ||
     	            listeSectionFil.getValue() == null ||
     	            listeProjets.getValue() == null) {
 
     	            showErrorDialog("Veuillez sélectionner une valeur pour chaque champ avant de continuer." ,"Champs manquants" );
 
-    	        } else {*/
+    	        } else {
     	            try {       
     	                FXMLLoader loader = new FXMLLoader(getClass().getResource("/Front_java/SertissageIDC/RemplirSertissageIDC.fxml"));
     	                Parent dashboard2Root = loader.load();
@@ -169,7 +169,7 @@ public class SelectionSertissageIDC{
     	                e.printStackTrace();
     	                showErrorDialog("Erreur lors du chargement du tableau de bord." ,"Erreur");
     	            }
-    	      //  }
+    	       }
     }
 
     @FXML

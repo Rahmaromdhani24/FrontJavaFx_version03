@@ -157,12 +157,12 @@
                               <Font name="System Bold" size="16.0" />
                            </font>
                         </Label>
-               <Label layoutX="320.0" layoutY="36.0" text="Spécification de mesure :">
+               <Label layoutX="320.0" layoutY="36.0" text="Séction de fil  :">
                 <font>
                               <Font name="System" size="16.0" />
                            </font>
                         </Label>
-               <Label fx:id="specificationsMesure" layoutX="505.0" layoutY="36.0">
+               <Label fx:id="sectionFil" layoutX="431.0" layoutY="36.0" text="0.35  mm²">
                 <font>
                               <Font name="System Bold" size="16.0" />
                            </font>
@@ -172,29 +172,34 @@
                               <Font name="System" size="16.0" />
                            </font>
                         </Label>
-               <Label fx:id="codeControleSelectionner" layoutX="1250.0" layoutY="36.0">
+               <Label fx:id="codeControleSelectionner" layoutX="1240.0" layoutY="36.0">
                 <font>
                               <Font name="System Bold" size="16.0" />
                            </font>
                         </Label>
-               <Label layoutX="805.0" layoutY="36.0" text="nombre des echantillons :">
+               <Label layoutX="805.0" layoutY="36.0" text="Hauteur de sertissage :">
                 <font>
                                <Font name="System" size="16.0" />
                            </font>
                         </Label>
-               <Label fx:id="nbrEch" layoutX="1000.0" layoutY="36.0" text="">
+               <Label fx:id="hauteurSertissage" layoutX="970.0" layoutY="36.0" text="11 - 10.85">
                 <font>
-                    <Font name="System  Bold" size="16.0" />
+                    <Font name="System Bold" size="16.0" />
                  </font>
               </Label>
-               <Label layoutX="500.0" layoutY="73.0" styleClass="matrix-grid-title" text="Numéro Courant : " />
-               <Label fx:id="nbrCycle" layoutX="700.0" layoutY="73.0" styleClass="matrix-grid-title" text="Label" />
-               <Label layoutX="635.0" layoutY="36.0" text="Section de fil : ">
+               <Label layoutX="500.0" layoutY="65.0" styleClass="matrix-grid-title" text="Numéro Courant : " />
+               <Label fx:id="nbrCycle" layoutX="700.0" layoutY="65.0" styleClass="matrix-grid-title" text="Label" />
+               <Label layoutX="560.0" layoutY="36.0" text="Force de traction :">
                   <font>
                      <Font size="16.0" />
                   </font>
                </Label>
-          <GridPane hgap="2" layoutX="30.0" layoutY="126.0" prefHeight="337.0" prefWidth="873.0" style="-fx-padding: 1px; -fx-border-color: gray; -fx-border-width: 2px; -fx-grid-lines-visible: true;" vgap="2">
+               <Label fx:id="forceTraction" layoutX="700.0" layoutY="36.0" text="50 N">
+                  <font>
+                     <Font name="System Bold" size="16.0" />
+                  </font>
+               </Label>
+          <GridPane hgap="2" layoutX="30.0" layoutY="105.0" prefHeight="337.0" prefWidth="873.0" style="-fx-padding: 1px; -fx-border-color: gray; -fx-border-width: 2px; -fx-grid-lines-visible: true;" vgap="2">
     <padding>
         <Insets bottom="10" left="10" right="10" top="10" />
     </padding>
@@ -214,7 +219,7 @@
                      <font>
                         <Font name="System Bold" size="18.0" />
                      </font></Label>
-    <Label prefHeight="17.0" prefWidth="204.0" styleClass="labelll" text="Hauteur de sertissage  (mm)" GridPane.columnIndex="1" GridPane.rowIndex="1">
+    <Label prefHeight="36.0" prefWidth="216.0" styleClass="labelll" text="Hauteur de sertissage  (mm)" GridPane.columnIndex="1" GridPane.rowIndex="1">
                      <font>
                         <Font name="System Bold" size="18.0" />
                      </font></Label>
@@ -232,7 +237,6 @@
                      </font></Label>
     <Label styleClass="labelll" text="                     Produit " GridPane.columnIndex="1" GridPane.rowIndex="5" />
     <Label prefHeight="17.0" prefWidth="205.0" styleClass="labelll" text="                     Série Produite" GridPane.columnIndex="1" GridPane.rowIndex="6" />
-    <Label prefHeight="17.0" prefWidth="194.0" styleClass="labelll" text="                      Numéro machine " GridPane.columnIndex="1" GridPane.rowIndex="7" />
     <Label fx:id="hauteurSertissageEch1C1" prefHeight="17.0" prefWidth="127.0" styleClass="labelll2" GridPane.columnIndex="2" GridPane.rowIndex="1" />
     <Label fx:id="hauteurSertissageEch2C1" prefHeight="17.0" prefWidth="128.0" styleClass="labelll2" GridPane.columnIndex="3" GridPane.rowIndex="1" />
     <Label fx:id="forceTractionEch2C1" prefHeight="17.0" prefWidth="133.0" styleClass="labelll2" GridPane.columnIndex="3" GridPane.rowIndex="2" />
@@ -265,13 +269,14 @@
        <RowConstraints maxHeight="40.0" minHeight="50.0" prefHeight="40.0" />
        <RowConstraints maxHeight="40.0" minHeight="50.0" prefHeight="40.0" />
        <RowConstraints maxHeight="40.0" minHeight="50.0" prefHeight="40.0" />
+                     <RowConstraints maxHeight="40.0" minHeight="50.0" prefHeight="40.0" />
        <RowConstraints maxHeight="40.0" minHeight="50.0" prefHeight="40.0" />
     </rowConstraints>
 
 </GridPane>
                <Pane layoutX="35.0" layoutY="182.0" prefHeight="290.0" prefWidth="100.0" style="-fx-background-color: #f4f4f4;">
                   <children>
-                     <Pane layoutX="-2.0" layoutY="103.0" prefHeight="103.0" prefWidth="104.0" style="-fx-border-color: gray; -fx-border-width: 2px;">
+                     <Pane layoutX="-2.0" layoutY="81.0" prefHeight="104.0" prefWidth="103.0" style="-fx-border-color: gray; -fx-border-width: 2px;">
                         <children>
                            <Label layoutX="38.0" layoutY="40.0" text="C2">
                               <font>
@@ -281,8 +286,7 @@
                         </children>
                      </Pane>
                   </children></Pane>
-               <Pane layoutX="30.0" layoutY="113.0" prefHeight="66.0" prefWidth="322.0" style="-fx-background-color: #f4f4f4;" />
-               <Pane layoutX="32.0" layoutY="180.0" prefHeight="105.0" prefWidth="104.0" style="-fx-border-color: gray; -fx-border-width: 2px;">
+               <Pane layoutX="32.0" layoutY="159.0" prefHeight="104.0" prefWidth="103.0" style="-fx-border-color: gray; -fx-border-width: 2px;">
                   <children>
                      <Label layoutX="38.0" layoutY="40.0" text="C1">
                         <font>
@@ -291,7 +295,7 @@
                      </Label>
                   </children>
                </Pane>
-               <Pane layoutX="32.0" layoutY="388.0" prefHeight="53.0" prefWidth="321.0" style="-fx-border-color: gray; -fx-border-width: 2px; -fx-background-color: #f4f4f4;">
+               <Pane layoutX="32.0" layoutY="367.0" prefHeight="53.0" prefWidth="321.0" style="-fx-border-color: gray; -fx-border-width: 2px; -fx-background-color: #f4f4f4;">
                   <children>
                      <Label layoutX="85.0" layoutY="13.0" prefHeight="20.0" prefWidth="152.0" text="        Produit ">
                         <font>
@@ -300,7 +304,7 @@
                      </Label>
                   </children>
                </Pane>
-               <Pane layoutX="32.0" layoutY="440.0" prefHeight="52.0" prefWidth="321.0" style="-fx-background-color: #f4f4f4; -fx-border-width: 2px; -fx-border-color: gray;">
+               <Pane layoutX="32.0" layoutY="420.0" prefHeight="52.0" prefWidth="321.0" style="-fx-background-color: #f4f4f4; -fx-border-width: 2px; -fx-border-color: gray;">
                   <children>
                      <Label layoutX="74.0" layoutY="12.0" prefHeight="20.0" prefWidth="175.0" text="     Série Produite ">
                         <font>
@@ -309,7 +313,7 @@
                      </Label>
                   </children>
                </Pane>
-               <Pane layoutX="32.0" layoutY="492.0" prefHeight="51.0" prefWidth="321.0" style="-fx-background-color: #f4f4f4; -fx-border-width: 2px; -fx-border-color: gray;">
+               <Pane layoutX="32.0" layoutY="472.0" prefHeight="51.0" prefWidth="321.0" style="-fx-background-color: #f4f4f4; -fx-border-width: 2px; -fx-border-color: gray;">
                   <children>
                      <Label layoutX="18.0" layoutY="14.0" prefHeight="27.0" prefWidth="294.0" text="              Numéro Machine">
                         <font>
@@ -318,22 +322,22 @@
                      </Label>
                   </children>
                </Pane>
-               <Pane layoutX="354.0" layoutY="387.0" prefHeight="55.0" prefWidth="546.0" style="-fx-background-color: #f4f4f4; -fx-border-width: 2px; -fx-border-color: gray;">
+               <Pane layoutX="354.0" layoutY="368.0" prefHeight="51.0" prefWidth="546.0" style="-fx-background-color: #f4f4f4; -fx-border-width: 2px; -fx-border-color: gray;">
                   <children>
-                     <Label fx:id="produit" layoutX="14.0" layoutY="8.0" prefHeight="25.0" prefWidth="518.0" styleClass="labelll2" />
+                     <Label fx:id="produit" layoutX="14.0" layoutY="6.0" prefHeight="25.0" prefWidth="518.0" styleClass="labelll2" />
                   </children>
                </Pane>
-               <Pane layoutX="354.0" layoutY="442.0" prefHeight="51.0" prefWidth="547.0" style="-fx-background-color: #f4f4f4; -fx-border-color: gray; -fx-border-width: 2px;">
+               <Pane layoutX="354.0" layoutY="419.0" prefHeight="52.0" prefWidth="547.0" style="-fx-background-color: #f4f4f4; -fx-border-color: gray; -fx-border-width: 2px;">
                   <children>
-                     <Label fx:id="serieProduit" layoutX="2.0" layoutY="4.0" prefHeight="31.0" prefWidth="527.0" styleClass="labelll2" />
+                     <Label fx:id="serieProduit" layoutX="2.0" layoutY="4.0" prefHeight="45.0" prefWidth="525.0" styleClass="labelll2" />
                   </children>
                </Pane>
-               <Pane layoutX="354.0" layoutY="493.0" prefHeight="51.0" prefWidth="545.0" style="-fx-background-color: #f4f4f4; -fx-border-color: gray; -fx-border-width: 2px;">
+               <Pane layoutX="354.0" layoutY="472.0" prefHeight="50.0" prefWidth="546.0" style="-fx-background-color: #f4f4f4; -fx-border-color: gray; -fx-border-width: 2px;">
                   <children>
-                     <Label fx:id="numMachine" layoutX="2.0" layoutY="5.0" prefHeight="28.0" prefWidth="543.0" styleClass="labelll2" />
+                     <Label fx:id="numMachine" layoutX="15.0" layoutY="6.0" prefHeight="45.0" prefWidth="525.0" styleClass="labelll2" />
                   </children>
                </Pane>
-               <Label layoutX="946.0" layoutY="260.0" text="10.85">
+               <Label layoutX="946.0" layoutY="262.0" text="10.85">
                   <font>
                      <Font name="System Bold" size="12.0" />
                   </font>
@@ -346,7 +350,7 @@
                    <NumberAxis fx:id="yAxis" opacity="0" side="LEFT" tickLabelsVisible="false" tickMarkVisible="false" visible="false" />
                 </yAxis>
              </StackedBarChart>
-               <Label layoutX="963.0" layoutY="542.0" text="60">
+               <Label layoutX="963.0" layoutY="540.0" text="60">
                   <font>
                      <Font name="System Bold" size="12.0" />
                   </font>
@@ -376,6 +380,24 @@
                      <Font name="System Bold" size="12.0" />
                   </font>
                </Label>
+               <Pane layoutX="21.0" layoutY="97.0" prefHeight="61.0" prefWidth="330.0" style="-fx-background-color: #f4f4f4;">
+                  <children>
+                     <Pane layoutX="10.0" layoutY="426.0" prefHeight="52.0" prefWidth="321.0" style="-fx-background-color: #f4f4f4; -fx-border-width: 2px; -fx-border-color: gray;">
+                        <children>
+                           <Label layoutX="18.0" layoutY="14.0" prefHeight="27.0" prefWidth="294.0" text="              Quantité de cycle">
+                              <font>
+                                 <Font name="System Bold" size="18.0" />
+                              </font>
+                           </Label>
+                        </children>
+                     </Pane>
+                  </children>
+               </Pane>
+               <Pane layoutX="353.0" layoutY="523.0" prefHeight="52.0" prefWidth="547.0" style="-fx-background-color: #f4f4f4; -fx-border-color: gray; -fx-border-width: 2px;">
+                  <children>
+                     <Label fx:id="quantiteCycle" layoutX="1.0" layoutY="5.0" prefHeight="45.0" prefWidth="525.0" styleClass="labelll2" />
+                  </children>
+               </Pane>
             </children>
          </AnchorPane>
       </center>
@@ -394,7 +416,7 @@
                   <Font name="System Bold" size="16.0" />
                </font>
             </Label>
-            <Label layoutX="-124.0" layoutY="215.0" text="10.97">
+            <Label layoutX="-124.0" layoutY="217.0" text="10.97">
                <font>
                   <Font name="System Bold" size="12.0" />
                </font>

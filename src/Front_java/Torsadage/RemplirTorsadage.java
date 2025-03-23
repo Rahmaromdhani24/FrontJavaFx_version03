@@ -627,8 +627,10 @@ public class RemplirTorsadage {
 	@FXML
 	void logout(ActionEvent event) {
 
+
     	AppInformations.reset();
-    	//TorsadageInformations.reset();
+    	TorsadageInformations.reset();
+
     
 
 		Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();

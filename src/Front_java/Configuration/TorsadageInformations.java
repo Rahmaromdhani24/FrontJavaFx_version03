@@ -35,4 +35,37 @@ public class TorsadageInformations {
 	public static double moyenne ; 
 	public static int ettendu ;
 
+	
+	public static void reset() {
+	    specificationsMesure = null;
+	    projetSelectionner = null;
+	    codeControleSelectionner = null;
+	    testTerminitionCommande = 0;
+	    
+	    numCommande = null;
+	    longueurFinalDebutCde = null;
+	    lognueurBoutDebutC1 = null;
+	    lognueurBoutDebutC2 = null;
+	    lognueurBoutFinC1 = null;
+	    lognueurBoutFinC2 = null;
+	    decalageDebutC1 = null;
+	    decalageDebutC2 = null;
+	    decalageFinC1 = null;
+	    decalageFinC2 = null;
+	    longueurFinalFinCde = null;
+	    longueurPasFinCde = null;
+	    ech1 = null;
+	    ech2 = null;
+	    ech3 = null;
+	    ech4 = null;
+	    ech5 = null;
+	    quantiteTotal = null;
+	    quantiteAtteint = null;
+	    numFils = null;
+	    numCourant = 0;
+	    date = null;
+	    moyenne = 0.0;
+	    ettendu = 0;
+	}
+
 }

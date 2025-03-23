@@ -172,8 +172,7 @@ public class SelectionInitialeController{
     void logout(ActionEvent event) {
 
     	AppInformations.reset();
-    	SoudureInformations.reset();
-    	SoudureInformationsCodeB.reset();
+    	TorsadageInformations.reset();
 
 
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();

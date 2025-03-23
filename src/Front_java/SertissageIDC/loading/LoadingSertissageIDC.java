@@ -51,11 +51,11 @@ public class LoadingSertissageIDC {
     private void pauseChargement(ActionEvent event) {
         try {
             // Charger le fichier FXML pour la fenêtre de chargement
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Front_java/SoudureUltrason/CodeB/RemplirQuantiteAtteintAvantCodeB.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Front_java/SertissageIDC/loading/RemplirQuantiteAtteintAvantPause.fxml"));
             Scene loadingScene = new Scene(loader.load());
 
             // Ajouter le fichier CSS
-            String cssPath = "/Front_java/SoudureUltrason/CodeB/RemplirQuantitieAtteintAvantCodeB.css";
+            String cssPath = "/Front_java/SertissageIDC/loading/RemplirQuantitieAtteintAvantPause.css";
             if (getClass().getResource(cssPath) != null) {
                 loadingScene.getStylesheets().add(getClass().getResource(cssPath).toExternalForm());
             } else {

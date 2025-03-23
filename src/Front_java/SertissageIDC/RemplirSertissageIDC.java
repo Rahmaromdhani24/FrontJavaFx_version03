@@ -1,9 +1,6 @@
 package Front_java.SertissageIDC;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -11,6 +8,8 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+
+import Front_java.Configuration.ActiveTextFieldManager;
 import Front_java.Configuration.AppInformations;
 import Front_java.Configuration.SertissageIDCInformations;
 import Front_java.Configuration.TorsadageInformations;
@@ -18,6 +17,7 @@ import Front_java.Modeles.OperateurInfo;
 import Front_java.SertissageIDC.loading.LoadingSertissageIDC;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.event.*;
 import javafx.fxml.*;
 import javafx.geometry.Insets;
@@ -166,12 +166,19 @@ public class RemplirSertissageIDC {
 	    @FXML
 	    private TextField serieProduit;
 
-	    @FXML
-	    private Label specificationsMesure;
-
+	
 	    @FXML
 	    private StackPane stackPane;
 
+	    @FXML
+	    private Label forceTraction ; 
+	    
+	    @FXML
+	    private Label sectionFil ; 
+	    
+	    @FXML
+	    private TextField quantiteCycle ; 
+	    
 		public TextField activeTextField;
 		
 		// Définition des bornes
@@ -183,13 +190,21 @@ public class RemplirSertissageIDC {
 		public TextField getActiveTextField() {
 			return activeTextField;
 		}
-		public void setActiveOnFocus(TextField textField) {
+		/*public void setActiveOnFocus(TextField textField) {
 			textField.focusedProperty().addListener((obs, oldVal, newVal) -> {
 				if (newVal) {
 					activeTextField = textField;
 				}
 			});
+		}*/
+		public void setActiveOnFocus(TextField textField) {
+		    textField.focusedProperty().addListener((obs, oldVal, newVal) -> {
+		        if (newVal) {
+		            ActiveTextFieldManager.getInstance().setActiveTextField(textField);
+		        }
+		    });
 		}
+		/*
 		  @FXML
 		    public void handleButtonClick(ActionEvent event) {
 		        if (activeTextField != null) {
@@ -202,7 +217,16 @@ public class RemplirSertissageIDC {
 		    // Méthode pour définir le TextField actif
 		    public void setActiveTextField(TextField textField) {
 		        this.activeTextField = textField;
+		    }*/
+		@FXML
+		public void handleButtonClick(ActionEvent event) {
+		    TextField activeTextField = ActiveTextFieldManager.getInstance().getActiveTextField();
+		    if (activeTextField != null) {
+		        Button clickedButton = (Button) event.getSource();
+		        String buttonText = clickedButton.getText();
+		        activeTextField.appendText(buttonText); // Ajoute le texte du bouton au champ actif
 		    }
+		}
 
 	@FXML
 	public void initialize() {
@@ -210,17 +234,19 @@ public class RemplirSertissageIDC {
 		  forceTractionEchFinC1.setDisable(true);
 		  hauteurSertissageEchFinC2.setDisable(true);
 		  forceTractionEchFinC2.setDisable(true);
+		  quantiteCycle.setDisable(true);
 		  
 		afficherInfosOperateur();
 		SertissageIDCInformations.testTerminitionCommande = 0 ; 
 		
 		afficherDateSystem();
 		afficherHeureSystem();
-		//loadNumeroCycleMax();
+		loadNumeroCycleMax();
 		clearImage.setOnMouseClicked(event -> {
-			if (activeTextField != null) {
-				activeTextField.clear();
-			}
+		    TextField activeTextField = ActiveTextFieldManager.getInstance().getActiveTextField();
+		    if (activeTextField != null) {
+		        activeTextField.clear();
+		    }
 		});
 		setActiveOnFocus(hauteurSertissageEch1C1);
 		setActiveOnFocus(hauteurSertissageEch2C1);
@@ -244,6 +270,8 @@ public class RemplirSertissageIDC {
 		setActiveOnFocus(produit);
 		setActiveOnFocus(serieProduit);
 		setActiveOnFocus(numMachine);
+		setActiveOnFocus(quantiteCycle);
+
 	}
 
 	
@@ -277,7 +305,7 @@ public class RemplirSertissageIDC {
 	           !forceTractionEch3C2.getText().isEmpty() &&
 	           !produit.getText().isEmpty() &&
 	           !serieProduit.getText().isEmpty() &&
-	           !numMachine.getText().isEmpty();
+	           !numMachine.getText().isEmpty();	    
 	}
 
 	  public static boolean areFieldsEqual(TextField f1, TextField f2, TextField f3, TextField f4) {
@@ -292,7 +320,7 @@ public class RemplirSertissageIDC {
 			        forceTractionEch1C1, forceTractionEch2C1, forceTractionEch3C1, 
 			        hauteurSertissageEch1C2, hauteurSertissageEch2C2, hauteurSertissageEch3C2, 
 			        forceTractionEch1C2, forceTractionEch2C2, forceTractionEch3C2, 
-			        produit, serieProduit, numMachine
+			        produit, serieProduit, numMachine , quantiteCycle
 			    );
 		 
 		 // 1. Vérification des champs obligatoires
@@ -302,7 +330,7 @@ public class RemplirSertissageIDC {
 	            || hauteurSertissageEch3C2.getText().isEmpty() || forceTractionEch1C2.getText().isEmpty() || forceTractionEch2C2.getText().isEmpty()
 	            || forceTractionEch3C2.getText().isEmpty()|| produit.getText().isEmpty()
 	            || serieProduit.getText().isEmpty()
-	            || numMachine.getText().isEmpty()  ) {
+	            || numMachine.getText().isEmpty() ) {
 
 	        showErrorDialog("Veuillez remplir tous les champs avant de continuer !", "Champs obligatoires");
 	        return; // Arrêt si un champ est vide
@@ -313,11 +341,12 @@ public class RemplirSertissageIDC {
 
 	    // Vérifier si des champs obligatoires sont vides
 	    if (checkOtherFields() && !hauteurSertissageEchFinC1.getText().isEmpty()&& !forceTractionEchFinC1.getText().isEmpty() 
-	        		               && !hauteurSertissageEchFinC2.getText().isEmpty() && !forceTractionEchFinC2.getText().isEmpty()) {
+	        		               && !hauteurSertissageEchFinC2.getText().isEmpty() && !forceTractionEchFinC2.getText().isEmpty()
+	        		               && !quantiteCycle.getText().isEmpty()) {
 	    	
 	    	// Vérification des champs vides
 	    	if (hauteurSertissageEchFinC1.getText().isEmpty() || forceTractionEchFinC1.getText().isEmpty() 
-	     	    || hauteurSertissageEchFinC2.getText().isEmpty() || forceTractionEchFinC2.getText().isEmpty()) {
+	     	    || hauteurSertissageEchFinC2.getText().isEmpty() || forceTractionEchFinC2.getText().isEmpty()|| quantiteCycle.getText().isEmpty()) {
 
 	     	    showErrorDialog("Veuillez remplir tous les champs avant de continuer !", "Champs obligatoires");
 	     	    return; // Arrêt immédiat si un champ est vide
@@ -392,34 +421,36 @@ public class RemplirSertissageIDC {
 	        String message = "Veuillez confirmer les données saisies ? \n\n";
 
 	        showConfirmationDialog(message, "Confirmation", () -> {
-	            // --- Code de sauvegarde et affichage de la nouvelle fenêtre ---
-            	    SertissageIDCInformations.hauteurSertissageC1Ech1 = Double.parseDouble(hauteurSertissageEch1C1.getText());
-            	    SertissageIDCInformations.hauteurSertissageC1Ech2 = Double.parseDouble(hauteurSertissageEch2C1.getText());
-            	    SertissageIDCInformations.hauteurSertissageC1Ech3 = Double.parseDouble(hauteurSertissageEch3C1.getText());
-            	    SertissageIDCInformations.hauteurSertissageC1EchFin =Double.parseDouble( hauteurSertissageEchFinC1.getText());
-            	    
-            	    SertissageIDCInformations.forceTractionEch1C1 = Integer.parseInt(forceTractionEch1C1.getText()); 
-            	    SertissageIDCInformations.forceTractionEch2C1 = Integer.parseInt(forceTractionEch2C1.getText()); 
-            	    SertissageIDCInformations.forceTractionEch3C1 = Integer.parseInt(forceTractionEch3C1.getText()); 
-            	    SertissageIDCInformations.forceTractionEchFinC1 = Integer.parseInt(forceTractionEchFinC1.getText()); 
-            	    
-            	    SertissageIDCInformations.hauteurSertissageC2Ech1 = Double.parseDouble(hauteurSertissageEch1C2.getText());
-            	    SertissageIDCInformations.hauteurSertissageC2Ech2 = Double.parseDouble(hauteurSertissageEch2C2.getText());
-            	    SertissageIDCInformations.hauteurSertissageC2Ech3 = Double.parseDouble(hauteurSertissageEch3C2.getText());
-            	    SertissageIDCInformations.hauteurSertissageC2EchFin =Double.parseDouble( hauteurSertissageEchFinC2.getText());
-            	    
-            	    SertissageIDCInformations.forceTractionEch1C2 = Integer.parseInt( forceTractionEch1C2.getText()); 
-            	    SertissageIDCInformations.forceTractionEch2C2 = Integer.parseInt(forceTractionEch1C2.getText()); 
-            	    SertissageIDCInformations.forceTractionEch3C2 = Integer.parseInt(forceTractionEch3C2.getText());
-            	    SertissageIDCInformations.forceTractionEchFinC2 = Integer.parseInt(forceTractionEchFinC2.getText()); 
-            	    
-            	    SertissageIDCInformations.produit = produit.getText(); 
-            	    SertissageIDCInformations.serieProduit = serieProduit.getText(); 
-            	    SertissageIDCInformations.numeroMachine = Integer.parseInt(numMachine.getText()); 
-            	    
-            	    SertissageIDCInformations.hauteurSertissageMax = 11 ; 
-            	    SertissageIDCInformations.hauteurSertissageMin = 10.85 ; 
-            	    SertissageIDCInformations.forceTraction= "50 N" ; 
+	        	
+	        	 // Exemple d'utilisation pour les champs que tu as mentionnés
+	            	double hauteurSertissageEch1C1Value = parseDoubleWithCleanup(hauteurSertissageEch1C1.getText());
+	                double hauteurSertissageEch2C1Value = parseDoubleWithCleanup(hauteurSertissageEch2C1.getText());
+	                double hauteurSertissageEch3C1Value = parseDoubleWithCleanup(hauteurSertissageEch3C1.getText());
+
+	                double hauteurSertissageEch1C2Value = parseDoubleWithCleanup(hauteurSertissageEch1C2.getText());
+	                double hauteurSertissageEch2C2Value = parseDoubleWithCleanup(hauteurSertissageEch2C2.getText());
+	                double hauteurSertissageEch3C2Value = parseDoubleWithCleanup(hauteurSertissageEch3C2.getText());
+
+	        
+	            	SertissageIDCInformations.hauteurSertissageC1Ech1 = hauteurSertissageEch1C1Value;
+	           	    SertissageIDCInformations.hauteurSertissageC1Ech2 = hauteurSertissageEch2C1Value;
+	           	    SertissageIDCInformations.hauteurSertissageC1Ech3 = hauteurSertissageEch3C1Value ;
+	           	    
+	           	    SertissageIDCInformations.forceTractionEch1C1 = Integer.parseInt(forceTractionEch1C1.getText()); 
+	     	        SertissageIDCInformations.forceTractionEch2C1 = Integer.parseInt(forceTractionEch2C1.getText()); 
+	     	        SertissageIDCInformations.forceTractionEch3C1 = Integer.parseInt(forceTractionEch3C1.getText()); 
+	     	    
+	     	        SertissageIDCInformations.hauteurSertissageC2Ech1 = hauteurSertissageEch1C2Value ;
+	       	        SertissageIDCInformations.hauteurSertissageC2Ech2 = hauteurSertissageEch2C2Value ;
+	       	        SertissageIDCInformations.hauteurSertissageC2Ech3 = hauteurSertissageEch3C2Value ;
+	       	   
+	       	        SertissageIDCInformations.forceTractionEch1C2 = Integer.parseInt( forceTractionEch1C2.getText()); 
+	     	        SertissageIDCInformations.forceTractionEch2C2 = Integer.parseInt(forceTractionEch1C2.getText()); 
+	     	        SertissageIDCInformations.forceTractionEch3C2 = Integer.parseInt(forceTractionEch3C2.getText());
+	     	    
+	       	        SertissageIDCInformations.produit = produit.getText(); 
+	     	        SertissageIDCInformations.serieProduit = serieProduit.getText(); 
+	     	        SertissageIDCInformations.numeroMachine =  Integer.parseInt(numMachine.getText()); 
             	    
                 // Affichage direct de la fenêtre SoudureResultat
                 try {
@@ -447,12 +478,42 @@ public class RemplirSertissageIDC {
         } else {     
         	  centerTextFields(
         		        hauteurSertissageEch1C1, hauteurSertissageEch2C1, hauteurSertissageEch3C1, 
-        		        forceTractionEch1C1, forceTractionEch2C1, forceTractionEch3C1, 
+        		        forceTractionEch1C1, forceTractionEch2C1, forceTractionEch3C1,hauteurSertissageEchFinC1 ,
         		        hauteurSertissageEch1C2, hauteurSertissageEch2C2, hauteurSertissageEch3C2, 
-        		        forceTractionEch1C2, forceTractionEch2C2, forceTractionEch3C2, 
-        		        produit, serieProduit, numMachine
+        		        forceTractionEch1C2, forceTractionEch2C2, forceTractionEch3C2, hauteurSertissageEchFinC2 , 
+        		        produit, serieProduit, numMachine , forceTractionEchFinC1 , forceTractionEchFinC2 
         		    );
             try {
+            	 // Exemple d'utilisation pour les champs que tu as mentionnés
+                double hauteurSertissageEch1C1Value = parseDoubleWithCleanup(hauteurSertissageEch1C1.getText());
+                double hauteurSertissageEch2C1Value = parseDoubleWithCleanup(hauteurSertissageEch2C1.getText());
+                double hauteurSertissageEch3C1Value = parseDoubleWithCleanup(hauteurSertissageEch3C1.getText());
+
+                double hauteurSertissageEch1C2Value = parseDoubleWithCleanup(hauteurSertissageEch1C2.getText());
+                double hauteurSertissageEch2C2Value = parseDoubleWithCleanup(hauteurSertissageEch2C2.getText());
+                double hauteurSertissageEch3C2Value = parseDoubleWithCleanup(hauteurSertissageEch3C2.getText());
+
+        
+            	SertissageIDCInformations.hauteurSertissageC1Ech1 = hauteurSertissageEch1C1Value;
+           	    SertissageIDCInformations.hauteurSertissageC1Ech2 = hauteurSertissageEch2C1Value;
+           	    SertissageIDCInformations.hauteurSertissageC1Ech3 = hauteurSertissageEch3C1Value ;
+           	    
+           	    SertissageIDCInformations.forceTractionEch1C1 = Integer.parseInt(forceTractionEch1C1.getText()); 
+     	        SertissageIDCInformations.forceTractionEch2C1 = Integer.parseInt(forceTractionEch2C1.getText()); 
+     	        SertissageIDCInformations.forceTractionEch3C1 = Integer.parseInt(forceTractionEch3C1.getText()); 
+     	    
+     	        SertissageIDCInformations.hauteurSertissageC2Ech1 = hauteurSertissageEch1C2Value ;
+       	        SertissageIDCInformations.hauteurSertissageC2Ech2 = hauteurSertissageEch2C2Value ;
+       	        SertissageIDCInformations.hauteurSertissageC2Ech3 = hauteurSertissageEch3C2Value ;
+       	   
+       	        SertissageIDCInformations.forceTractionEch1C2 = Integer.parseInt( forceTractionEch1C2.getText()); 
+     	        SertissageIDCInformations.forceTractionEch2C2 = Integer.parseInt(forceTractionEch1C2.getText()); 
+     	        SertissageIDCInformations.forceTractionEch3C2 = Integer.parseInt(forceTractionEch3C2.getText());
+     	    
+       	        SertissageIDCInformations.produit = produit.getText(); 
+     	        SertissageIDCInformations.serieProduit = serieProduit.getText(); 
+     	        SertissageIDCInformations.numeroMachine =  Integer.parseInt(numMachine.getText()); 
+       	    
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/Front_java/SertissageIDC/loading/LoadingSertissageIDC.fxml"));
                 Scene loadingScene = new Scene(loader.load());
                 String cssPath = "/Front_java/SertissageIDC/loading/LoadingSertissageIDC.css";
@@ -471,43 +532,47 @@ public class RemplirSertissageIDC {
                 	hauteurSertissageEchFinC1.setDisable(false); 
                 	forceTractionEchFinC1.setDisable(false);
                 	hauteurSertissageEchFinC2.setDisable(false);
-                	forceTractionEchFinC2.setDisable(false);            	
+                	forceTractionEchFinC2.setDisable(false);      
+                	quantiteCycle.setDisable(false);      
                 	
                     // Si tous les champs sont remplis, passer à la fenêtre de résultats
                     if (checkOtherFields()) {
                     	
                     	try {
-                    		
-                    	    // Vérification et conversion des valeurs
-                    	
-                    	    SertissageIDCInformations.hauteurSertissageC1Ech1 = Double.parseDouble(hauteurSertissageEch1C1.getText());
-                    	    SertissageIDCInformations.hauteurSertissageC1Ech2 = Double.parseDouble(hauteurSertissageEch2C1.getText());
-                    	    SertissageIDCInformations.hauteurSertissageC1Ech3 = Double.parseDouble(hauteurSertissageEch3C1.getText());
-                    	    SertissageIDCInformations.hauteurSertissageC1EchFin =Double.parseDouble( hauteurSertissageEchFinC1.getText());
-                    	    
-                    	    SertissageIDCInformations.forceTractionEch1C1 = Integer.parseInt(forceTractionEch1C1.getText()); 
-                    	    SertissageIDCInformations.forceTractionEch2C1 = Integer.parseInt(forceTractionEch2C1.getText()); 
-                    	    SertissageIDCInformations.forceTractionEch3C1 = Integer.parseInt(forceTractionEch3C1.getText()); 
-                    	    SertissageIDCInformations.forceTractionEchFinC1 = Integer.parseInt(forceTractionEchFinC1.getText()); 
-                    	    
-                    	    SertissageIDCInformations.hauteurSertissageC2Ech1 = Double.parseDouble(hauteurSertissageEch1C1.getText());
-                    	    SertissageIDCInformations.hauteurSertissageC2Ech2 = Double.parseDouble(hauteurSertissageEch2C1.getText());
-                    	    SertissageIDCInformations.hauteurSertissageC2Ech3 = Double.parseDouble(hauteurSertissageEch3C1.getText());
-                    	    SertissageIDCInformations.hauteurSertissageC2EchFin =Double.parseDouble( hauteurSertissageEchFinC1.getText());
-                    	    
-                    	    SertissageIDCInformations.forceTractionEch1C2 = Integer.parseInt( hauteurSertissageEch1C2.getText()); 
-                    	    SertissageIDCInformations.forceTractionEch2C2 = Integer.parseInt(hauteurSertissageEch2C2.getText()); 
-                    	    SertissageIDCInformations.forceTractionEch3C2 = Integer.parseInt(hauteurSertissageEch3C2.getText());
-                    	    SertissageIDCInformations.forceTractionEchFinC2 = Integer.parseInt(hauteurSertissageEchFinC2.getText()); 
+                    		 // Exemple d'utilisation pour les champs que tu as mentionnés
+                            double hauteurSertissageEch1C1Value1 = parseDoubleWithCleanup(hauteurSertissageEch1C1.getText());
+                            double hauteurSertissageEch2C1Value1 = parseDoubleWithCleanup(hauteurSertissageEch2C1.getText());
+                            double hauteurSertissageEch3C1Value1 = parseDoubleWithCleanup(hauteurSertissageEch3C1.getText());
+
+                        
+                            double hauteurSertissageEch1C2Value1 = parseDoubleWithCleanup(hauteurSertissageEch1C2.getText());
+                            double hauteurSertissageEch2C2Value1 = parseDoubleWithCleanup(hauteurSertissageEch2C2.getText());
+                            double hauteurSertissageEch3C2Value1 = parseDoubleWithCleanup(hauteurSertissageEch3C2.getText());
+
+                            
+                        	SertissageIDCInformations.hauteurSertissageC1Ech1 = hauteurSertissageEch1C1Value1;
+                       	    SertissageIDCInformations.hauteurSertissageC1Ech2 = hauteurSertissageEch2C1Value1;
+                       	    SertissageIDCInformations.hauteurSertissageC1Ech3 = hauteurSertissageEch3C1Value1 ;
+                       	    
+                       	    SertissageIDCInformations.forceTractionEch1C1 = Integer.parseInt(forceTractionEch1C1.getText()); 
+                 	        SertissageIDCInformations.forceTractionEch2C1 = Integer.parseInt(forceTractionEch2C1.getText()); 
+                 	        SertissageIDCInformations.forceTractionEch3C1 = Integer.parseInt(forceTractionEch3C1.getText()); 
+                 	    
+                 	        SertissageIDCInformations.hauteurSertissageC2Ech1 = hauteurSertissageEch1C2Value1 ;
+                   	        SertissageIDCInformations.hauteurSertissageC2Ech2 = hauteurSertissageEch2C2Value1;
+                   	        SertissageIDCInformations.hauteurSertissageC2Ech3 = hauteurSertissageEch3C2Value1 ;
+                   	   
+                   	        SertissageIDCInformations.forceTractionEch1C2 = Integer.parseInt( forceTractionEch1C2.getText()); 
+                 	        SertissageIDCInformations.forceTractionEch2C2 = Integer.parseInt(forceTractionEch1C2.getText()); 
+                 	        SertissageIDCInformations.forceTractionEch3C2 = Integer.parseInt(forceTractionEch3C2.getText());
+                 	    
                     	    
                     	    SertissageIDCInformations.produit = produit.getText(); 
                     	    SertissageIDCInformations.serieProduit = serieProduit.getText(); 
-                    	    SertissageIDCInformations.numeroMachine = Integer.parseInt(numMachine.getText()); 
-                    	    
-                    	    SertissageIDCInformations.hauteurSertissageMax = 11 ; 
-                    	    SertissageIDCInformations.hauteurSertissageMin = 10.85 ; 
-                    	    SertissageIDCInformations.forceTraction= "50 N" ; 
-                        	
+                    	    SertissageIDCInformations.numeroMachine =  Integer.parseInt(numMachine.getText()); 
+                    	    SertissageIDCInformations.quantiteCycle= Integer.parseInt(quantiteCycle.getText()) ; 
+
+
                     	    // Chargement de la nouvelle fenêtre
                     	    FXMLLoader loader2 = new FXMLLoader(getClass().getResource("/Front_java/SertissageIDC/Resultat.fxml"));
                     	    Scene resultScene = new Scene(loader2.load());
@@ -621,8 +686,6 @@ public class RemplirSertissageIDC {
 			posteUser.setText(operateurInfo.getPoste());
 			segementUser.setText(operateurInfo.getSegment());
 			nomProjet.setText(SertissageIDCInformations.projetSelectionner);
-			specificationsMesure.setText(SertissageIDCInformations.sectionFil);
-			nbrEch.setText("5 Piéces");
 			codeControleSelectionner.setText(SertissageIDCInformations.codeControleSelectionner);
 
 		} else {
@@ -656,12 +719,12 @@ public class RemplirSertissageIDC {
 	    String token = AppInformations.token;
 
 	    // Encodage correct des paramètres pour éviter tout problème
-	    String encodedSectionFil = URLEncoder.encode(AppInformations.sectionFilSelectionner, StandardCharsets.UTF_8);
-	    String encodedNomProjet = URLEncoder.encode(AppInformations.projetSelectionner, StandardCharsets.UTF_8);
+	    String encodedSectionFil = URLEncoder.encode(SertissageIDCInformations.sectionFilSelectionner, StandardCharsets.UTF_8);
+	    String encodedNomProjet = URLEncoder.encode(SertissageIDCInformations.projetSelectionner, StandardCharsets.UTF_8);
 	    String encodedSegmentPDEK = URLEncoder.encode(String.valueOf(AppInformations.operateurInfo.getSegment()), StandardCharsets.UTF_8);
 	    String encodedPlantPDEK = URLEncoder.encode(AppInformations.operateurInfo.getPlant(), StandardCharsets.UTF_8);
 
-	    String url = "http://localhost:8281/operations/soudure/numCycleMax?sectionFil=" + encodedSectionFil 
+	    String url = "http://localhost:8281/operations/SertissageIDC/numCycleMax?sectionFilSelectionner=" + encodedSectionFil 
 	            + "&segment=" + encodedSegmentPDEK
 	            + "&nomPlant=" + encodedPlantPDEK  // Correction ici
 	            + "&nomProjet=" + encodedNomProjet;
@@ -691,7 +754,7 @@ public class RemplirSertissageIDC {
 	}
 
 
-/*	private void loadNumeroCycleMax() {
+	private void loadNumeroCycleMax() {
 		Task<Integer> task = new Task<>() {
 			@Override
 			protected Integer call() throws Exception {
@@ -701,20 +764,24 @@ public class RemplirSertissageIDC {
 
 		task.setOnSucceeded(event -> {
 			int numeroCycleMax = task.getValue();
-			valeurNumeroCycle.setText(String.valueOf(numeroCycleMax + 1));
-			SoudureInformations.numeroCycle = numeroCycleMax + 1;
-			System.out.println("Numéro de cycle max récupéré : " + numeroCycleMax);
+			if(numeroCycleMax == 8) {
+				nbrCycle.setText(String.valueOf( 1));
+			}
+			else if(numeroCycleMax < 8) {
+				nbrCycle.setText(String.valueOf(numeroCycleMax + 1));
+			}
+			SertissageIDCInformations.numCycle = (numeroCycleMax + 1) +"";
 		});
 
 		task.setOnFailed(event -> {
 			Throwable e = task.getException();
-			valeurNumeroCycle.setText("Erreur");
+			nbrCycle.setText("Erreur");
 			System.out.println("Erreur lors de la récupération du numéro de cycle : " + e.getMessage());
 		});
 
 		// Lance la tâche dans un thread séparé
 		new Thread(task).start();
-	}*/
+	}
 
 	/*********************************          Alerts        ***************************************/
 
@@ -889,8 +956,11 @@ public class RemplirSertissageIDC {
 	 	        forceTractionEchFinC1.setDisable(false);
 	 	        forceTractionEchFinC1.getStyleClass().add("textfield-blue-border");
 	 	       
-	 	       forceTractionEchFinC2.setDisable(false);
-	 	       forceTractionEchFinC2.getStyleClass().add("textfield-blue-border");
+	 	        forceTractionEchFinC2.setDisable(false);
+	 	        forceTractionEchFinC2.getStyleClass().add("textfield-blue-border");
+	 	       
+	 	        quantiteCycle.setDisable(false);
+	 	       quantiteCycle.getStyleClass().add("textfield-blue-border");
 	 	       
 	 	    }
 	}
@@ -984,6 +1054,21 @@ public class RemplirSertissageIDC {
     public void centerTextFields(TextField... fields) {
         for (TextField field : fields) {
             field.setStyle("-fx-alignment: center;"); // Centre le texte dans le champ
+        }
+    }
+    public double parseDoubleWithCleanup(String input) {
+        if (input == null || input.trim().isEmpty()) {
+            return 0.0; // Retourne une valeur par défaut (0.0) si l'entrée est vide ou nulle
+        }
+        
+        // Supprimer les espaces
+        input = input.replaceAll("\\s", "");
+        
+        try {
+            return Double.parseDouble(input);
+        } catch (NumberFormatException e) {
+            System.out.println("Erreur de format pour la valeur : " + input);
+            return 0.0; // Retourner une valeur par défaut en cas d'erreur de format
         }
     }
 

@@ -54,7 +54,7 @@ public class RemplirSertissageNormal {
 	private double xOffset = 0;
 	private double yOffset = 0;
  
-	 @FXML
+	  @FXML
 	    private Button btnClose;
 
 	    @FXML
@@ -79,22 +79,49 @@ public class RemplirSertissageNormal {
 	    private Label dateSystem;
 
 	    @FXML
-	    private TextField hauteurIsolantEch1;
+	    private TextField forceTractionEch1C1;
 
 	    @FXML
-	    private TextField hauteurIsolantFinCde;
+	    private TextField forceTractionEch1C2;
+
+	    @FXML
+	    private TextField forceTractionEch2C1;
+
+	    @FXML
+	    private TextField forceTractionEch2C2;
+
+	    @FXML
+	    private TextField forceTractionEch3C1;
+
+	    @FXML
+	    private TextField forceTractionEch3C2;
+
+	    @FXML
+	    private TextField hauteurIsolant;
+
+	    @FXML
+	    private TextField hauteurIsolantEchFin;
 
 	    @FXML
 	    private TextField hauteurSertissageEch1;
 
 	    @FXML
+	    private TextField hauteurSertissageEch1C2;
+
+	    @FXML
 	    private TextField hauteurSertissageEch2;
+
+	    @FXML
+	    private TextField hauteurSertissageEch2C2;
 
 	    @FXML
 	    private TextField hauteurSertissageEch3;
 
 	    @FXML
-	    private TextField hauteurSertissageFinCommande;
+	    private TextField hauteurSertissageEch3C2;
+
+	    @FXML
+	    private TextField hauteurSertissageEchFin;
 
 	    @FXML
 	    private Label heureSystem;
@@ -115,29 +142,22 @@ public class RemplirSertissageNormal {
 	    private Label labelTraction;
 
 	    @FXML
-	    private TextField tractionEch1;
-	    
-	    @FXML
-	    private TextField largeurIsolantEch1;
+	    private TextField largeurIsolant;
 
 	    @FXML
-	    private TextField largeurIsolantFinCde;
+	    private TextField largeurIsolantEchFin;
 
 	    @FXML
-	    private TextField largeurSertissageEch1;
+	    private TextField largeurSertissage;
 
 	    @FXML
-	    private TextField largeurSertissageFinCde;
-
-
-	    @FXML
-	    private TextField machineTractionEch2;
+	    private TextField largeurSertissageEchFin;
 
 	    @FXML
-	    private TextField machineTractionEch3;
+	    private ComboBox<String> listeMachineTraction;
 
 	    @FXML
-	    private TextField machineTractionFinCde;
+	    private ComboBox<String> listeProduits;
 
 	    @FXML
 	    private Label matriculeUser;
@@ -146,16 +166,16 @@ public class RemplirSertissageNormal {
 	    private Label nbrCycle;
 
 	    @FXML
-	    private Label nbrEch;
-
-	    @FXML
 	    private Label nomPrenomUser;
 
 	    @FXML
 	    private Label nomProjet;
 
 	    @FXML
-	    private TextField numProduit;
+	    private Label numContact;
+
+	    @FXML
+	    private Label numOutil;
 
 	    @FXML
 	    private Label operationUser;
@@ -170,16 +190,10 @@ public class RemplirSertissageNormal {
 	    private TextField quantiteCycle;
 
 	    @FXML
-	    private TextField quantiteCycleEch2;
-
-	    @FXML
-	    private TextField quantiteCycleEch3;
-
-	    @FXML
-	    private TextField quantiteCycleFinCde;
-
-	    @FXML
 	    private BorderPane rootPane;
+
+	    @FXML
+	    private Label sectionFil;
 
 	    @FXML
 	    private Label segementUser;
@@ -187,18 +201,14 @@ public class RemplirSertissageNormal {
 	    @FXML
 	    private TextField serieProduit;
 
-
-	    @FXML
-	    private Label sectionFil;
-
 	    @FXML
 	    private StackPane stackPane;
 
 	    @FXML
-	    private ComboBox<String> listeMachinesTraction;
+	    private TextField traction;
 
 	    @FXML
-	    private TextField tractionFinCde;
+	    private TextField tractionEchFin;
 
 		public TextField activeTextField;
 		
@@ -228,44 +238,50 @@ public class RemplirSertissageNormal {
 
 	@FXML
 	public void initialize() throws Exception {
-	hauteurSertissageFinCommande.setDisable(true); 
-	largeurSertissageFinCde.setDisable(true);
-	hauteurIsolantFinCde.setDisable(true);
+	hauteurSertissageEchFin.setDisable(true); 
+	largeurSertissageEchFin.setDisable(true);
+	hauteurIsolantEchFin.setDisable(true);
+    largeurIsolantEchFin.setDisable(true);
+    tractionEchFin.setDisable(true);
     quantiteCycle.setDisable(true);
 
         loadListeMachinesTractions() ; 
+        loadListeProduits() ; 
 		afficherInfosOperateur();
         SertissageNormaleInformations.testTerminitionCommande = 0 ; 
 		
 		afficherDateSystem();
 		afficherHeureSystem();
 		//loadNumeroCycleMax();
-		/*clearImage.setOnMouseClicked(event -> {
+	    clearImage.setOnMouseClicked(event -> {
 			if (activeTextField != null) {
 				activeTextField.clear();
 			}
-		});*/
+		});
 
 		setActiveOnFocus(hauteurSertissageEch1);
 		setActiveOnFocus(hauteurSertissageEch2);
 		setActiveOnFocus(hauteurSertissageEch3);
-		setActiveOnFocus(hauteurSertissageFinCommande);
-		setActiveOnFocus(largeurSertissageEch1);
-		setActiveOnFocus(largeurSertissageFinCde);
+		setActiveOnFocus(hauteurSertissageEchFin);
+		setActiveOnFocus(largeurSertissage);
+		setActiveOnFocus(largeurSertissageEchFin);
 		
 
-		setActiveOnFocus(hauteurIsolantEch1);
-		setActiveOnFocus(hauteurIsolantFinCde);
-		setActiveOnFocus(largeurIsolantEch1);		
+		setActiveOnFocus(hauteurIsolant);
+		setActiveOnFocus(hauteurIsolantEchFin);
+		setActiveOnFocus(largeurIsolant);		
+		setActiveOnFocus(largeurIsolantEchFin);		
 
-		setActiveOnFocus(tractionEch1);
-		setActiveOnFocus(numProduit);
+
+		setActiveOnFocus(traction);
+		setActiveOnFocus(tractionEchFin);
 		setActiveOnFocus(serieProduit);
 		setActiveOnFocus(quantiteCycle);
+
 	
 	
 	}
-
+/********************** load Liste machine traction ************************/
 	private void loadListeMachinesTractions() {
 	    Task<ObservableList<String>> task = new Task<>() {
 	        @Override
@@ -277,11 +293,38 @@ public class RemplirSertissageNormal {
 	    };
 
 	    task.setOnSucceeded(event -> {
-	      listeMachinesTraction.setItems(task.getValue());
-	      listeMachinesTraction.getSelectionModel().clearSelection(); // Désélectionner toute valeur par défaut
-	      listeMachinesTraction.setValue(null); // S'assurer qu'aucune valeur n'est affichée au démarrage
+	      listeMachineTraction.setItems(task.getValue());
+	      listeMachineTraction.getSelectionModel().clearSelection(); // Désélectionner toute valeur par défaut
+	      listeMachineTraction.setValue(null); // S'assurer qu'aucune valeur n'est affichée au démarrage
 
-	      listeMachinesTraction.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
+	      listeMachineTraction.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
+	       
+	      });
+	    });
+
+	    task.setOnFailed(event -> {
+	        System.out.println("Erreur lors du chargement des numéros de fils : " + task.getException().getMessage());
+	    });
+
+	    new Thread(task).start();
+	}
+/********************** load liste des produits ***********************/
+	private void loadListeProduits() {
+	    Task<ObservableList<String>> task = new Task<>() {
+	        @Override
+	        protected ObservableList<String> call() {
+	            return FXCollections.observableArrayList(
+	                "ZKW", "Produit 1", "Produit 2" , "Produit 3"
+	            );
+	        }
+	    };
+
+	    task.setOnSucceeded(event -> {
+	      listeProduits.setItems(task.getValue());
+	      listeProduits.getSelectionModel().clearSelection(); // Désélectionner toute valeur par défaut
+	      listeProduits.setValue(null); // S'assurer qu'aucune valeur n'est affichée au démarrage
+
+	      listeProduits.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
 	          if (newValue != null) {
 	               System.out.println("Numéro de fil sélectionné : " + newValue);
 	          }
@@ -316,13 +359,13 @@ public class RemplirSertissageNormal {
 	    return !hauteurSertissageEch1.getText().isEmpty() &&
 	           !hauteurSertissageEch2.getText().isEmpty() &&
 	           !hauteurSertissageEch3.getText().isEmpty() &&
-	           !largeurSertissageEch1.getText().isEmpty() &&
-	           !hauteurIsolantEch1.getText().isEmpty() &&
-	           !largeurIsolantEch1.getText().isEmpty() &&
-	           !tractionEch1.getText().isEmpty() &&
-	           !numProduit.getText().isEmpty() &&	          	         
-	           !serieProduit.getText().isEmpty() &&
-	           listeMachinesTraction.getValue() != null ;
+	           !largeurSertissage.getText().isEmpty() &&
+	           !hauteurIsolant.getText().isEmpty() &&
+	           !largeurIsolant.getText().isEmpty() &&
+	           !traction.getText().isEmpty() &&
+	           listeProduits.getValue() != null &&	  
+	    	   listeMachineTraction.getValue() != null &&	          	         
+	           !serieProduit.getText().isEmpty() ;
 	}
 
 	@FXML
@@ -330,37 +373,39 @@ public class RemplirSertissageNormal {
 		
 		 // 1. Vérification des champs obligatoires
 	    if (hauteurSertissageEch1.getText().isEmpty() || hauteurSertissageEch2.getText().isEmpty() || hauteurSertissageEch3.getText().isEmpty()
-	            || largeurSertissageEch1.getText().isEmpty() || hauteurIsolantEch1.getText().isEmpty() || largeurIsolantEch1.getText().isEmpty()
-	            || tractionEch1.getText().isEmpty() || numProduit.getText().isEmpty()        
-	            || serieProduit.getText().isEmpty() 
-	            || listeMachinesTraction.getValue() == null  ) {
+	            || largeurSertissage.getText().isEmpty() || hauteurIsolant.getText().isEmpty() || largeurIsolant.getText().isEmpty()
+	            || traction.getText().isEmpty() || listeProduits.getValue() == null         
+	            || serieProduit.getText().isEmpty()  ||  serieProduit.getText().isEmpty() 
+	            || listeMachineTraction.getValue() == null  ) {
 
 	        showErrorDialog("Veuillez remplir tous les champs avant de continuer !", "Champs obligatoires");
 	        return; // Arrêt si un champ est vide
 	    }
-	    // 3. Si tous les champs sont remplis, afficher l'alerte de confirmation
-        if (checkOtherFields() && !hauteurIsolantFinCde.getText().isEmpty()&& !largeurSertissageFinCde.getText().isEmpty() 
-        		&& !hauteurIsolantFinCde.getText().isEmpty()  && !quantiteCycle.getText().isEmpty()) {
+        if (checkOtherFields() && !hauteurSertissageEchFin.getText().isEmpty()&& !largeurSertissageEchFin.getText().isEmpty() 
+        		&& !hauteurIsolantEchFin.getText().isEmpty()  && !largeurIsolantEchFin.getText().isEmpty() && 
+        		!tractionEchFin.getText().isEmpty() &&  !quantiteCycle.getText().isEmpty()) {
             // Préparer le message de confirmation avec les données saisies
             String message = "Veuillez confirmer les données saisies ? \n\n";
 
             // Appeler la méthode showConfirmationDialog
             showConfirmationDialog(message, "Confirmation", () -> {
             	
-            	SertissageNormaleInformations.numCycle = nbrCycle.getText(); 
+            	SertissageNormaleInformations.numCycle = nbrCycle.getText() ; 
             	SertissageNormaleInformations.hauteurSertissageEch1 = hauteurSertissageEch1.getText(); 
             	SertissageNormaleInformations.hauteurSertissageEch2 = hauteurSertissageEch2.getText(); 
             	SertissageNormaleInformations.hauteurSertissageEch3 = hauteurSertissageEch3.getText(); 
-            	SertissageNormaleInformations.hauteurSertissageFinal = hauteurSertissageFinCommande.getText(); 
-            	SertissageNormaleInformations.largeurSertissage = largeurSertissageEch1.getText(); 
-            	SertissageNormaleInformations.largeurSertissageFinal = largeurSertissageFinCde.getText(); 
-            	SertissageNormaleInformations.hauteurIsolant = hauteurIsolantEch1.getText();
-            	SertissageNormaleInformations.hauteurIsolantFinal = hauteurIsolantFinCde.getText();
-            	SertissageNormaleInformations.largeurIsolant = largeurIsolantEch1.getText();
-            	SertissageNormaleInformations.traction = tractionEch1.getText();
-            	SertissageNormaleInformations.produit = numProduit.getText();
-            	SertissageNormaleInformations.quantiteCycle = quantiteCycle.getText();
-            	SertissageNormaleInformations.machineTraction = listeMachinesTraction.getValue();
+            	SertissageNormaleInformations.hauteurSertissageEchFin = hauteurSertissageEchFin.getText(); 
+            	SertissageNormaleInformations.largeurSertissage = largeurSertissage.getText(); 
+            	SertissageNormaleInformations.largeurSertissageEchFin = largeurSertissageEchFin.getText(); 
+            	SertissageNormaleInformations.hauteurIsolant = hauteurIsolant.getText();
+            	SertissageNormaleInformations.hauteurIsolantEchFin = hauteurIsolantEchFin.getText();
+            	SertissageNormaleInformations.largeurIsolant = largeurIsolant.getText();
+            	SertissageNormaleInformations.largeurIsolantEchFin = largeurIsolantEchFin.getText();
+            	SertissageNormaleInformations.traction = traction.getText();
+            	SertissageNormaleInformations.tractionFinEch = tractionEchFin.getText();
+            	SertissageNormaleInformations.produit = listeProduits.getValue();
+            	SertissageNormaleInformations.quantiteAtteint = quantiteCycle.getText();
+            	SertissageNormaleInformations.machineTraction = listeMachineTraction.getValue();
             	SertissageNormaleInformations.serieProduit = serieProduit.getText() ; 
 
 
@@ -370,9 +415,9 @@ public class RemplirSertissageNormal {
                 // Affichage direct de la fenêtre SoudureResultat
                 try {
                 	  // Chargement de la nouvelle fenêtre
-            	    FXMLLoader loader2 = new FXMLLoader(getClass().getResource("/Front_java/SertissageNormal/SertissageNormalResultat.fxml"));
+            	    FXMLLoader loader2 = new FXMLLoader(getClass().getResource("/Front_java/SertissageNormal/ResultatSertissageNormal.fxml"));
             	    Scene resultScene = new Scene(loader2.load());
-            	    resultScene.getStylesheets().add(getClass().getResource("/Front_java/SertissageNormal/SertissageNormalResultat.css").toExternalForm());                   	    
+            	    resultScene.getStylesheets().add(getClass().getResource("/Front_java/SertissageNormal/ResultatSertissageNormal.css").toExternalForm());                   	    
             	    Stage resultStage = new Stage();
             	    resultStage.setScene(resultScene);
             	    resultStage.setMaximized(true);
@@ -392,22 +437,24 @@ public class RemplirSertissageNormal {
             });
         } else {
             // Si les champs ne sont pas remplis ou si "quantité atteinte" est vide, afficher la fenêtre de chargement
-        	SertissageNormaleInformations.numCycle = nbrCycle.getText(); 
+
+        	//SertissageNormaleInformations.numCycle = Integer.parseInt(nbrCycle.getText() ); 
         	SertissageNormaleInformations.hauteurSertissageEch1 = hauteurSertissageEch1.getText(); 
         	SertissageNormaleInformations.hauteurSertissageEch2 = hauteurSertissageEch2.getText(); 
         	SertissageNormaleInformations.hauteurSertissageEch3 = hauteurSertissageEch3.getText(); 
-        	SertissageNormaleInformations.hauteurSertissageFinal = hauteurSertissageFinCommande.getText(); 
-        	SertissageNormaleInformations.largeurSertissage = largeurSertissageEch1.getText(); 
-        	SertissageNormaleInformations.largeurSertissageFinal = largeurSertissageFinCde.getText(); 
-        	SertissageNormaleInformations.hauteurIsolant = hauteurIsolantEch1.getText();
-        	SertissageNormaleInformations.hauteurIsolantFinal = hauteurIsolantFinCde.getText();
-        	SertissageNormaleInformations.largeurIsolant = largeurIsolantEch1.getText();
-        	SertissageNormaleInformations.traction = tractionEch1.getText();
-        	SertissageNormaleInformations.produit = numProduit.getText();
-        	SertissageNormaleInformations.quantiteCycle = quantiteCycle.getText();
-        	SertissageNormaleInformations.machineTraction = listeMachinesTraction.getValue();
+        	SertissageNormaleInformations.hauteurSertissageEchFin = hauteurSertissageEchFin.getText() ; 
+        	SertissageNormaleInformations.largeurSertissage = largeurSertissage.getText(); 
+        	SertissageNormaleInformations.largeurSertissageEchFin =largeurSertissageEchFin.getText(); 
+        	SertissageNormaleInformations.hauteurIsolant = hauteurIsolant.getText();
+        	SertissageNormaleInformations.hauteurIsolantEchFin = hauteurIsolantEchFin.getText();
+        	SertissageNormaleInformations.largeurIsolant = largeurIsolant.getText();
+        	SertissageNormaleInformations.largeurIsolantEchFin = largeurIsolantEchFin.getText();
+        	SertissageNormaleInformations.traction = traction.getText();
+        	SertissageNormaleInformations.tractionFinEch = tractionEchFin.getText();
+        	SertissageNormaleInformations.produit = listeProduits.getValue();
+        	SertissageNormaleInformations.quantiteAtteint = quantiteCycle.getText();
+        	SertissageNormaleInformations.machineTraction = listeMachineTraction.getValue();
         	SertissageNormaleInformations.serieProduit = serieProduit.getText() ; 
-        	
 
         	
             try {
@@ -426,29 +473,34 @@ public class RemplirSertissageNormal {
                 // Définir l'action à exécuter lorsque le bouton "Terminer" est cliqué
                 loadingController.setOnTerminerAction(() -> {
                     // Rendre le champ "quantité atteinte" activé
-                	hauteurSertissageFinCommande.setDisable(false); 
-                	largeurSertissageFinCde.setDisable(false);
-                	hauteurIsolantFinCde.setDisable(false);
+                	hauteurSertissageEchFin.setDisable(false); 
+                	largeurSertissageEchFin.setDisable(false);
+                	largeurIsolantEchFin.setDisable(false);
+                	hauteurSertissageEchFin.setDisable(false) ; 
+                	tractionEchFin.setDisable(false) ; 
                     quantiteCycle.setDisable(false);
 
                     // Si tous les champs sont remplis, passer à la fenêtre de résultats
                     if (checkOtherFields()) {
                     	try {
-                    		SertissageNormaleInformations.numCycle = nbrCycle.getText(); 
+                    		SertissageNormaleInformations.numCycle = nbrCycle.getText() ; 
                         	SertissageNormaleInformations.hauteurSertissageEch1 = hauteurSertissageEch1.getText(); 
                         	SertissageNormaleInformations.hauteurSertissageEch2 = hauteurSertissageEch2.getText(); 
                         	SertissageNormaleInformations.hauteurSertissageEch3 = hauteurSertissageEch3.getText(); 
-                        	SertissageNormaleInformations.hauteurSertissageFinal = hauteurSertissageFinCommande.getText(); 
-                        	SertissageNormaleInformations.largeurSertissage = largeurSertissageEch1.getText(); 
-                        	SertissageNormaleInformations.largeurSertissageFinal = largeurSertissageFinCde.getText(); 
-                        	SertissageNormaleInformations.hauteurIsolant = hauteurIsolantEch1.getText();
-                        	SertissageNormaleInformations.hauteurIsolantFinal = hauteurIsolantFinCde.getText();
-                        	SertissageNormaleInformations.largeurIsolant = largeurIsolantEch1.getText();
-                        	SertissageNormaleInformations.traction = tractionEch1.getText();
-                        	SertissageNormaleInformations.produit = numProduit.getText();
-                        	SertissageNormaleInformations.quantiteCycle = quantiteCycle.getText();
-                        	SertissageNormaleInformations.machineTraction = listeMachinesTraction.getValue();
+                        	SertissageNormaleInformations.hauteurSertissageEchFin =hauteurSertissageEchFin.getText(); 
+                        	SertissageNormaleInformations.largeurSertissage = largeurSertissage.getText(); 
+                        	SertissageNormaleInformations.largeurSertissageEchFin = largeurSertissageEchFin.getText(); 
+                        	SertissageNormaleInformations.hauteurIsolant = hauteurIsolant.getText();
+                        	SertissageNormaleInformations.hauteurIsolantEchFin = hauteurIsolantEchFin.getText();
+                        	SertissageNormaleInformations.largeurIsolant =largeurIsolant.getText();
+                        	SertissageNormaleInformations.largeurIsolantEchFin = largeurIsolantEchFin.getText();
+                        	SertissageNormaleInformations.traction = traction.getText();
+                        	SertissageNormaleInformations.tractionFinEch =tractionEchFin.getText();
+                        	SertissageNormaleInformations.produit = listeProduits.getValue();
+                        	SertissageNormaleInformations.quantiteAtteint =quantiteCycle.getText();
+                        	SertissageNormaleInformations.machineTraction = listeMachineTraction.getValue();
                         	SertissageNormaleInformations.serieProduit = serieProduit.getText() ; 
+
                         	
                     	    // Chargement de la nouvelle fenêtre
                     	    FXMLLoader loader2 = new FXMLLoader(getClass().getResource("/Front_java/SertissageNormal/loading/LoadingSertissageNormal.fxml"));
@@ -565,13 +617,12 @@ public class RemplirSertissageNormal {
 			segementUser.setText(operateurInfo.getSegment());
 			nomProjet.setText(SertissageNormaleInformations.projetSelectionner);
 			sectionFil.setText(SertissageNormaleInformations.sectionFil);
-			nbrEch.setText("5 Piéces");
 			codeControleSelectionner.setText(SertissageNormaleInformations.codeControleSelectionner);
-			labelHauteurSertissage.setText("/ ToL :"+getElementFromSection(SertissageNormaleInformations.sectionFil , "Hauteur_Sertissage")+" mm");
-			labelLargeurSertissage.setText("/ ToL :"+getElementFromSection(SertissageNormaleInformations.sectionFil , "Largeur_Sertissage")+" mm");
-			labelHauteurIsolant.setText("/ ToL :"+getElementFromSection(SertissageNormaleInformations.sectionFil , "Hauteur_Isolant") +" mm");
-			labelLargeurIsolant.setText("/ ToL :"+getElementFromSection(SertissageNormaleInformations.sectionFil , "Largeur_Isolant"));
-			labelTraction.setText(": >= "+getElementFromSection(SertissageNormaleInformations.sectionFil , "Traction")+" N");
+			labelHauteurSertissage.setText(getElementFromSection(SertissageNormaleInformations.sectionFil , "Hauteur_Sertissage")+" mm");
+			labelLargeurSertissage.setText(getElementFromSection(SertissageNormaleInformations.sectionFil , "Largeur_Sertissage")+" mm");
+			labelHauteurIsolant.setText(getElementFromSection(SertissageNormaleInformations.sectionFil , "Hauteur_Isolant") +" mm");
+			labelLargeurIsolant.setText(getElementFromSection(SertissageNormaleInformations.sectionFil , "Largeur_Isolant"));
+			labelTraction.setText(" >= "+getElementFromSection(SertissageNormaleInformations.sectionFil , "Traction")+" N");
 
 
 		} else {
@@ -831,12 +882,21 @@ public class RemplirSertissageNormal {
 	/****************************************/
 	public void actualiserFenetreMere() {
 	   if (SertissageNormaleInformations.testTerminitionCommande == 1) {
-		    hauteurSertissageFinCommande.setDisable(false); 
-		    hauteurSertissageFinCommande.getStyleClass().add("textfield-blue-border");
-	       	largeurSertissageFinCde.setDisable(false);
-	       	largeurSertissageFinCde.getStyleClass().add("textfield-blue-border");
-         	hauteurIsolantFinCde.setDisable(false);
-         	hauteurIsolantFinCde.getStyleClass().add("textfield-blue-border");
+		    hauteurSertissageEchFin.setDisable(false); 
+		    hauteurSertissageEchFin.getStyleClass().add("textfield-blue-border");
+		    
+	       	largeurSertissageEchFin.setDisable(false);
+	       	largeurSertissageEchFin.getStyleClass().add("textfield-blue-border");
+	       	
+	     	hauteurIsolantEchFin.setDisable(false);
+	     	hauteurIsolantEchFin.getStyleClass().add("textfield-blue-border");
+	       	
+	       	largeurIsolantEchFin.setDisable(false);
+         	largeurIsolantEchFin.getStyleClass().add("textfield-blue-border");
+         	
+        	tractionEchFin.setDisable(false);
+        	tractionEchFin.getStyleClass().add("textfield-blue-border");
+         	
             quantiteCycle.setDisable(false);
             quantiteCycle.getStyleClass().add("textfield-blue-border");
 	       
