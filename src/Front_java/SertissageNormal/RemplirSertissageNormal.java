@@ -35,12 +35,13 @@ import javafx.scene.layout.VBox;
 import javafx.stage.*;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
-import java.util.concurrent.CompletableFuture;
-
+import java.util.Arrays;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXDialog;
 import com.jfoenix.controls.JFXDialogLayout;
-import Front_java.Configuration.TorsadageInformations;
 import javafx.animation.KeyFrame;
 import javafx.animation.PauseTransition;
 import javafx.util.Duration;
@@ -76,25 +77,7 @@ public class RemplirSertissageNormal {
 	    private Label codeControleSelectionner;
 
 	    @FXML
-	    private Label dateSystem;
-
-	    @FXML
-	    private TextField forceTractionEch1C1;
-
-	    @FXML
-	    private TextField forceTractionEch1C2;
-
-	    @FXML
-	    private TextField forceTractionEch2C1;
-
-	    @FXML
-	    private TextField forceTractionEch2C2;
-
-	    @FXML
-	    private TextField forceTractionEch3C1;
-
-	    @FXML
-	    private TextField forceTractionEch3C2;
+	    private Label dateSystem;	  
 
 	    @FXML
 	    private TextField hauteurIsolant;
@@ -105,20 +88,14 @@ public class RemplirSertissageNormal {
 	    @FXML
 	    private TextField hauteurSertissageEch1;
 
-	    @FXML
-	    private TextField hauteurSertissageEch1C2;
-
+	 
 	    @FXML
 	    private TextField hauteurSertissageEch2;
 
-	    @FXML
-	    private TextField hauteurSertissageEch2C2;
-
+	 
 	    @FXML
 	    private TextField hauteurSertissageEch3;
 
-	    @FXML
-	    private TextField hauteurSertissageEch3C2;
 
 	    @FXML
 	    private TextField hauteurSertissageEchFin;
@@ -238,6 +215,7 @@ public class RemplirSertissageNormal {
 
 	@FXML
 	public void initialize() throws Exception {
+		loadDernierNumeroCycle() ; 
 	hauteurSertissageEchFin.setDisable(true); 
 	largeurSertissageEchFin.setDisable(true);
 	hauteurIsolantEchFin.setDisable(true);
@@ -252,7 +230,6 @@ public class RemplirSertissageNormal {
 		
 		afficherDateSystem();
 		afficherHeureSystem();
-		//loadNumeroCycleMax();
 	    clearImage.setOnMouseClicked(event -> {
 			if (activeTextField != null) {
 				activeTextField.clear();
@@ -287,7 +264,7 @@ public class RemplirSertissageNormal {
 	        @Override
 	        protected ObservableList<String> call() {
 	            return FXCollections.observableArrayList(
-	                "D-128", "D-101", "D-103"
+	                "D-128", "D-101"
 	            );
 	        }
 	    };
@@ -325,9 +302,7 @@ public class RemplirSertissageNormal {
 	      listeProduits.setValue(null); // S'assurer qu'aucune valeur n'est affichée au démarrage
 
 	      listeProduits.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
-	          if (newValue != null) {
-	               System.out.println("Numéro de fil sélectionné : " + newValue);
-	          }
+	       
 	      });
 	    });
 
@@ -367,51 +342,231 @@ public class RemplirSertissageNormal {
 	    	   listeMachineTraction.getValue() != null &&	          	         
 	           !serieProduit.getText().isEmpty() ;
 	}
-
 	@FXML
 	public void suivant(ActionEvent event) {
-		
+		  centerTextFields(
+				  hauteurSertissageEch1, hauteurSertissageEch2, hauteurSertissageEch3, 
+				  largeurSertissage, hauteurIsolant, largeurIsolant, 
+				  traction, serieProduit , quantiteCycle , hauteurIsolantEchFin , hauteurIsolantEchFin,
+				  hauteurSertissageEchFin , largeurIsolantEchFin , largeurSertissageEchFin
+			    );
+		 
 		 // 1. Vérification des champs obligatoires
-	    if (hauteurSertissageEch1.getText().isEmpty() || hauteurSertissageEch2.getText().isEmpty() || hauteurSertissageEch3.getText().isEmpty()
-	            || largeurSertissage.getText().isEmpty() || hauteurIsolant.getText().isEmpty() || largeurIsolant.getText().isEmpty()
-	            || traction.getText().isEmpty() || listeProduits.getValue() == null         
-	            || serieProduit.getText().isEmpty()  ||  serieProduit.getText().isEmpty() 
-	            || listeMachineTraction.getValue() == null  ) {
+		  if (hauteurSertissageEch1.getText().isEmpty() || hauteurSertissageEch2.getText().isEmpty() || hauteurSertissageEch3.getText().isEmpty()
+		            || largeurSertissage.getText().isEmpty() || hauteurIsolant.getText().isEmpty() || largeurIsolant.getText().isEmpty()
+		            || traction.getText().isEmpty() || listeProduits.getValue() == null         
+		            || serieProduit.getText().isEmpty()  ||  serieProduit.getText().isEmpty() 
+		            || listeMachineTraction.getValue() == null  ) {
 
-	        showErrorDialog("Veuillez remplir tous les champs avant de continuer !", "Champs obligatoires");
-	        return; // Arrêt si un champ est vide
-	    }
-        if (checkOtherFields() && !hauteurSertissageEchFin.getText().isEmpty()&& !largeurSertissageEchFin.getText().isEmpty() 
-        		&& !hauteurIsolantEchFin.getText().isEmpty()  && !largeurIsolantEchFin.getText().isEmpty() && 
-        		!tractionEchFin.getText().isEmpty() &&  !quantiteCycle.getText().isEmpty()) {
-            // Préparer le message de confirmation avec les données saisies
-            String message = "Veuillez confirmer les données saisies ? \n\n";
+		        showErrorDialog("Veuillez remplir tous les champs avant de continuer !", "Champs obligatoires");
+		        return; // Arrêt si un champ est vide
+		    }
+		    if ((!hauteurSertissageEchFin.isDisabled() && hauteurSertissageEchFin.getText().isEmpty()) ||
+		    	    (!largeurSertissageEchFin.isDisabled() && largeurSertissageEchFin.getText().isEmpty()) ||
+		    	    (!largeurIsolantEchFin.isDisabled() && largeurIsolantEchFin.getText().isEmpty()) ||
+		    	    (!hauteurIsolantEchFin.isDisabled() && hauteurIsolantEchFin.getText().isEmpty()) ||
+		    	    (!tractionEchFin.isDisabled() && tractionEchFin.getText().isEmpty()) ||
+		    	    (!quantiteCycle.isDisabled() && quantiteCycle.getText().isEmpty())) {
+		    	    
+		    	    showErrorDialog("Veuillez remplir tous les champs avant de continuer !", "Champs obligatoires");
+		    	    return; // Arrête l'exécution de la méthode après l'alerte
+		    	}
+	   
+	    // 3. Si tous les champs sont remplis, afficher l'alerte de confirmation
+     	    boolean hasError = false;
 
-            // Appeler la méthode showConfirmationDialog
-            showConfirmationDialog(message, "Confirmation", () -> {
-            	
-            	SertissageNormaleInformations.numCycle = nbrCycle.getText() ; 
-            	SertissageNormaleInformations.hauteurSertissageEch1 = hauteurSertissageEch1.getText(); 
-            	SertissageNormaleInformations.hauteurSertissageEch2 = hauteurSertissageEch2.getText(); 
-            	SertissageNormaleInformations.hauteurSertissageEch3 = hauteurSertissageEch3.getText(); 
-            	SertissageNormaleInformations.hauteurSertissageEchFin = hauteurSertissageEchFin.getText(); 
-            	SertissageNormaleInformations.largeurSertissage = largeurSertissage.getText(); 
-            	SertissageNormaleInformations.largeurSertissageEchFin = largeurSertissageEchFin.getText(); 
-            	SertissageNormaleInformations.hauteurIsolant = hauteurIsolant.getText();
-            	SertissageNormaleInformations.hauteurIsolantEchFin = hauteurIsolantEchFin.getText();
-            	SertissageNormaleInformations.largeurIsolant = largeurIsolant.getText();
-            	SertissageNormaleInformations.largeurIsolantEchFin = largeurIsolantEchFin.getText();
+	    // Vérifier si des champs obligatoires sont vides
+     	    if (checkOtherFields() && !hauteurSertissageEchFin.getText().isEmpty()&& !largeurSertissageEchFin.getText().isEmpty() 
+            		&& !hauteurIsolantEchFin.getText().isEmpty()  && !largeurIsolantEchFin.getText().isEmpty() && 
+            		!tractionEchFin.getText().isEmpty() &&  !quantiteCycle.getText().isEmpty()) {
+     	    	
+	    	
+	 
+     	    	//// ligne 1 : haauteur Sertissage 
+     	    	 double valHauteurSertissage = SertissageNormaleInformations.labelHauteurSertissage ; 
+     	    	 if (areFieldsEqual(hauteurSertissageEch1 , hauteurSertissageEch2 , hauteurSertissageEch3 , hauteurSertissageEchFin)) {
+     	            colorBorderRed(hauteurSertissageEch1, hauteurSertissageEch2, hauteurSertissageEch3, hauteurSertissageEchFin);
+     	            showErrorDialog("Les valeurs des échantillons de hauteur de sertissage  doivent être différentes et ne dépasse pas ."+valHauteurSertissage+0.05, "");
+     	            hasError = true;
+     	        }
+     	        // Vérification des valeurs hors limites
+     	        List<TextField> hauteurSertissageFields = Arrays.asList(
+     	        		hauteurSertissageEch1, hauteurSertissageEch2, hauteurSertissageEch3, hauteurSertissageEchFin    	        		
+     	        );
+     	       
+     	      
+     	        for (TextField field : hauteurSertissageFields) {
+     	            try {
+     	                double valeur = Double.parseDouble(field.getText());
+     	                if (valeur < (valHauteurSertissage - 0.05) || valeur > ( valHauteurSertissage+ 0.05)) {
+     	                    colorBorderRed(field);
+     	                    showErrorDialog("La valeur " + valeur + " dans  champs de hauteur de sertissage est hors limites. Elle doit être entre " +(valHauteurSertissage - 0.05)  + " et " + (valHauteurSertissage + 0.05)  + ".", "");
+     	                    hasError = true;
+     	                }
+     	            } catch (NumberFormatException e) {
+     	                colorBorderRed(field);
+     	                showErrorDialog("Veuillez entrer une valeur numérique valide " , "");
+     	                hasError = true;
+     	            }
+     	        }
+     	  //// ligne 2 : largeur Sertissage 
+     	       double valLargeurSertissage = SertissageNormaleInformations.labelLargeurSertissage ; 
+   	        String toleranceStr = fetchToleranceLargeurSertissageFromAPI(
+   	        		SertissageNormaleInformations.numeroOutils,
+   	        		SertissageNormaleInformations.numeroContacts,
+   	        		SertissageNormaleInformations.sectionFil
+   	        		).replace("±", "").trim(); // Suppression du symbole ±
+   	        		double toleranceLargeurSertissage = Double.parseDouble(toleranceStr);
+   	        		
+    	    	 if (areFieldsEqualDeuxChamps(largeurSertissage , largeurSertissageEchFin )) {
+    	            colorBorderRed(largeurSertissage, largeurSertissageEchFin);
+    	            showErrorDialog("Les valeurs des échantillons de largeur de sertissage  doivent être différentes et ne dépasse pas ."+valLargeurSertissage+toleranceLargeurSertissage, "");
+    	            hasError = true;
+    	        }
+    	        // Vérification des valeurs hors limites
+    	        List<TextField> largeurSertissageFields = Arrays.asList(
+    	        		largeurSertissage, largeurSertissageEchFin    	        		
+    	        );
+    	       
+    	     
+    	        for (TextField field : largeurSertissageFields) {
+    	            try {
+    	                double valeur = Double.parseDouble(field.getText());
+    	                if (valeur < (valLargeurSertissage - toleranceLargeurSertissage) || valeur > ( valLargeurSertissage+ toleranceLargeurSertissage)) {
+    	                    colorBorderRed(field);
+    	                    showErrorDialog("La valeur " + valeur + " dans  champs de largeur  de sertissage est hors limites. Elle doit être entre " +(valHauteurSertissage - toleranceLargeurSertissage)  + " et " + (valHauteurSertissage + toleranceLargeurSertissage)  + ".", "");
+    	                    hasError = true;
+    	                }
+    	            } catch (NumberFormatException e) {
+    	                colorBorderRed(field);
+    	                showErrorDialog("Veuillez entrer une valeur numérique valide " , "");
+    	                hasError = true;
+    	            }
+    	        }
+    	        //// ligne 3 : hauteur isolant   
+      	       double valHauteurIsolant = SertissageNormaleInformations.labelHauteurIsolant ; 
+    	        String toleranceStrHauteurIsolant = fetchToleranceHauteurIsolantFromAPI(
+    	        		SertissageNormaleInformations.numeroOutils,
+    	        		SertissageNormaleInformations.numeroContacts,
+    	        		SertissageNormaleInformations.sectionFil
+    	        		).replace("±", "").trim(); // Suppression du symbole ±
+    	        		double toleranceHauteurIsolant = Double.parseDouble(toleranceStrHauteurIsolant);
+    	        		
+     	    	 if (areFieldsEqualDeuxChamps(hauteurIsolant , hauteurIsolantEchFin )) {
+     	            colorBorderRed(hauteurIsolant, hauteurIsolantEchFin);
+     	            showErrorDialog("Les valeurs des échantillons de hauteur de isolant   doivent être différentes et ne dépasse pas ."+valHauteurIsolant+toleranceHauteurIsolant, "");
+     	            hasError = true;
+     	        }
+     	        // Vérification des valeurs hors limites
+     	        List<TextField> HauteurIsolantsFields = Arrays.asList(
+     	        		hauteurIsolant, hauteurIsolantEchFin    	        		
+     	        );
+     	       
+     	     
+     	        for (TextField field : HauteurIsolantsFields) {
+     	            try {
+     	                double valeur = Double.parseDouble(field.getText());
+     	                if (valeur < (valHauteurIsolant - toleranceHauteurIsolant) || valeur > ( valHauteurIsolant+ toleranceHauteurIsolant)) {
+     	                    colorBorderRed(field);
+     	                    showErrorDialog("La valeur " + valeur + " dans  champs de hauteur de isolant  est hors limites. Elle doit être entre " +(valHauteurIsolant - toleranceHauteurIsolant)  + " et " + (valHauteurIsolant+ toleranceHauteurIsolant)  + ".", "");
+     	                    hasError = true;
+     	                }
+     	            } catch (NumberFormatException e) {
+     	                colorBorderRed(field);
+     	                showErrorDialog("Veuillez entrer une valeur numérique valide " , "");
+     	                hasError = true;
+     	            }
+     	        }
+     	       //// ligne 4  : largeur isolant 
+      	       double valLargeurIsolant = SertissageNormaleInformations.labelLargeurIsolant ; 
+    	        String toleranceStrLargeurIsolant = fetchToleranceLargeurIsolantFromAPI(
+    	        		SertissageNormaleInformations.numeroOutils,
+    	        		SertissageNormaleInformations.numeroContacts,
+    	        		SertissageNormaleInformations.sectionFil
+    	        		).replace("±", "").trim(); // Suppression du symbole ±
+    	        		double toleranceLargeurIsolant = Double.parseDouble(toleranceStrLargeurIsolant);
+    	        		
+     	    	 if (areFieldsEqualDeuxChamps(largeurIsolant , largeurIsolantEchFin )) {
+     	            colorBorderRed(largeurIsolant, largeurIsolantEchFin);
+     	            showErrorDialog("Les valeurs des échantillons de largeur de isolant  doivent être différentes et ne dépasse pas ."+(valLargeurIsolant+toleranceLargeurIsolant), "");
+     	            hasError = true;
+     	        }
+     	        // Vérification des valeurs hors limites
+     	        List<TextField> largeurIsolantFields = Arrays.asList(
+     	        		largeurIsolant , largeurIsolantEchFin      		
+     	        );
+     	       
+     	     
+     	        for (TextField field : largeurIsolantFields) {
+     	            try {
+     	                double valeur = Double.parseDouble(field.getText());
+     	                if (valeur < (valLargeurIsolant - toleranceLargeurIsolant) || valeur > ( valLargeurIsolant+ toleranceLargeurIsolant)) {
+     	                    colorBorderRed(field);
+     	                    showErrorDialog("La valeur " + valeur + " dans  champs de hauteur de sertissage est hors limites. Elle doit être entre " +(valLargeurIsolant - toleranceLargeurIsolant)  + " et " + (valLargeurIsolant+ toleranceLargeurIsolant)  + ".", "");
+     	                    hasError = true;
+     	                }
+     	            } catch (NumberFormatException e) {
+     	                colorBorderRed(field);
+     	                showErrorDialog("Veuillez entrer une valeur numérique valide " , "");
+     	                hasError = true;
+     	            }
+     	        }
+     	        //// ligne 5 : traction
+       	       String valtractionString = SertissageNormaleInformations.labelTraction ; 
+               int tractionValue = extractValue(valtractionString) ; 
+               System.out.print(" valeur de traction numerique "+tractionValue);
+     	        		
+      	    	 if (areFieldsEqualDeuxChamps(traction , tractionEchFin )) {
+      	            colorBorderRed(traction , tractionEchFin);
+      	            showErrorDialog("Les valeurs des échantillons de traction  doivent être différentes et ne dépasse pas ."+tractionValue+" N", "");
+      	            hasError = true;
+      	        }
+      	        // Vérification des valeurs hors limites
+      	        List<TextField> tractionFields = Arrays.asList(
+      	        		traction , tractionEchFin	
+      	        );
+      	       
+      	     
+      	        for (TextField field : tractionFields) {
+      	            try {
+      	                int valeur = Integer.parseInt(field.getText());
+      	                if ( valeur < ( tractionValue)) {
+      	                    colorBorderRed(field);
+      	                    showErrorDialog("La valeur " + valeur + " dans  champs traction  est hors limites. Elle doit être superieur ou égale a  " +tractionValue+" N"  + ".", "");
+      	                    hasError = true;
+      	                }
+      	            } catch (NumberFormatException e) {
+      	                colorBorderRed(field);
+      	                showErrorDialog("Veuillez entrer une valeur numérique valide " , "");
+      	                hasError = true;
+      	            }
+      	        }
+     	        if (hasError) {
+     	            return;
+     	        }
+
+	        // Aucune erreur => afficher la confirmation
+	        String message = "Veuillez confirmer les données saisies ? \n\n";
+
+	        showConfirmationDialog(message, "Confirmation", () -> {
+	        	
+	        	SertissageNormaleInformations.hauteurSertissageEch1 = Double.parseDouble(hauteurSertissageEch1.getText()); 
+            	SertissageNormaleInformations.hauteurSertissageEch2 = Double.parseDouble(hauteurSertissageEch2.getText()); 
+            	SertissageNormaleInformations.hauteurSertissageEch3 = Double.parseDouble(hauteurSertissageEch3.getText()); 
+            	SertissageNormaleInformations.hauteurSertissageEchFin =Double.parseDouble( hauteurSertissageEchFin.getText()); 
+            	SertissageNormaleInformations.largeurSertissage = Double.parseDouble(largeurSertissage.getText()); 
+            	SertissageNormaleInformations.largeurSertissageEchFin = Double.parseDouble(largeurSertissageEchFin.getText()); 
+            	SertissageNormaleInformations.hauteurIsolant = Double.parseDouble(hauteurIsolant.getText());
+            	SertissageNormaleInformations.hauteurIsolantEchFin = Double.parseDouble(hauteurIsolantEchFin.getText());
+            	SertissageNormaleInformations.largeurIsolant = Double.parseDouble(largeurIsolant.getText());
+            	SertissageNormaleInformations.largeurIsolantEchFin = Double.parseDouble(largeurIsolantEchFin.getText());
             	SertissageNormaleInformations.traction = traction.getText();
-            	SertissageNormaleInformations.tractionFinEch = tractionEchFin.getText();
+            	SertissageNormaleInformations.tractionFinEch = Integer.parseInt( tractionEchFin.getText());
             	SertissageNormaleInformations.produit = listeProduits.getValue();
             	SertissageNormaleInformations.quantiteAtteint = quantiteCycle.getText();
             	SertissageNormaleInformations.machineTraction = listeMachineTraction.getValue();
-            	SertissageNormaleInformations.serieProduit = serieProduit.getText() ; 
-
-
-                // Si l'utilisateur confirme, exécuter la méthode ajoutPDEK()
-            	ajouterPdekAvecSoudure();
-
+            	SertissageNormaleInformations.serieProduit = Integer.parseInt(serieProduit.getText()) ; 
+            	    
                 // Affichage direct de la fenêtre SoudureResultat
                 try {
                 	  // Chargement de la nouvelle fenêtre
@@ -435,119 +590,129 @@ public class RemplirSertissageNormal {
                     ex.printStackTrace();
                 }
             });
-        } else {
-            // Si les champs ne sont pas remplis ou si "quantité atteinte" est vide, afficher la fenêtre de chargement
+        } else {     
+        			  centerTextFields(
+        					  hauteurSertissageEch1, hauteurSertissageEch2, hauteurSertissageEch3, 
+        					  largeurSertissage, hauteurIsolant, largeurIsolant, 
+        					  traction, serieProduit , quantiteCycle , hauteurIsolantEchFin , hauteurIsolantEchFin,
+        					  hauteurSertissageEchFin , largeurIsolantEchFin , largeurSertissageEchFin
+        				    );
+        			 SertissageNormaleInformations.numCycle = Integer.parseInt( nbrCycle.getText()) ; 
+                  	SertissageNormaleInformations.hauteurSertissageEch1 = Double.parseDouble(hauteurSertissageEch1.getText()); 
+                  	SertissageNormaleInformations.hauteurSertissageEch2 = Double.parseDouble(hauteurSertissageEch2.getText()); 
+                  	SertissageNormaleInformations.hauteurSertissageEch3 = Double.parseDouble(hauteurSertissageEch3.getText()); 
+                  	SertissageNormaleInformations.largeurSertissage = Double.parseDouble(largeurSertissage.getText()); 
+                  	SertissageNormaleInformations.hauteurIsolant = Double.parseDouble(hauteurIsolant.getText());
+                  	SertissageNormaleInformations.largeurIsolant = Double.parseDouble(largeurIsolant.getText());
+                  	SertissageNormaleInformations.traction = traction.getText();
+                  	SertissageNormaleInformations.produit = listeProduits.getValue();
+                  	SertissageNormaleInformations.machineTraction = listeMachineTraction.getValue();
+                  	SertissageNormaleInformations.serieProduit = Integer.parseInt(serieProduit.getText()) ; 
+        			  try {
+        	                FXMLLoader loader = new FXMLLoader(getClass().getResource("/Front_java/SertissageNormal/loading/LoadingSertissageNormal.fxml"));
+        	                Scene loadingScene = new Scene(loader.load());
+        	                String cssPath = "/Front_java/SertissageNormal/loading/LoadingSertissageNormal.css";
+        	                if (getClass().getResource(cssPath) != null) {
+        	                    loadingScene.getStylesheets().add(getClass().getResource(cssPath).toExternalForm());
+        	                } else {
+        	                    System.out.println("❌ Fichier CSS introuvable : " + cssPath);
+        	                }
 
-        	//SertissageNormaleInformations.numCycle = Integer.parseInt(nbrCycle.getText() ); 
-        	SertissageNormaleInformations.hauteurSertissageEch1 = hauteurSertissageEch1.getText(); 
-        	SertissageNormaleInformations.hauteurSertissageEch2 = hauteurSertissageEch2.getText(); 
-        	SertissageNormaleInformations.hauteurSertissageEch3 = hauteurSertissageEch3.getText(); 
-        	SertissageNormaleInformations.hauteurSertissageEchFin = hauteurSertissageEchFin.getText() ; 
-        	SertissageNormaleInformations.largeurSertissage = largeurSertissage.getText(); 
-        	SertissageNormaleInformations.largeurSertissageEchFin =largeurSertissageEchFin.getText(); 
-        	SertissageNormaleInformations.hauteurIsolant = hauteurIsolant.getText();
-        	SertissageNormaleInformations.hauteurIsolantEchFin = hauteurIsolantEchFin.getText();
-        	SertissageNormaleInformations.largeurIsolant = largeurIsolant.getText();
-        	SertissageNormaleInformations.largeurIsolantEchFin = largeurIsolantEchFin.getText();
-        	SertissageNormaleInformations.traction = traction.getText();
-        	SertissageNormaleInformations.tractionFinEch = tractionEchFin.getText();
-        	SertissageNormaleInformations.produit = listeProduits.getValue();
-        	SertissageNormaleInformations.quantiteAtteint = quantiteCycle.getText();
-        	SertissageNormaleInformations.machineTraction = listeMachineTraction.getValue();
-        	SertissageNormaleInformations.serieProduit = serieProduit.getText() ; 
+        	                LoadingSertissageNormal loadingController = loader.getController();
+        	                loadingController.setParentController(this);
 
-        	
-            try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/Front_java/SertissageNormal/loading/LoadingSertissageNormal.fxml"));
-                Scene loadingScene = new Scene(loader.load());
-                String cssPath = "/Front_java/SertissageNormal/loading/LoadingSertissageNormal.css";
-                if (getClass().getResource(cssPath) != null) {
-                    loadingScene.getStylesheets().add(getClass().getResource(cssPath).toExternalForm());
-                } else {
-                    System.out.println("❌ Fichier CSS introuvable : " + cssPath);
-                }
+        	                // Définir l'action à exécuter lorsque le bouton "Terminer" est cliqué
+        	                loadingController.setOnTerminerAction(() -> {
+        	                    // Rendre le champ "quantité atteinte" activé
+        	                	hauteurSertissageEchFin.setDisable(false); 
+        	                	largeurSertissageEchFin.setDisable(false);
+        	                	largeurIsolantEchFin.setDisable(false);
+        	                	hauteurIsolantEchFin.setDisable(false) ; 
+        	                	tractionEchFin.setDisable(false) ; 
+        	                    quantiteCycle.setDisable(false);
 
-                LoadingSertissageNormal loadingController = loader.getController();
-                loadingController.setParentController(this);
+        	                    // Si tous les champs sont remplis, passer à la fenêtre de résultats
+        	                    if (checkOtherFields()) {
+        	                    	try {
+        	                    		SertissageNormaleInformations.numCycle = Integer.parseInt( nbrCycle.getText()) ; 
+        	                        	SertissageNormaleInformations.hauteurSertissageEch1 = Double.parseDouble(hauteurSertissageEch1.getText()); 
+        	                        	SertissageNormaleInformations.hauteurSertissageEch2 = Double.parseDouble(hauteurSertissageEch2.getText()); 
+        	                        	SertissageNormaleInformations.hauteurSertissageEch3 = Double.parseDouble(hauteurSertissageEch3.getText()); 
+        	                        	SertissageNormaleInformations.hauteurSertissageEchFin =Double.parseDouble( hauteurSertissageEchFin.getText()); 
+        	                        	SertissageNormaleInformations.largeurSertissage = Double.parseDouble(largeurSertissage.getText()); 
+        	                        	SertissageNormaleInformations.largeurSertissageEchFin = Double.parseDouble(largeurSertissageEchFin.getText()); 
+        	                        	SertissageNormaleInformations.hauteurIsolant = Double.parseDouble(hauteurIsolant.getText());
+        	                        	SertissageNormaleInformations.hauteurIsolantEchFin = Double.parseDouble(hauteurIsolantEchFin.getText());
+        	                        	SertissageNormaleInformations.largeurIsolant = Double.parseDouble(largeurIsolant.getText());
+        	                        	SertissageNormaleInformations.largeurIsolantEchFin = Double.parseDouble(largeurIsolantEchFin.getText());
+        	                        	SertissageNormaleInformations.traction = traction.getText();
+        	                        	SertissageNormaleInformations.tractionFinEch = Integer.parseInt( tractionEchFin.getText());
+        	                        	SertissageNormaleInformations.produit = listeProduits.getValue();
+        	                        	SertissageNormaleInformations.quantiteAtteint = quantiteCycle.getText();
+        	                        	SertissageNormaleInformations.machineTraction = listeMachineTraction.getValue();
+        	                        	SertissageNormaleInformations.serieProduit = Integer.parseInt(serieProduit.getText()) ; 
 
-                // Définir l'action à exécuter lorsque le bouton "Terminer" est cliqué
-                loadingController.setOnTerminerAction(() -> {
-                    // Rendre le champ "quantité atteinte" activé
-                	hauteurSertissageEchFin.setDisable(false); 
-                	largeurSertissageEchFin.setDisable(false);
-                	largeurIsolantEchFin.setDisable(false);
-                	hauteurSertissageEchFin.setDisable(false) ; 
-                	tractionEchFin.setDisable(false) ; 
-                    quantiteCycle.setDisable(false);
+        	                        	
+        	                    	    // Chargement de la nouvelle fenêtre
+        	                    	    FXMLLoader loader2 = new FXMLLoader(getClass().getResource("/Front_java/SertissageNormal/loading/LoadingSertissageNormal.fxml"));
+        	                    	    Scene resultScene = new Scene(loader2.load());
+        	                    	    resultScene.getStylesheets().add(getClass().getResource("/Front_java/SertissageNormal/loading/LoadingSertissageNormal.css").toExternalForm());
+        	                    	    
+        	                    	    Stage resultStage = new Stage();
+        	                    	    resultStage.setScene(resultScene);
+        	                    	    resultStage.setMaximized(true);
+        	                    	    resultStage.initStyle(StageStyle.UNDECORATED);
+        	                    	    
+        	                    	    // Ajout d'une icône
+        	                    	    Image icon = new Image("/logo_app.jpg");
+        	                    	    resultStage.getIcons().add(icon);
+        	                    	    
+        	                    	    // Affichage de la nouvelle fenêtre
+        	                    	    resultStage.show();
 
-                    // Si tous les champs sont remplis, passer à la fenêtre de résultats
-                    if (checkOtherFields()) {
-                    	try {
-                    		SertissageNormaleInformations.numCycle = nbrCycle.getText() ; 
-                        	SertissageNormaleInformations.hauteurSertissageEch1 = hauteurSertissageEch1.getText(); 
-                        	SertissageNormaleInformations.hauteurSertissageEch2 = hauteurSertissageEch2.getText(); 
-                        	SertissageNormaleInformations.hauteurSertissageEch3 = hauteurSertissageEch3.getText(); 
-                        	SertissageNormaleInformations.hauteurSertissageEchFin =hauteurSertissageEchFin.getText(); 
-                        	SertissageNormaleInformations.largeurSertissage = largeurSertissage.getText(); 
-                        	SertissageNormaleInformations.largeurSertissageEchFin = largeurSertissageEchFin.getText(); 
-                        	SertissageNormaleInformations.hauteurIsolant = hauteurIsolant.getText();
-                        	SertissageNormaleInformations.hauteurIsolantEchFin = hauteurIsolantEchFin.getText();
-                        	SertissageNormaleInformations.largeurIsolant =largeurIsolant.getText();
-                        	SertissageNormaleInformations.largeurIsolantEchFin = largeurIsolantEchFin.getText();
-                        	SertissageNormaleInformations.traction = traction.getText();
-                        	SertissageNormaleInformations.tractionFinEch =tractionEchFin.getText();
-                        	SertissageNormaleInformations.produit = listeProduits.getValue();
-                        	SertissageNormaleInformations.quantiteAtteint =quantiteCycle.getText();
-                        	SertissageNormaleInformations.machineTraction = listeMachineTraction.getValue();
-                        	SertissageNormaleInformations.serieProduit = serieProduit.getText() ; 
+        	                    	    // Fermeture de la fenêtre actuelle
+        	                    	    Stage currentStage = (Stage) btnSuivant.getScene().getWindow();
+        	                            currentStage.close();
 
-                        	
-                    	    // Chargement de la nouvelle fenêtre
-                    	    FXMLLoader loader2 = new FXMLLoader(getClass().getResource("/Front_java/SertissageNormal/loading/LoadingSertissageNormal.fxml"));
-                    	    Scene resultScene = new Scene(loader2.load());
-                    	    resultScene.getStylesheets().add(getClass().getResource("/Front_java/SertissageNormal/loading/LoadingSertissageNormal.css").toExternalForm());
-                    	    
-                    	    Stage resultStage = new Stage();
-                    	    resultStage.setScene(resultScene);
-                    	    resultStage.setMaximized(true);
-                    	    resultStage.initStyle(StageStyle.UNDECORATED);
-                    	    
-                    	    // Ajout d'une icône
-                    	    Image icon = new Image("/logo_app.jpg");
-                    	    resultStage.getIcons().add(icon);
-                    	    
-                    	    // Affichage de la nouvelle fenêtre
-                    	    resultStage.show();
+        	                    	} catch (IOException ex) {
+        	                    	    System.out.println("Erreur lors du chargement de la fenêtre SoudureResultat : " + ex.getMessage());
+        	                    	    ex.printStackTrace();
+        	                    	}
 
-                    	    // Fermeture de la fenêtre actuelle
-                    	    Stage currentStage = (Stage) btnSuivant.getScene().getWindow();
-                            currentStage.close();
+        	                    }
+        	                });
 
-                    	} catch (IOException ex) {
-                    	    System.out.println("Erreur lors du chargement de la fenêtre SoudureResultat : " + ex.getMessage());
-                    	    ex.printStackTrace();
-                    	}
+        	                Stage parentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        	                Stage loadingStage = new Stage();
+        	                loadingStage.setScene(loadingScene);
+        	                loadingStage.initStyle(StageStyle.UNDECORATED);
+        	                loadingStage.initModality(Modality.APPLICATION_MODAL);
+        	                loadingStage.initOwner(parentStage);
+        	                loadingStage.show();
 
-                    }
-                });
-
-                Stage parentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-                Stage loadingStage = new Stage();
-                loadingStage.setScene(loadingScene);
-                loadingStage.initStyle(StageStyle.UNDECORATED);
-                loadingStage.initModality(Modality.APPLICATION_MODAL);
-                loadingStage.initOwner(parentStage);
-                loadingStage.show();
-
-            } catch (IOException ex) {
-                System.out.println("❌ Erreur lors du chargement de la fenêtre de chargement : " + ex.getMessage());
-                ex.printStackTrace();
-            }
-        }
+        	            } catch (IOException ex) {
+        	                System.out.println("❌ Erreur lors du chargement de la fenêtre de chargement : " + ex.getMessage());
+        	                ex.printStackTrace();
+        	            }
+        	        }
 }
 	
+	  public static boolean areFieldsEqual(TextField f1, TextField f2, TextField f3, TextField f4) {
+	        return f1.getText().equals(f2.getText()) &&
+	               f1.getText().equals(f3.getText()) &&
+	               f1.getText().equals(f4.getText());
+	    }
+	  
+	  public static boolean areFieldsEqualDeuxChamps(TextField f1, TextField f2) {
+	        return f1.getText().equals(f2.getText());
+	    }
+	  private static void colorBorderRed(TextField... fields) {
+	        for (TextField field : fields) {
+	            field.setStyle("-fx-border-color: red; -fx-border-width: 2px;");
+	            field.setOnMouseClicked(event -> field.setStyle("-fx-border-color: red; -fx-border-width: 2px;"));
 
-	    
+	        }
+	    }
 	@FXML
 	void precedant(ActionEvent event) {
 		try {
@@ -578,8 +743,8 @@ public class RemplirSertissageNormal {
 	@FXML
 	void logout(ActionEvent event) {
 
-    	AppInformations.reset();
-    	//TorsadageInformations.reset();
+		AppInformations.reset();
+    	SertissageNormaleInformations.reset();
     
 
 		Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
@@ -616,15 +781,58 @@ public class RemplirSertissageNormal {
 			posteUser.setText(operateurInfo.getPoste());
 			segementUser.setText(operateurInfo.getSegment());
 			nomProjet.setText(SertissageNormaleInformations.projetSelectionner);
-			sectionFil.setText(SertissageNormaleInformations.sectionFil);
+			sectionFil.setText(SertissageNormaleInformations.sectionFil +" mm²");
 			codeControleSelectionner.setText(SertissageNormaleInformations.codeControleSelectionner);
-			labelHauteurSertissage.setText(getElementFromSection(SertissageNormaleInformations.sectionFil , "Hauteur_Sertissage")+" mm");
-			labelLargeurSertissage.setText(getElementFromSection(SertissageNormaleInformations.sectionFil , "Largeur_Sertissage")+" mm");
-			labelHauteurIsolant.setText(getElementFromSection(SertissageNormaleInformations.sectionFil , "Hauteur_Isolant") +" mm");
-			labelLargeurIsolant.setText(getElementFromSection(SertissageNormaleInformations.sectionFil , "Largeur_Isolant"));
-			labelTraction.setText(" >= "+getElementFromSection(SertissageNormaleInformations.sectionFil , "Traction")+" N");
+			numContact.setText(SertissageNormaleInformations.numeroContacts );
+			numOutil.setText(SertissageNormaleInformations.numeroOutils );
+			
+			String toleranceHauteurIsolant = fetchToleranceHauteurIsolantFromAPI(SertissageNormaleInformations.numeroOutils,
+					                                                     SertissageNormaleInformations.numeroContacts,
+					                                                     SertissageNormaleInformations.sectionFil ) ; 
+			
+			String toleranceLargeurIsolant = fetchToleranceLargeurIsolantFromAPI(SertissageNormaleInformations.numeroOutils,
+                    SertissageNormaleInformations.numeroContacts,
+                    SertissageNormaleInformations.sectionFil ) ; 
+			
+			String toleranceLargeurSertissageString= fetchToleranceLargeurSertissageFromAPI(SertissageNormaleInformations.numeroOutils,
+                    SertissageNormaleInformations.numeroContacts,
+                    SertissageNormaleInformations.sectionFil ) ; 
+			
+			SertissageNormaleInformations.labelHauteurSertissage = Double.parseDouble(fetchHauteurSertissageFromAPI(SertissageNormaleInformations.numeroOutils ,
+																			                    SertissageNormaleInformations.numeroContacts,
+																			                    SertissageNormaleInformations.sectionFil ));
+			
+			SertissageNormaleInformations.labelLargeurSertissage = Double.parseDouble(fetchLargeurSertissageFromAPI(SertissageNormaleInformations.numeroOutils,
+                    SertissageNormaleInformations.numeroContacts,
+                    SertissageNormaleInformations.sectionFil ) ) ; 
 
+			
+			SertissageNormaleInformations.labelHauteurIsolant = Double.parseDouble(fetchHauteurIsolantFromAPI(SertissageNormaleInformations.numeroOutils,
+																                    SertissageNormaleInformations.numeroContacts,
+																                    SertissageNormaleInformations.sectionFil ));
 
+			
+			SertissageNormaleInformations.labelLargeurIsolant = Double.parseDouble(fetchLargeurIsolantFromAPI(SertissageNormaleInformations.numeroOutils,
+                    SertissageNormaleInformations.numeroContacts,
+                    SertissageNormaleInformations.sectionFil ));
+
+			
+			labelHauteurSertissage.setText(SertissageNormaleInformations.labelHauteurSertissage +"/±0.05 mm");
+			
+		
+			labelLargeurSertissage.setText(SertissageNormaleInformations.labelLargeurSertissage +"/"+toleranceLargeurSertissageString+" mm");
+			
+			labelHauteurIsolant.setText(SertissageNormaleInformations.labelHauteurIsolant +"/"+toleranceHauteurIsolant+" mm");
+			
+			labelLargeurIsolant.setText(SertissageNormaleInformations.labelLargeurIsolant +"/"+toleranceLargeurIsolant+" mm");
+			
+			String traction =fetchTractionFromAPI(SertissageNormaleInformations.numeroOutils,
+                    SertissageNormaleInformations.numeroContacts,
+                    SertissageNormaleInformations.sectionFil ) ; 
+					traction = traction.replace("&gt;", ">").replace("&lt;", "<"); // Décodage manuel
+					labelTraction.setText(traction);
+					
+					SertissageNormaleInformations.labelTraction = traction ; 
 		} else {
 			System.out.println("Aucune information d'opérateur disponible.");
 		}
@@ -651,69 +859,31 @@ public class RemplirSertissageNormal {
 	}
 
 
-	/**** recuperation numero de cycle de pdek ****/
-	private int getNumeroCycleMaxFromApi() throws Exception {
-	    String token = AppInformations.token;
-
-	    // Encodage correct des paramètres pour éviter tout problème
-	    String encodedSectionFil = URLEncoder.encode(AppInformations.sectionFilSelectionner, StandardCharsets.UTF_8);
-	    String encodedNomProjet = URLEncoder.encode(AppInformations.projetSelectionner, StandardCharsets.UTF_8);
-	    String encodedSegmentPDEK = URLEncoder.encode(String.valueOf(AppInformations.operateurInfo.getSegment()), StandardCharsets.UTF_8);
-	    String encodedPlantPDEK = URLEncoder.encode(AppInformations.operateurInfo.getPlant(), StandardCharsets.UTF_8);
-
-	    String url = "http://localhost:8281/operations/soudure/numCycleMax?sectionFil=" + encodedSectionFil 
-	            + "&segment=" + encodedSegmentPDEK
-	            + "&nomPlant=" + encodedPlantPDEK  // Correction ici
-	            + "&nomProjet=" + encodedNomProjet;
 
 
-	    HttpRequest request = HttpRequest.newBuilder()
-	            .uri(URI.create(url))
-	            .header("Authorization", "Bearer " + token)
-	            .build();
+	private void loadDernierNumeroCycle() {
+	    String dernierNumeroStr = fetchNumMaxCycle();
 
-	    HttpClient client = HttpClient.newHttpClient();
-	    HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+	    // Vérifier si la réponse est un nombre valide
+	    try {
+	        int dernierNumeroCycle = Integer.parseInt(dernierNumeroStr);
 
-	    if (response.statusCode() == 200) {
-	        String responseBody = response.body().trim();
-	        System.out.println("Numéro de cycle reçu : " + responseBody);
-
-	        try {
-	            return Integer.parseInt(responseBody); // Conversion de la réponse en int
-	        } catch (NumberFormatException e) {
-	            throw new Exception("Réponse inattendue de l'API : " + responseBody);
+	        SertissageNormaleInformations.numCycle = dernierNumeroCycle ; 
+	        if (dernierNumeroCycle == 8) {
+	            nbrCycle.setText("1");
+	        } else if (dernierNumeroCycle < 8) {
+	            nbrCycle.setText(String.valueOf(dernierNumeroCycle + 1));
+	        } else {
+	            nbrCycle.setText("Erreur");
+	            System.out.println("Erreur lors de la récupération du dernier numéro de cycle.");
 	        }
-	    } else {
-	        throw new Exception("Erreur lors de la récupération du numéro de cycle : " + response.statusCode() + " - " + response.body());
+	    } catch (NumberFormatException e) {
+	        nbrCycle.setText("Erreur");
+	        System.out.println("Impossible de convertir la réponse en nombre : " + dernierNumeroStr);
 	    }
 	}
 
 
-/*	private void loadNumeroCycleMax() {
-		Task<Integer> task = new Task<>() {
-			@Override
-			protected Integer call() throws Exception {
-				return getNumeroCycleMaxFromApi(); // Appelle la méthode corrigée avec encodage
-			}
-		};
-
-		task.setOnSucceeded(event -> {
-			int numeroCycleMax = task.getValue();
-			valeurNumeroCycle.setText(String.valueOf(numeroCycleMax + 1));
-			SoudureInformations.numeroCycle = numeroCycleMax + 1;
-			System.out.println("Numéro de cycle max récupéré : " + numeroCycleMax);
-		});
-
-		task.setOnFailed(event -> {
-			Throwable e = task.getException();
-			valeurNumeroCycle.setText("Erreur");
-			System.out.println("Erreur lors de la récupération du numéro de cycle : " + e.getMessage());
-		});
-
-		// Lance la tâche dans un thread séparé
-		new Thread(task).start();
-	}*/
 
 	/*********************************          Alerts        ***************************************/
 
@@ -904,7 +1074,6 @@ public class RemplirSertissageNormal {
 	}
 
     public void afficherNotification(String message) {
-        System.out.println("📢 Affichage d'une notification : " + message);
 
         if (stackPane == null) {
             System.out.println("❌ Erreur : stackPane est null.");
@@ -957,7 +1126,6 @@ public class RemplirSertissageNormal {
 
         closeButton.setOnAction(e -> {
             dialog.close();
-            System.out.println("Notification fermée par l'utilisateur.");
         });
 
         dialog.show();
@@ -967,7 +1135,6 @@ public class RemplirSertissageNormal {
         pause.setOnFinished(e -> {
             if (dialog.isVisible()) {
                 dialog.close();
-                System.out.println(" Notification fermée automatiquement après 5 secondes.");
             }
         });
         pause.play();
@@ -980,7 +1147,7 @@ public class RemplirSertissageNormal {
             }
         });
     }
-/*********************  Recupere des detailes des elements *****/
+/*********************  Recupere des detailes des elements ****
     private String getElementFromSection(String sectionFil, String element) throws Exception {
         String token = AppInformations.token;
 
@@ -1017,6 +1184,327 @@ public class RemplirSertissageNormal {
         }
     }
 
+*/
+    /********************* details des hauteurs et largeurs sertissage et islolan ************************/
+    private static final HttpClient httpClient = HttpClient.newHttpClient();
 
+    public  String fetchHauteurSertissageFromAPI(String numeroOutil, String numeroContact, String sectionFil) {
+
+        try {
+            // Construire l'URL avec les paramètres
+            String url = "http://localhost:8281/operations/SertissageNormal/hauteurSertissage"
+                    + "?numeroOutil=" + numeroOutil
+                    + "&numeroContact=" + numeroContact
+                    + "&sectionFil=" + sectionFil;
+
+            // Construire la requête HTTP avec le token d'authentification
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(url))
+                    .header("Authorization", "Bearer " + AppInformations.token) // Ajouter le token si nécessaire
+                    .GET()
+                    .build();
+
+            // Envoyer la requête et récupérer la réponse
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+            // Vérifier si la réponse est réussie (code 200 OK)
+            if (response.statusCode() == 200) {
+                return response.body(); // Retourne directement la hauteur de sertissage
+            } else {
+                System.out.println("Erreur de l'API: " + response.statusCode());
+                return "Erreur API: " + response.statusCode();
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Erreur de connexion à l'API";
+        }
+    }
+
+    public  String fetchLargeurSertissageFromAPI(String numeroOutil, String numeroContact, String sectionFil) {
+
+        try {
+            // Construire l'URL avec les paramètres
+            String url = "http://localhost:8281/operations/SertissageNormal/largeurSertissage"
+                    + "?numeroOutil=" + numeroOutil
+                    + "&numeroContact=" + numeroContact
+                    + "&sectionFil=" + sectionFil;
+
+            // Construire la requête HTTP avec le token d'authentification
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(url))
+                    .header("Authorization", "Bearer " + AppInformations.token) // Ajouter le token si nécessaire
+                    .GET()
+                    .build();
+
+            // Envoyer la requête et récupérer la réponse
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+            // Vérifier si la réponse est réussie (code 200 OK)
+            if (response.statusCode() == 200) {
+                return response.body(); // Retourne directement la hauteur de sertissage
+            } else {
+                System.out.println("Erreur de l'API: " + response.statusCode());
+                return "Erreur API: " + response.statusCode();
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Erreur de connexion à l'API";
+        }
+    }
+    public  String fetchHauteurIsolantFromAPI(String numeroOutil, String numeroContact, String sectionFil) {
+
+        try {
+            // Construire l'URL avec les paramètres
+            String url = "http://localhost:8281/operations/SertissageNormal/hauteurSertissage"
+                    + "?numeroOutil=" + numeroOutil
+                    + "&numeroContact=" + numeroContact
+                    + "&sectionFil=" + sectionFil;
+
+            // Construire la requête HTTP avec le token d'authentification
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(url))
+                    .header("Authorization", "Bearer " + AppInformations.token) // Ajouter le token si nécessaire
+                    .GET()
+                    .build();
+
+            // Envoyer la requête et récupérer la réponse
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+            // Vérifier si la réponse est réussie (code 200 OK)
+            if (response.statusCode() == 200) {
+                return response.body(); // Retourne directement la hauteur de sertissage
+            } else {
+                System.out.println("Erreur de l'API: " + response.statusCode());
+                return "Erreur API: " + response.statusCode();
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Erreur de connexion à l'API";
+        }
+    }
+
+    public  String fetchLargeurIsolantFromAPI(String numeroOutil, String numeroContact, String sectionFil) {
+
+        try {
+            // Construire l'URL avec les paramètres
+            String url = "http://localhost:8281/operations/SertissageNormal/largeurSertissage"
+                    + "?numeroOutil=" + numeroOutil
+                    + "&numeroContact=" + numeroContact
+                    + "&sectionFil=" + sectionFil;
+
+            // Construire la requête HTTP avec le token d'authentification
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(url))
+                    .header("Authorization", "Bearer " + AppInformations.token) // Ajouter le token si nécessaire
+                    .GET()
+                    .build();
+
+            // Envoyer la requête et récupérer la réponse
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+            // Vérifier si la réponse est réussie (code 200 OK)
+            if (response.statusCode() == 200) {
+                return response.body(); // Retourne directement la hauteur de sertissage
+            } else {
+                System.out.println("Erreur de l'API: " + response.statusCode());
+                return "Erreur API: " + response.statusCode();
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Erreur de connexion à l'API";
+        }
+    }
+public  String fetchTractionFromAPI(String numeroOutil, String numeroContact, String sectionFil) {
+        try {
+            // Construire l'URL avec les paramètres
+            String url = "http://localhost:8281/operations/SertissageNormal/traction"
+                    + "?numeroOutil=" + numeroOutil
+                    + "&numeroContact=" + numeroContact
+                    + "&sectionFil=" + sectionFil;
+
+            // Construire la requête HTTP avec le token d'authentification
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(url))
+                    .header("Authorization", "Bearer " + AppInformations.token) // Ajouter le token si nécessaire
+                    .GET()
+                    .build();
+
+            // Envoyer la requête et récupérer la réponse
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+            // Vérifier si la réponse est réussie (code 200 OK)
+            if (response.statusCode() == 200) {
+                return response.body(); // Retourne directement la hauteur de sertissage
+            } else {
+                System.out.println("Erreur de l'API: " + response.statusCode());
+                return "Erreur API: " + response.statusCode();
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Erreur de connexion à l'API";
+        }
+    }
+public  String fetchToleranceLargeurSertissageFromAPI(String numeroOutil, String numeroContact, String sectionFil) {
+    try {
+        // Construire l'URL avec les paramètres
+        String url = "http://localhost:8281/operations/SertissageNormal/ToleranceLargeurSertissage"
+                + "?numeroOutil=" + numeroOutil
+                + "&numeroContact=" + numeroContact
+                + "&sectionFil=" + sectionFil;
+
+        // Construire la requête HTTP avec le token d'authentification
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .header("Authorization", "Bearer " + AppInformations.token) // Ajouter le token si nécessaire
+                .GET()
+                .build();
+
+        // Envoyer la requête et récupérer la réponse
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+        // Vérifier si la réponse est réussie (code 200 OK)
+        if (response.statusCode() == 200) {
+            return response.body(); // Retourne directement la hauteur de sertissage
+        } else {
+            System.out.println("Erreur de l'API: " + response.statusCode());
+            return "Erreur API: " + response.statusCode();
+        }
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        return "Erreur de connexion à l'API";
+    }
+}
+public  String fetchToleranceLargeurIsolantFromAPI(String numeroOutil, String numeroContact, String sectionFil) {
+    try {
+        // Construire l'URL avec les paramètres
+        String url = "http://localhost:8281/operations/SertissageNormal/ToleranceLargeurIsolant"
+                + "?numeroOutil=" + numeroOutil
+                + "&numeroContact=" + numeroContact
+                + "&sectionFil=" + sectionFil;
+
+        // Construire la requête HTTP avec le token d'authentification
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .header("Authorization", "Bearer " + AppInformations.token) // Ajouter le token si nécessaire
+                .GET()
+                .build();
+
+        // Envoyer la requête et récupérer la réponse
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+        // Vérifier si la réponse est réussie (code 200 OK)
+        if (response.statusCode() == 200) {
+            return response.body(); // Retourne directement la hauteur de sertissage
+        } else {
+            System.out.println("Erreur de l'API: " + response.statusCode());
+            return "Erreur API: " + response.statusCode();
+        }
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        return "Erreur de connexion à l'API";
+    }
+}
+public  String fetchToleranceHauteurIsolantFromAPI(String numeroOutil, String numeroContact, String sectionFil) {
+    try {
+        // Construire l'URL avec les paramètres
+        String url = "http://localhost:8281/operations/SertissageNormal/ToleranceHauteurIsolant"
+                + "?numeroOutil=" + numeroOutil
+                + "&numeroContact=" + numeroContact
+                + "&sectionFil=" + sectionFil;
+
+        // Construire la requête HTTP avec le token d'authentification
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .header("Authorization", "Bearer " + AppInformations.token) // Ajouter le token si nécessaire
+                .GET()
+                .build();
+
+        // Envoyer la requête et récupérer la réponse
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+        // Vérifier si la réponse est réussie (code 200 OK)
+        if (response.statusCode() == 200) {
+            return response.body(); // Retourne directement la hauteur de sertissage
+        } else {
+            System.out.println("Erreur de l'API: " + response.statusCode());
+            return "Erreur API: " + response.statusCode();
+        }
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        return "Erreur de connexion à l'API";
+    }
+}
+/*********************  extraire mm depuis section fil *****/
+
+
+public double extraireValeurNumeriqueSectionFil(String sectionFil) {
+    return Double.parseDouble(sectionFil.trim().split(" ")[0] );
+}
+public void centerTextFields(TextField... fields) {
+    for (TextField field : fields) {
+        field.setStyle("-fx-alignment: center;"); // Centre le texte dans le champ
+    }
+}
+public static int extractValue(String input) {
+    Pattern pattern = Pattern.compile("\\d+(\\.\\d+)?"); // Capture les nombres entiers et décimaux
+    Matcher matcher = pattern.matcher(input);
+    
+    if (matcher.find()) {
+        return Integer.parseInt(matcher.group()); // Convertir en double
+    }
+    throw new IllegalArgumentException("Aucun nombre trouvé dans la chaîne !");
+}
+/***************************** Récuperation dernier numero de cycle de pdek courant **************************/
+
+
+public String fetchNumMaxCycle() {
+    try {
+        // Encoder les paramètres pour éviter les erreurs d'URL
+        String sectionFilEncoded = URLEncoder.encode(SertissageNormaleInformations.sectionFil + " mm²", StandardCharsets.UTF_8);
+        String projetEncoded = URLEncoder.encode(SertissageNormaleInformations.projetSelectionner, StandardCharsets.UTF_8);
+        String nomPlantEncoded = URLEncoder.encode(AppInformations.operateurInfo.getPlant(), StandardCharsets.UTF_8);
+
+        // Construire l'URL avec les paramètres encodés
+        String urlString = "http://localhost:8281/operations/SertissageNormal/dernier-numero-cycle?" +
+                "sectionFilSelectionne=" + sectionFilEncoded +
+                "&segment=" + AppInformations.operateurInfo.getSegment() +
+                "&nomPlant=" + nomPlantEncoded +
+                "&projetName=" + projetEncoded;
+
+        System.out.println("URL encodée : " + urlString);
+
+        // Construire la requête HTTP avec le token
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(urlString))
+                .header("Authorization", "Bearer " + AppInformations.token)
+                .GET()
+                .build();
+
+        // Envoyer la requête
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+        System.out.println("Statut HTTP reçu : " + response.statusCode());
+        System.out.println("Réponse brute : " + response.body());
+
+        // Vérifier si la réponse est réussie (code 200 OK)
+        if (response.statusCode() == 200) {
+            return response.body();
+        } else {
+            return "Erreur API: " + response.statusCode();
+        }
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        return "Erreur de connexion à l'API";
+    }
+}
 
 }

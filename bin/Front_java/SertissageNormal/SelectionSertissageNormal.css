@@ -106,8 +106,9 @@
     -fx-alignment: center;
 }
 .liste-sectionFil-combo .list-view {
-    -fx-pref-width: 150px;
-    -fx-pref-height: 300px; /* Ajustez la hauteur en fonction du nombre d'éléments */
+    -fx-pref-width: 200px;
+    -fx-pref-height: 100px; 
+   /* -fx-translate-y: 10px; /* Ajustez la hauteur en fonction du nombre d'éléments */
 }
 .liste-codeControle-combo {
     -fx-background-color: #D9D9D9;
@@ -130,11 +131,64 @@
     -fx-alignment: center;
 }
 .liste-codeControle-combo .list-view {
-    -fx-pref-width: 150px;
+    -fx-pref-width: 200px;
     -fx-pref-height: 150px; /* Ajustez la hauteur en fonction du nombre d'éléments */
 }
 
 .radiusBtn{
 	 -fx-border-radius: 10px;
     -fx-background-radius: 10px;
+}
+
+.search-field {
+    -fx-padding: 8px;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: black;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+    -fx-border-color: #0773ff;
+    -fx-border-width: 2px;
+    -fx-background-color: white;
+}
+.search-field:focused {
+    -fx-border-color: #0555cc;
+    -fx-background-color: #f0f8ff;
+}
+.keypad-button {
+    -fx-font-size: 27px;
+    -fx-font-weight: bold;
+    -fx-pref-width: 90px;
+    -fx-pref-height: 90px;
+    -fx-background-color: white;
+    -fx-text-fill: black;
+    -fx-border-color: black;
+    -fx-border-width: 1.5px;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+}
+.keypad-button1 {
+    -fx-font-size: 27px;
+    -fx-font-weight: bold;
+    -fx-pref-width: 150px;
+    -fx-pref-height: 90px;
+    -fx-background-color: white;
+    -fx-text-fill: black;
+    -fx-border-color: black;
+    -fx-border-width: 1.5px;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+}
+.keypad-image {
+    -fx-pref-width: 150px;  /* Largeur préférée */
+    -fx-pref-height: 90px;  /* Hauteur préférée */
+    -fx-background-color: transparent;  /* Fond transparent */
+    -fx-border-color: black;  /* Bordure noire */
+    -fx-border-width: 1.5px;  /* Épaisseur de la bordure */
+    -fx-border-radius: 10px;  /* Coins arrondis */
+    -fx-padding: 5px;  /* Espacement autour de l’image */
+}
+
+.keypad-button:hover {
+    -fx-background-color: #f2f2f2; /* Un léger gris au survol */
 }

@@ -1,4 +1,4 @@
-package Front_java.Configuration;
+package Front_java.Modeles;
 
 
 import lombok.Getter;

@@ -10,9 +10,9 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 
 import Front_java.Configuration.AppInformations;
-import Front_java.Configuration.SertissageIDCData;
 import Front_java.Configuration.SertissageIDCInformations;
 import Front_java.Modeles.OperateurInfo;
+import Front_java.Modeles.SertissageIDCData;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.concurrent.Task;

@@ -1,9 +1,6 @@
 package Front_java.SertissageNormal;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -12,14 +9,11 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import Front_java.Configuration.AppInformations;
-import Front_java.Configuration.SertissageIDCInformations;
 import Front_java.Configuration.SertissageNormaleInformations;
 import Front_java.Modeles.OperateurInfo;
-import Front_java.SertissageNormal.loading.LoadingSertissageNormal;
+import Front_java.Modeles.SertissageNormalData;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.*;
 import javafx.fxml.*;
@@ -36,12 +30,10 @@ import javafx.scene.layout.VBox;
 import javafx.stage.*;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
-import java.util.concurrent.CompletableFuture;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXDialog;
 import com.jfoenix.controls.JFXDialogLayout;
-import Front_java.Configuration.TorsadageInformations;
 import javafx.animation.KeyFrame;
 import javafx.animation.PauseTransition;
 import javafx.util.Duration;
@@ -183,7 +175,7 @@ public class ResultatSertissageNormal {
 	@FXML
 	public void initialize(){
 		
-		//ajouterPdekAvecSertissageIDC() ; 
+		ajouterPdekAvecSertissageNormal() ;
 		initialiserDonneesPDEKEnregistrer() ; 
 		afficherInfosOperateur();
 		SertissageNormaleInformations.testTerminitionCommande = 0 ; 
@@ -194,26 +186,26 @@ public class ResultatSertissageNormal {
 
 public void initialiserDonneesPDEKEnregistrer() {
 		
-		nbrCycle.setText(SertissageNormaleInformations.numCycle );
-		hauteurSertissageEch1.setText(SertissageNormaleInformations.hauteurSertissageEch1 );
-		hauteurSertissageEch2.setText(SertissageNormaleInformations.hauteurSertissageEch2 );
-		hauteurSertissageEch3.setText(SertissageNormaleInformations.hauteurSertissageEch3 );
-		hauteurSertissageEchFin.setText(SertissageNormaleInformations.hauteurSertissageEchFin);
+		nbrCycle.setText(SertissageNormaleInformations.numCycle+"" );
+		hauteurSertissageEch1.setText(SertissageNormaleInformations.hauteurSertissageEch1 +"");
+		hauteurSertissageEch2.setText(SertissageNormaleInformations.hauteurSertissageEch2 +"");
+		hauteurSertissageEch3.setText(SertissageNormaleInformations.hauteurSertissageEch3 +"");
+		hauteurSertissageEchFin.setText(SertissageNormaleInformations.hauteurSertissageEchFin +"");
 		
-		largeurSertissage.setText(SertissageNormaleInformations.largeurSertissage);
-		largeurSertissageEchFin.setText(SertissageNormaleInformations.largeurSertissageEchFin );
+		largeurSertissage.setText(SertissageNormaleInformations.largeurSertissage +"");
+		largeurSertissageEchFin.setText(SertissageNormaleInformations.largeurSertissageEchFin +"");
 		
 		
-		largeurIsolant.setText(SertissageNormaleInformations.largeurIsolant );
-		largeurIsolantEchFin.setText(SertissageNormaleInformations.largeurIsolantEchFin );
+		largeurIsolant.setText(SertissageNormaleInformations.largeurIsolant +"");
+		largeurIsolantEchFin.setText(SertissageNormaleInformations.largeurIsolantEchFin +"");
 	
 		hauteurIsolant.setText(SertissageNormaleInformations.hauteurIsolant +"");
-		hauteurIsolantEchFin.setText(SertissageNormaleInformations.hauteurIsolantEchFin);
+		hauteurIsolantEchFin.setText(SertissageNormaleInformations.hauteurIsolantEchFin +"");
 		traction.setText(SertissageNormaleInformations.traction );
-		tractionEchFin.setText(SertissageNormaleInformations.tractionFinEch );
+		tractionEchFin.setText(SertissageNormaleInformations.tractionFinEch +"");
 		
 		produit.setText(SertissageNormaleInformations.produit);
-		serieProduit.setText(SertissageNormaleInformations.serieProduit);
+		serieProduit.setText(SertissageNormaleInformations.serieProduit +"");
 		machineTraction.setText(SertissageNormaleInformations.machineTraction);
 	
 		quantiteCycle.setText(SertissageNormaleInformations.quantiteAtteint );
@@ -243,6 +235,8 @@ public void initialiserDonneesPDEKEnregistrer() {
 		SertissageNormaleInformations.projetSelectionner= null ; 
 		SertissageNormaleInformations.codeControleSelectionner= null ; 
 		SertissageNormaleInformations.sectionFil = null ; 
+		SertissageNormaleInformations.numeroContacts = null ; 
+		SertissageNormaleInformations.numeroOutils = null ; 
 		try {
 			// Charger la scène de Dashboard1
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/Front_java/SertissageNormal/SelectionSertissageNormal.fxml"));
@@ -275,9 +269,8 @@ public void initialiserDonneesPDEKEnregistrer() {
 	@FXML
 	void logout(ActionEvent event) {
 
-    	AppInformations.reset();
-    	//TorsadageInformations.reset();
-    
+		AppInformations.reset();
+    	SertissageNormaleInformations.reset();
 
 		Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
 		stage.close();
@@ -313,10 +306,10 @@ public void initialiserDonneesPDEKEnregistrer() {
 			posteUser.setText(operateurInfo.getPoste());
 			segementUser.setText(operateurInfo.getSegment());
 			nomProjet.setText(SertissageNormaleInformations.projetSelectionner);
-			sectionFil.setText(SertissageNormaleInformations.sectionFil);
+			sectionFil.setText(SertissageNormaleInformations.sectionFil +" mm²");
 			codeControleSelectionner.setText(SertissageNormaleInformations.codeControleSelectionner);
-			
-
+			numOutil.setText(SertissageNormaleInformations.numeroOutils);
+			numContact.setText(SertissageNormaleInformations.numeroContacts);
 		} else {
 			System.out.println("Aucune information d'opérateur disponible.");
 		}
@@ -560,8 +553,88 @@ public void initialiserDonneesPDEKEnregistrer() {
 	}
 	/********************************************* Ajout PDEK  ***************************************************************/
 	private void ajouterPdekAvecSertissageNormal() {
-	
+		Task<Void> task = new Task<>() {
+			@Override
+			protected Void call() throws Exception {
+				try {
+					// Code pour l'ajout du PDEK
+					String token = AppInformations.token;
+					String encodedProjet = URLEncoder.encode(SertissageNormaleInformations.projetSelectionner,
+							StandardCharsets.UTF_8);
+
+					String url = "http://localhost:8281/operations/SertissageNormal/ajouterPdekSertissageNormal" + "?matricule="
+							+ AppInformations.operateurInfo.getMatricule() + "&nomProjet=" + encodedProjet;
+
+					// Récupération des valeurs saisies et création de l'objet SoudureDTO
+					SertissageNormalData sertissageNormal = new SertissageNormalData();							
+
+					sertissageNormal.setSectionFil(SertissageNormaleInformations.sectionFil+" mm²");
+					LocalDate dateActuelle = LocalDate.now();
+					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+					sertissageNormal.setDate(dateActuelle.format(formatter)); 									
+                    sertissageNormal.setNumeroOutils(SertissageNormaleInformations.numeroOutils);
+                    sertissageNormal.setNumeroContacts(SertissageNormaleInformations.numeroContacts); 
+                    sertissageNormal.setHauteurSertissageEch1(SertissageNormaleInformations.hauteurSertissageEch1); 					    
+                    sertissageNormal.setHauteurSertissageEch2(SertissageNormaleInformations.hauteurSertissageEch2); 
+                    sertissageNormal.setHauteurSertissageEch3(SertissageNormaleInformations.hauteurSertissageEch3); 
+                    sertissageNormal.setHauteurSertissageEchFin(SertissageNormaleInformations.hauteurSertissageEchFin); 
+                    sertissageNormal.setLargeurSertissage(SertissageNormaleInformations.largeurSertissage); 
+                    sertissageNormal.setLargeurSertissageEchFin(SertissageNormaleInformations.largeurSertissageEchFin); 				    
+                    sertissageNormal.setHauteurIsolant(SertissageNormaleInformations.hauteurIsolant); 
+                    sertissageNormal.setHauteurIsolantEchFin(SertissageNormaleInformations.hauteurIsolantEchFin); 
+                    sertissageNormal.setLargeurIsolant(SertissageNormaleInformations.largeurIsolant); 				    
+                    sertissageNormal.setLargeurIsolantEchFin(SertissageNormaleInformations.largeurIsolantEchFin); 
+                    sertissageNormal.setTraction(SertissageNormaleInformations.traction); 
+                    sertissageNormal.setTractionFinEch(SertissageNormaleInformations.tractionFinEch); 
+                    sertissageNormal.setProduit (SertissageNormaleInformations.produit); 
+                    sertissageNormal.setSerieProduit(SertissageNormaleInformations.serieProduit); 
+                    sertissageNormal.setQuantiteCycle(Integer.parseInt(SertissageNormaleInformations.quantiteAtteint)); 				    
+                    sertissageNormal.setCodeControle(SertissageNormaleInformations.codeControleSelectionner); 					    
+                    sertissageNormal.setSegment (Integer.parseInt(AppInformations.operateurInfo.getSegment())); 
+                    sertissageNormal.setNumeroMachine(SertissageNormaleInformations.machineTraction); 
+					sertissageNormal.setTolerance(Double.parseDouble(fetchTolerance(SertissageNormaleInformations.numeroOutils , 
+						                                     	SertissageNormaleInformations.numeroContacts ,
+						                                     	SertissageNormaleInformations.sectionFil )) ) ; 
+					
+					  sertissageNormal.setNumeroOutils(SertissageNormaleInformations.numeroOutils) ;  
+					  sertissageNormal.setNumeroContacts(SertissageNormaleInformations.numeroContacts) ;   
+
+					
+					// Conversion de l'objet SoudureDTO en JSON
+					ObjectMapper objectMapper = new ObjectMapper();
+					String sertissageNormalJson = objectMapper.writeValueAsString(sertissageNormal);
+
+					HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url))
+							.header("Authorization", "Bearer " + token).header("Content-Type", "application/json")
+							.POST(HttpRequest.BodyPublishers.ofString(sertissageNormalJson)).build();
+
+					HttpClient client = HttpClient.newHttpClient();
+					HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+					if (response.statusCode() == 201) {
+					} else {
+						System.out.println("Erreur dans l'ajout PDEK, code : " + response.statusCode() + ", message : "
+								+ response.body());
+						throw new Exception("Erreur dans l'ajout PDEK : " + response.body());
+					}
+
+				} catch (Exception e) {
+					e.printStackTrace();
+					throw new Exception("Erreur dans la méthode ajouterPdekAvecSoudure : " + e.getMessage());
+				}
+				return null;
+			}
+		};
+
+		task.setOnFailed(event -> {
+			Throwable exception = task.getException();
+			System.out.println("Erreur lors de l'ajout du PDEK : " + exception.getMessage());
+			showErrorDialog("Erreur", "Erreur lors de l'ajout du PDEK : " + exception.getMessage());
+		});
+
+		new Thread(task).start();
 	}
+
 	
 	/****************** Extraire valeur depuis section fil ****************/
 	public double extraireValeurNumerique(String sectionFil) {
@@ -650,43 +723,38 @@ public void initialiserDonneesPDEKEnregistrer() {
             }
         });
     }
-/*********************  Recupere des detailes des elements *****/
-    private String getElementFromSection(String sectionFil, String element) throws Exception {
-        String token = AppInformations.token;
+/***** recuperation tolerance de instance de sertissage normal ***************************/
+    private static final HttpClient httpClient = HttpClient.newHttpClient();
 
-        // Encodage correct des paramètres pour éviter tout problème
-        String encodedSectionFil = URLEncoder.encode(sectionFil, StandardCharsets.UTF_8);
-        // Remplacer les '+' par '%20' pour éviter que '+' soit interprété comme un espace
-        encodedSectionFil = encodedSectionFil.replace("+", "%20");
+    public  String  fetchTolerance(String numeroOutil, String numeroContact, String sectionFil) {
+        try {
+            // Construire l'URL avec les paramètres
+            String url = "http://localhost:8281/operations/SertissageNormal/tolerance"
+                    + "?numeroOutil=" + numeroOutil
+                    + "&numeroContact=" + numeroContact
+                    + "&sectionFil=" + sectionFil;
 
-        String encodedElement = URLEncoder.encode(element, StandardCharsets.UTF_8);
+            // Construire la requête HTTP avec le token d'authentification
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(url))
+                    .header("Authorization", "Bearer " + AppInformations.token) // Ajouter le token si nécessaire
+                    .GET()
+                    .build();
 
-        // URL de l'API avec la section et l'élément spécifiques
-        String url = "http://localhost:8281/operations/SertissageNormal/sections/" + encodedSectionFil + "/" + encodedElement;
+            // Envoyer la requête et récupérer la réponse
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
+            // Vérifier si la réponse est réussie (code 200 OK)
+            if (response.statusCode() == 200) {
+                return response.body(); // Retourne directement la hauteur de sertissage
+            } else {
+                System.out.println("Erreur de l'API: " + response.statusCode());
+                return "Erreur API: " + response.statusCode();
+            }
 
-        // Construction de la requête HTTP avec le token d'authentification
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(url))
-                .header("Authorization", "Bearer " + token)
-                .build();
-
-        // Création du client HTTP
-        HttpClient client = HttpClient.newHttpClient();
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-        // Vérification du code de statut HTTP
-        if (response.statusCode() == 200) {
-            String responseBody = response.body().trim();
-
-            // Retourner la valeur de l'élément demandé
-            return responseBody;
-        } else {
-            throw new Exception("Erreur lors de la récupération de l'élément : "
-                + response.statusCode() + " - " + response.body());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Erreur de connexion à l'API";
         }
     }
-
-
-
 }

@@ -274,8 +274,8 @@
 }
 .liste-codeControle-combo .list-view {
     -fx-pref-width: 150px;
-    -fx-max-height: 30px; /* Limite la hauteur pour éviter qu'elle ne monte trop */
-    -fx-translate-y: 100px; /* Décale légèrement vers le bas */
+    -fx-max-height: 10px; /* Limite la hauteur pour éviter qu'elle ne monte trop */
+    -fx-translate-y: 50px; /* Décale légèrement vers le bas */
         
     
 }  

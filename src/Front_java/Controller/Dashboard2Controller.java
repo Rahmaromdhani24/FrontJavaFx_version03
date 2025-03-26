@@ -12,6 +12,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import Front_java.Configuration.AppInformations;
+import Front_java.Configuration.SertissageNormaleInformations;
 import Front_java.Configuration.SoudureInformations;
 import Front_java.Configuration.SoudureInformationsCodeB;
 import Front_java.Loading.LoadingController;
@@ -231,6 +232,12 @@ public class Dashboard2Controller {
 	        return; // Arrêt si un champ est vide
 	    }
 
+	/*  if ((!quantiteField.isDisabled() && quantiteField.getText().isEmpty()) ) {
+	    	    
+	    	    showErrorDialog("Veuillez remplir tous les champs avant de continuer !", "Champs obligatoires");
+	    	    return; // Arrête l'exécution de la méthode après l'alerte
+	    	}
+	    */
 	    // 2. Vérification de la valeur de traction
 	    int tractionRecupererTextField;
 	    try {
@@ -569,28 +576,25 @@ public class Dashboard2Controller {
 
 
 	private void loadNumeroCycleMax() {
-		Task<Integer> task = new Task<>() {
-			@Override
-			protected Integer call() throws Exception {
-				return getNumeroCycleMaxFromApi(); // Appelle la méthode corrigée avec encodage
-			}
-		};
+	    String dernierNumeroStr = fetchNumMaxCycle();
 
-		task.setOnSucceeded(event -> {
-			int numeroCycleMax = task.getValue();
-			valeurNumeroCycle.setText(String.valueOf(numeroCycleMax + 1));
-			SoudureInformations.numeroCycle = numeroCycleMax + 1;
-			System.out.println("Numéro de cycle max récupéré : " + numeroCycleMax);
-		});
+	    // Vérifier si la réponse est un nombre valide
+	    try {
+	        int dernierNumeroCycle = Integer.parseInt(dernierNumeroStr);
 
-		task.setOnFailed(event -> {
-			Throwable e = task.getException();
-			valeurNumeroCycle.setText("Erreur");
-			System.out.println("Erreur lors de la récupération du numéro de cycle : " + e.getMessage());
-		});
-
-		// Lance la tâche dans un thread séparé
-		new Thread(task).start();
+	        SoudureInformations.numerCyclePDEK = dernierNumeroCycle ; 
+	        if (dernierNumeroCycle == 8) {
+	            valeurNumeroCycle.setText("1");
+	        } else if (dernierNumeroCycle < 8) {
+	            valeurNumeroCycle.setText(String.valueOf(dernierNumeroCycle + 1));
+	        } else {
+	            valeurNumeroCycle.setText("Erreur");
+	            System.out.println("Erreur lors de la récupération du dernier numéro de cycle.");
+	        }
+	    } catch (NumberFormatException e) {
+	        valeurNumeroCycle.setText("Erreur");
+	        System.out.println("Impossible de convertir la réponse en nombre : " + dernierNumeroStr);
+	    }
 	}
 
 	/*********************************          Alerts        ***************************************/
@@ -998,6 +1002,50 @@ public class Dashboard2Controller {
                 overlayPane.setStyle("-fx-background-color: transparent;");
             }
         });
+    }
+    /************************************************* Recupertion dernier num cycle **************************/
+    private static final HttpClient httpClient = HttpClient.newHttpClient();
+
+    public String fetchNumMaxCycle() {
+        try {
+            // Encoder les paramètres pour éviter les erreurs d'URL
+            String sectionFilEncoded = URLEncoder.encode(SertissageNormaleInformations.sectionFil + " mm²", StandardCharsets.UTF_8);
+            String projetEncoded = URLEncoder.encode(SertissageNormaleInformations.projetSelectionner, StandardCharsets.UTF_8);
+            String nomPlantEncoded = URLEncoder.encode(AppInformations.operateurInfo.getPlant(), StandardCharsets.UTF_8);
+
+            // Construire l'URL avec les paramètres encodés
+            String urlString = "http://localhost:8281/operations/soudure/dernier-numero-cycle?" +
+                    "sectionFilSelectionne=" + sectionFilEncoded +
+                    "&segment=" + AppInformations.operateurInfo.getSegment() +
+                    "&nomPlant=" + nomPlantEncoded +
+                    "&projetName=" + projetEncoded;
+
+            System.out.println("URL encodée : " + urlString);
+
+            // Construire la requête HTTP avec le token
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(urlString))
+                    .header("Authorization", "Bearer " + AppInformations.token)
+                    .GET()
+                    .build();
+
+            // Envoyer la requête
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+            System.out.println("Statut HTTP reçu : " + response.statusCode());
+            System.out.println("Réponse brute : " + response.body());
+
+            // Vérifier si la réponse est réussie (code 200 OK)
+            if (response.statusCode() == 200) {
+                return response.body();
+            } else {
+                return "Erreur API: " + response.statusCode();
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Erreur de connexion à l'API";
+        }
     }
 
 }

@@ -9,6 +9,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import Front_java.Configuration.AppInformations;
+import Front_java.Configuration.SertissageNormaleInformations;
 import Front_java.Modeles.OperateurInfo;
 import Front_java.Modeles.TorsadageDTO;
 import Front_java.Torsadage.loading.LoadingTorsadage;
@@ -326,6 +327,16 @@ public class RemplirTorsadage {
 	        showErrorDialog("Veuillez remplir tous les champs avant de continuer !", "Champs obligatoires");
 	        return; // Arrêt si un champ est vide
 	    }
+	    if ((!longueurFinalFinCde.isDisabled() && longueurFinalFinCde.getText().isEmpty()) ||
+	    	    (!longueurPasFinCde.isDisabled() && longueurPasFinCde.getText().isEmpty()) ||
+	    	    (!decalageFinC1.isDisabled() && decalageFinC1.getText().isEmpty()) ||
+	    	    (!decalageFinC2.isDisabled() && decalageFinC2.getText().isEmpty()) ||
+	    	    (!quantiteAtteint.isDisabled() && quantiteAtteint.getText().isEmpty()) ) {
+	    
+	    	    
+	    	    showErrorDialog("Veuillez remplir tous les champs avant de continuer !", "Champs obligatoires");
+	    	    return; // Arrête l'exécution de la méthode après l'alerte
+	    	}
 	    // 3. Si tous les champs sont remplis, afficher l'alerte de confirmation
         if (checkOtherFields() && !decalageFinC1.getText().isEmpty()&& !decalageFinC2.getText().isEmpty() && !longueurFinalFinCde.getText().isEmpty() 
         		               && !longueurPasFinCde.getText().isEmpty() && !quantiteAtteint.getText().isEmpty()) {
@@ -738,33 +749,25 @@ public class RemplirTorsadage {
 
 
 	private void loadNumeroCycleMax() {
-		Task<Integer> task = new Task<>() {
-			@Override
-			protected Integer call() throws Exception {
-				return getNumeroCycleMaxFromApi(); // Appelle la méthode corrigée avec encodage
-			}
-		};
+	    String dernierNumeroStr = fetchNumMaxCycle();
 
-		task.setOnSucceeded(event -> {
-			int numeroCycleMax = task.getValue();
-			if(numeroCycleMax == 25) {
-				nbrCycle.setText(String.valueOf( 1));
-			}
-			else if(numeroCycleMax < 25) {
-				nbrCycle.setText(String.valueOf(numeroCycleMax + 1));
-			}
-			TorsadageInformations.numCourant = numeroCycleMax + 1;
-			System.out.println("Numéro de cycle max récupéré : " + numeroCycleMax);
-		});
+	    // Vérifier si la réponse est un nombre valide
+	    try {
+	        int dernierNumeroCycle = Integer.parseInt(dernierNumeroStr);
 
-		task.setOnFailed(event -> {
-			Throwable e = task.getException();
-			nbrCycle.setText("Erreur");
-			System.out.println("Erreur lors de la récupération du numéro de cycle : " + e.getMessage());
-		});
-
-		// Lance la tâche dans un thread séparé
-		new Thread(task).start();
+	        TorsadageInformations.numCourant = dernierNumeroCycle ; 
+	        if (dernierNumeroCycle == 8) {
+	            nbrCycle.setText("1");
+	        } else if (dernierNumeroCycle < 8) {
+	            nbrCycle.setText(String.valueOf(dernierNumeroCycle + 1));
+	        } else {
+	            nbrCycle.setText("Erreur");
+	            System.out.println("Erreur lors de la récupération du dernier numéro de cycle.");
+	        }
+	    } catch (NumberFormatException e) {
+	        nbrCycle.setText("Erreur");
+	        System.out.println("Impossible de convertir la réponse en nombre : " + dernierNumeroStr);
+	    }
 	}
 
 	/*********************************          Alerts        ***************************************/
@@ -1128,4 +1131,49 @@ public class RemplirTorsadage {
 
 				
 	}
+  /************************************************* Recupertion dernier num cycle **************************/
+  private static final HttpClient httpClient = HttpClient.newHttpClient();
+
+  public String fetchNumMaxCycle() {
+      try {
+          // Encoder les paramètres pour éviter les erreurs d'URL
+          String sectionFilEncoded = URLEncoder.encode(SertissageNormaleInformations.sectionFil + " mm²", StandardCharsets.UTF_8);
+          String projetEncoded = URLEncoder.encode(SertissageNormaleInformations.projetSelectionner, StandardCharsets.UTF_8);
+          String nomPlantEncoded = URLEncoder.encode(AppInformations.operateurInfo.getPlant(), StandardCharsets.UTF_8);
+
+          // Construire l'URL avec les paramètres encodés
+          String urlString = "http://localhost:8281/operations/Torsadage/dernier-numero-cycle?" +
+                  "sectionFilSelectionne=" + sectionFilEncoded +
+                  "&segment=" + AppInformations.operateurInfo.getSegment() +
+                  "&nomPlant=" + nomPlantEncoded +
+                  "&projetName=" + projetEncoded;
+
+          System.out.println("URL encodée : " + urlString);
+
+          // Construire la requête HTTP avec le token
+          HttpRequest request = HttpRequest.newBuilder()
+                  .uri(URI.create(urlString))
+                  .header("Authorization", "Bearer " + AppInformations.token)
+                  .GET()
+                  .build();
+
+          // Envoyer la requête
+          HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+          System.out.println("Statut HTTP reçu : " + response.statusCode());
+          System.out.println("Réponse brute : " + response.body());
+
+          // Vérifier si la réponse est réussie (code 200 OK)
+          if (response.statusCode() == 200) {
+              return response.body();
+          } else {
+              return "Erreur API: " + response.statusCode();
+          }
+
+      } catch (Exception e) {
+          e.printStackTrace();
+          return "Erreur de connexion à l'API";
+      }
+  }
+
 }

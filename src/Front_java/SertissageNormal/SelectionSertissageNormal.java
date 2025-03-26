@@ -22,6 +22,7 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.*;
@@ -33,6 +34,7 @@ import javafx.geometry.Pos;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -45,15 +47,59 @@ import javafx.animation.KeyFrame;
 import javafx.util.Duration;
 
 public class SelectionSertissageNormal{
-	 @FXML
-	 private BorderPane rootPane; 
-	 @FXML
-	 private StackPane stackPane;
+    @FXML
+    private Button btnClose;
+
+    @FXML
+    private Button btnLogout;
+
+    @FXML
+    private Button btnMinimize;
+
     @FXML
     private Button btnSuivant;
 
     @FXML
+    private Label code1;
+
+    @FXML
+    private Label code2;
+
+    @FXML
+    private Label code3;
+
+    @FXML
+    private Label code4;
+
+    @FXML
+    private Label code5;
+
+    @FXML
+    private Label code6;
+
+    @FXML
     private Label dateSystem;
+
+    @FXML
+    private Label description1;
+
+    @FXML
+    private Label description2;
+
+    @FXML
+    private Label description3;
+
+    @FXML
+    private Label description4;
+
+    @FXML
+    private Label description5;
+
+    @FXML
+    private Label description6;
+
+    @FXML
+    private Pane descriptionCode;
 
     @FXML
     private Label heureSystem;
@@ -62,11 +108,14 @@ public class SelectionSertissageNormal{
     private ComboBox<String> listeCodeControle;
 
     @FXML
-    private ComboBox<String> listeSectionFil;
+    private ComboBox<String> listeContacts;
 
     @FXML
-    private ComboBox<String> listeProjets ; 
-    
+    private ComboBox<String> listeProjets;
+
+    @FXML
+    private ComboBox<String> listeSectionFil;
+
     @FXML
     private Label matriculeUser;
 
@@ -80,47 +129,70 @@ public class SelectionSertissageNormal{
     private Label plantUser;
 
     @FXML
+    private Label posteUser;
+
+    @FXML
+    private BorderPane rootPane;
+
+    @FXML
+    private TextField searchField;
+
+    @FXML
     private Label segementUser;
 
     @FXML
-    private Label posteUser;
+    private StackPane stackPane;
     
     @FXML
-    private Label description1;
-    @FXML
-    private Label description2;
-    @FXML
-    private Label description3;
-    @FXML
-    private Label description4;
-    @FXML
-    private Label description5;
-    @FXML
-    private Label description6;
-
-    @FXML
-    private Label code1;
-    @FXML
-    private Label code2;
-    @FXML
-    private Label code3;
-    @FXML
-    private Label code4;
-    @FXML
-    private Label code5;
-    @FXML
-    private Label code6;
+    private ImageView clearImage;
    
+    private final HttpClient httpClient = HttpClient.newHttpClient(); // Client HTTP
+
     
+	public TextField activeTextField;
+	
+	public TextField getActiveTextField() {
+		return activeTextField;
+	}
+	public void setActiveOnFocus(TextField textField) {
+		textField.focusedProperty().addListener((obs, oldVal, newVal) -> {
+			if (newVal) {
+				activeTextField = textField;
+			}
+		});
+	}
+	  @FXML
+	    public void handleButtonClick(ActionEvent event) {
+	        if (activeTextField != null) {
+	            Button clickedButton = (Button) event.getSource();
+	            String buttonText = clickedButton.getText();
+	            activeTextField.appendText(buttonText);
+	        }
+	    }
+
+	    // Méthode pour définir le TextField actif
+	    public void setActiveTextField(TextField textField) {
+	        this.activeTextField = textField;
+	    }
+
+	    
     @FXML
     public void initialize() {
+    	setActiveOnFocus(searchField);
         afficherInfosOperateur();
         afficherDateSystem(); // Afficher la date du système
         afficherHeureSystem();
-        populateComboBoxSections();
+        //populateComboBoxSections();
         loadCodesControles() ; 
         loadProjets() ; 
         chargerCodesEtDescriptions(); 
+        
+        if (SertissageNormaleInformations.numeroOutils != null) {
+            searchField.setText(SertissageNormaleInformations.numeroOutils);
+        }
+        if (SertissageNormaleInformations.numeroContacts != null) {
+            listeContacts.setValue(SertissageNormaleInformations.numeroContacts);
+        }
         if (SertissageNormaleInformations.sectionFil != null) {
             listeSectionFil.setValue(SertissageNormaleInformations.sectionFil);
         }
@@ -132,7 +204,67 @@ public class SelectionSertissageNormal{
         if (SertissageNormaleInformations.projetSelectionner!= null) {
             listeProjets.setValue(SertissageNormaleInformations.projetSelectionner);
         }
+        
+        clearImage.setOnMouseClicked(event -> {
+			if (activeTextField != null) {
+				activeTextField.clear();
+			}
+		});
+        
+        // Écouteur pour détecter les changements dans le champ de recherche (saisie du numéro d'outil)
+            searchField.textProperty().addListener((observable, oldValue, newValue) -> {
+                if (!newValue.isEmpty()) {
+                    // Utilise le token d'authentification pour appeler l'API et récupérer les contacts
+                    List<String> contacts = fetchContactsFromAPI(newValue);
+                    
+                    // Met à jour la liste des contacts dans la ComboBox
+                    listeContacts.getItems().setAll(contacts);
+                } else {
+                    // Si le champ de recherche est vide, vide la liste des contacts
+                    listeContacts.getItems().clear();
+                }
+            });
+
+            // Écouteur pour détecter la sélection d'un contact
+         // Ajoute un écouteur à la ComboBox des contacts
+            listeContacts.valueProperty().addListener((observable, oldValue, newValue) -> {
+                if (newValue != null) {
+                    // Lorsque l'opérateur sélectionne un contact, récupère les sections de fil
+                    String numeroOutil = searchField.getText(); // Le numéro d'outil saisi
+                    String numeroContact = newValue; // Le contact sélectionné
+                    
+                    SertissageNormaleInformations.numeroOutils = numeroOutil;
+                    SertissageNormaleInformations.numeroContacts = numeroContact;
+                    
+                    // Appel de l'API pour récupérer les sections de fil
+                    List<String> sectionsFil = fetchSectionsFilFromAPI(numeroOutil, numeroContact);
+                    
+                 // Ajouter "mm²" à chaque section pour l'affichage
+                    List<String> sectionsFilWithUnit = sectionsFil.stream()
+                                                                  .map(section -> section + " mm²") 
+                                                                  .collect(Collectors.toList());
+
+                    // Vider la ComboBox avant d'ajouter les nouvelles sections
+                    listeSectionFil.getItems().clear();
+                    listeSectionFil.getItems().addAll(sectionsFilWithUnit);
+
+                    // Ne pas sélectionner de valeur par défaut
+                    listeSectionFil.getSelectionModel().clearSelection();
+                    listeSectionFil.setValue(null);
+
+                    // Écouteur pour enregistrer la valeur sélectionnée sans "mm²"
+                    listeSectionFil.valueProperty().addListener((obs, oldSelection, newSelection) -> {
+                        if (newSelection != null) {
+                            // Supprimer " mm²" avant d'enregistrer la valeur
+                            SertissageNormaleInformations.sectionFil = newSelection.replace(" mm²", "").trim();
+                        }
+                    });
+
+
+                }
+            });
     }
+
     
     @FXML
     private void close(ActionEvent event) {
@@ -148,7 +280,9 @@ public class SelectionSertissageNormal{
     void submit(ActionEvent event) {
         if (listeCodeControle.getValue() == null ||
             listeSectionFil.getValue() == null ||
-            listeProjets.getValue() == null) {
+            listeProjets.getValue() == null ||
+            listeContacts.getValue() == null ||
+            searchField.getText()==null) {
 
             showErrorDialog("Veuillez sélectionner une valeur pour chaque champ avant de continuer." ,"Champs manquants" );
 
@@ -182,8 +316,7 @@ public class SelectionSertissageNormal{
     void logout(ActionEvent event) {
 
     	AppInformations.reset();
-    	SoudureInformations.reset();
-    	SoudureInformationsCodeB.reset();
+    	SertissageNormaleInformations.reset();
 
 
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
@@ -244,63 +377,8 @@ public class SelectionSertissageNormal{
         timeline.play(); // Démarrer l'animation
     }
     
-    /***** ComboBox Sections Fils ******************/
-    private List<String> getSectionsFromApi() throws Exception {
-        // Récupérer le token
-        String token = AppInformations.token;
-
-        // Créer une requête HTTP avec l'en-tête Authorization
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:8281/operations/SertissageNormal/sectionsFils"))
-                .header("Authorization", "Bearer " + token)  // Ajout de l'en-tête Authorization
-                .build();
-
-        HttpClient client = HttpClient.newHttpClient();
-
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-        if (response.statusCode() == 200) {
-            ObjectMapper objectMapper = new ObjectMapper();
-            
-            // Si l'API renvoie un tableau de sections, il faut le convertir en liste
-            List<String> sections = objectMapper.readValue(response.body(), List.class);
-
-
-            return sections;
-        } else {
-            throw new Exception("Erreur lors de la récupération des données: " + response.statusCode());
-        }
-    }
-
-
-    private void populateComboBoxSections() {
-        Task<List<String>> task = new Task<>() {
-            @Override
-            protected List<String> call() throws Exception {
-                return getSectionsFromApi();
-            }
-        };
-
-        task.setOnSucceeded(event -> {
-            List<String> sections = task.getValue();
-            ObservableList<String> observableList = FXCollections.observableArrayList(sections);
-            listeSectionFil.setItems(observableList);
-            listeSectionFil.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
-                if (newValue != null) {
-                    SertissageNormaleInformations.sectionFil = newValue;
-                }
-            });
-        });
-
-        task.setOnFailed(event -> {
-            Throwable ex = task.getException();
-            System.out.println("Erreur lors du chargement des sections de fils : " + ex.getMessage());
-        });
-
-        new Thread(task).start();
-    }
-
-
+  
+  
     /***** ComboBox Codes des controles ******************/
     private List<String> getCodesControlesFromApi() throws Exception {
         String token = AppInformations.token;
@@ -509,6 +587,63 @@ public class SelectionSertissageNormal{
         });
     }
 
+/*************** recuperer liste des contacts *************************/
 
+    public List<String> fetchContactsFromAPI(String toolNumber) {
+        try {
+            // Crée la requête HTTP avec le paramètre "numeroOutil" et ajoute l'en-tête Authorization avec le token
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create("http://localhost:8281/operations/SertissageNormal/contacts?numeroOutil=" + toolNumber)) // Remplace par ton API
+                    .header("Authorization", "Bearer " + AppInformations.token) // Ajouter le token d'authentification
+                    .GET()
+                    .build();
 
+            // Envoie la requête et récupère la réponse
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+            // Vérifie si la réponse est réussie (code 200 OK)
+            if (response.statusCode() == 200) {
+                // Convertit le corps de la réponse JSON en liste
+                ObjectMapper objectMapper = new ObjectMapper();
+                return objectMapper.readValue(response.body(), List.class); // Convertir JSON en liste
+            } else {
+                System.out.println("Erreur de l'API: " + response.statusCode());
+                return new ArrayList<>(); // Retourne une liste vide si l'API échoue
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>(); // Retourne une liste vide en cas d'erreur
+        }
+    }
+    
+    /********************************  recuperer liste des sections des fils *********************/
+    // Méthode pour récupérer les sections de fil à partir de l'API
+    public List<String> fetchSectionsFilFromAPI(String toolNumber, String contactNumber) {
+        try {
+            // Crée la requête HTTP avec les paramètres "numeroOutil" et "numeroContact" et ajoute l'en-tête Authorization avec le token
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create("http://localhost:8281/operations/SertissageNormal/sections?numeroOutil=" + toolNumber + "&numeroContact=" + contactNumber)) // Remplacer par l'URL de l'API
+                    .header("Authorization", "Bearer " + AppInformations.token) // Ajouter le token d'authentification
+                    .GET()
+                    .build();
+
+            // Envoie la requête et récupère la réponse
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+            // Vérifie si la réponse est réussie (code 200 OK)
+            if (response.statusCode() == 200) {
+                // Convertit le corps de la réponse JSON en liste de sections de fil
+                ObjectMapper objectMapper = new ObjectMapper();
+                return objectMapper.readValue(response.body(), List.class); // Convertir JSON en liste
+            } else {
+                System.out.println("Erreur de l'API: " + response.statusCode());
+                return new ArrayList<>(); // Retourne une liste vide si l'API échoue
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>(); // Retourne une liste vide en cas d'erreur
+        }
+    }
 }

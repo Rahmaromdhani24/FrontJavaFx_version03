@@ -12,6 +12,7 @@ import java.nio.charset.StandardCharsets;
 import Front_java.Configuration.ActiveTextFieldManager;
 import Front_java.Configuration.AppInformations;
 import Front_java.Configuration.SertissageIDCInformations;
+import Front_java.Configuration.SertissageNormaleInformations;
 import Front_java.Configuration.TorsadageInformations;
 import Front_java.Modeles.OperateurInfo;
 import Front_java.SertissageIDC.loading.LoadingSertissageIDC;
@@ -190,13 +191,7 @@ public class RemplirSertissageIDC {
 		public TextField getActiveTextField() {
 			return activeTextField;
 		}
-		/*public void setActiveOnFocus(TextField textField) {
-			textField.focusedProperty().addListener((obs, oldVal, newVal) -> {
-				if (newVal) {
-					activeTextField = textField;
-				}
-			});
-		}*/
+
 		public void setActiveOnFocus(TextField textField) {
 		    textField.focusedProperty().addListener((obs, oldVal, newVal) -> {
 		        if (newVal) {
@@ -204,20 +199,7 @@ public class RemplirSertissageIDC {
 		        }
 		    });
 		}
-		/*
-		  @FXML
-		    public void handleButtonClick(ActionEvent event) {
-		        if (activeTextField != null) {
-		            Button clickedButton = (Button) event.getSource();
-		            String buttonText = clickedButton.getText();
-		            activeTextField.appendText(buttonText);
-		        }
-		    }
-
-		    // Méthode pour définir le TextField actif
-		    public void setActiveTextField(TextField textField) {
-		        this.activeTextField = textField;
-		    }*/
+		
 		@FXML
 		public void handleButtonClick(ActionEvent event) {
 		    TextField activeTextField = ActiveTextFieldManager.getInstance().getActiveTextField();
@@ -335,6 +317,15 @@ public class RemplirSertissageIDC {
 	        showErrorDialog("Veuillez remplir tous les champs avant de continuer !", "Champs obligatoires");
 	        return; // Arrêt si un champ est vide
 	    }
+	    if ((!hauteurSertissageEchFinC1.isDisabled() && hauteurSertissageEchFinC1.getText().isEmpty()) ||
+	    	    (!forceTractionEchFinC1.isDisabled() && forceTractionEchFinC1.getText().isEmpty()) ||
+	    	    (!hauteurSertissageEchFinC2.isDisabled() && hauteurSertissageEchFinC2.getText().isEmpty()) ||
+	    	    (!forceTractionEchFinC2.isDisabled() && forceTractionEchFinC2.getText().isEmpty()) ||
+	    	    (!quantiteCycle.isDisabled() && quantiteCycle.getText().isEmpty())) {
+        	
+	    	    showErrorDialog("Veuillez remplir tous les champs avant de continuer !", "Champs obligatoires");
+	    	    return; // Arrête l'exécution de la méthode après l'alerte
+	    	}
 	   
 	    // 3. Si tous les champs sont remplis, afficher l'alerte de confirmation
      	    boolean hasError = false;
@@ -755,32 +746,25 @@ public class RemplirSertissageIDC {
 
 
 	private void loadNumeroCycleMax() {
-		Task<Integer> task = new Task<>() {
-			@Override
-			protected Integer call() throws Exception {
-				return getNumeroCycleMaxFromApi(); // Appelle la méthode corrigée avec encodage
-			}
-		};
+	    String dernierNumeroStr = fetchNumMaxCycle();
 
-		task.setOnSucceeded(event -> {
-			int numeroCycleMax = task.getValue();
-			if(numeroCycleMax == 8) {
-				nbrCycle.setText(String.valueOf( 1));
-			}
-			else if(numeroCycleMax < 8) {
-				nbrCycle.setText(String.valueOf(numeroCycleMax + 1));
-			}
-			SertissageIDCInformations.numCycle = (numeroCycleMax + 1) +"";
-		});
+	    // Vérifier si la réponse est un nombre valide
+	    try {
+	        int dernierNumeroCycle = Integer.parseInt(dernierNumeroStr);
 
-		task.setOnFailed(event -> {
-			Throwable e = task.getException();
-			nbrCycle.setText("Erreur");
-			System.out.println("Erreur lors de la récupération du numéro de cycle : " + e.getMessage());
-		});
-
-		// Lance la tâche dans un thread séparé
-		new Thread(task).start();
+	        SertissageIDCInformations.numCycle = dernierNumeroCycle+"" ; 
+	        if (dernierNumeroCycle == 8) {
+	            nbrCycle.setText("1");
+	        } else if (dernierNumeroCycle < 8) {
+	            nbrCycle.setText(String.valueOf(dernierNumeroCycle + 1));
+	        } else {
+	            nbrCycle.setText("Erreur");
+	            System.out.println("Erreur lors de la récupération du dernier numéro de cycle.");
+	        }
+	    } catch (NumberFormatException e) {
+	        nbrCycle.setText("Erreur");
+	        System.out.println("Impossible de convertir la réponse en nombre : " + dernierNumeroStr);
+	    }
 	}
 
 	/*********************************          Alerts        ***************************************/
@@ -1069,6 +1053,50 @@ public class RemplirSertissageIDC {
         } catch (NumberFormatException e) {
             System.out.println("Erreur de format pour la valeur : " + input);
             return 0.0; // Retourner une valeur par défaut en cas d'erreur de format
+        }
+    }
+    /************************************************* Recupertion dernier num cycle **************************/
+    private static final HttpClient httpClient = HttpClient.newHttpClient();
+
+    public String fetchNumMaxCycle() {
+        try {
+            // Encoder les paramètres pour éviter les erreurs d'URL
+            String sectionFilEncoded = URLEncoder.encode(SertissageNormaleInformations.sectionFil + " mm²", StandardCharsets.UTF_8);
+            String projetEncoded = URLEncoder.encode(SertissageNormaleInformations.projetSelectionner, StandardCharsets.UTF_8);
+            String nomPlantEncoded = URLEncoder.encode(AppInformations.operateurInfo.getPlant(), StandardCharsets.UTF_8);
+
+            // Construire l'URL avec les paramètres encodés
+            String urlString = "http://localhost:8281/operations/SertissageIDC/dernier-numero-cycle?" +
+                    "sectionFilSelectionne=" + sectionFilEncoded +
+                    "&segment=" + AppInformations.operateurInfo.getSegment() +
+                    "&nomPlant=" + nomPlantEncoded +
+                    "&projetName=" + projetEncoded;
+
+            System.out.println("URL encodée : " + urlString);
+
+            // Construire la requête HTTP avec le token
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(urlString))
+                    .header("Authorization", "Bearer " + AppInformations.token)
+                    .GET()
+                    .build();
+
+            // Envoyer la requête
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+            System.out.println("Statut HTTP reçu : " + response.statusCode());
+            System.out.println("Réponse brute : " + response.body());
+
+            // Vérifier si la réponse est réussie (code 200 OK)
+            if (response.statusCode() == 200) {
+                return response.body();
+            } else {
+                return "Erreur API: " + response.statusCode();
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Erreur de connexion à l'API";
         }
     }
 

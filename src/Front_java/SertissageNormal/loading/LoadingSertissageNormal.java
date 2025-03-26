@@ -51,57 +51,57 @@ public class LoadingSertissageNormal {
     }
     @FXML
     private void pauseChargement(ActionEvent event) {
-        try {
-            // Charger le fichier FXML pour la fenêtre de chargement
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Front_java/SoudureUltrason/CodeB/RemplirQuantiteAtteintAvantCodeB.fxml"));
-            Scene loadingScene = new Scene(loader.load());
+    	  try {
+              // Charger le fichier FXML pour la fenêtre de chargement
+              FXMLLoader loader = new FXMLLoader(getClass().getResource("/Front_java/SertissageNormal/loading/RemplirPause.fxml"));
+              Scene loadingScene = new Scene(loader.load());
 
-            // Ajouter le fichier CSS
-            String cssPath = "/Front_java/SoudureUltrason/CodeB/RemplirQuantitieAtteintAvantCodeB.css";
-            if (getClass().getResource(cssPath) != null) {
-                loadingScene.getStylesheets().add(getClass().getResource(cssPath).toExternalForm());
-            } else {
-                System.out.println("Fichier CSS introuvable : " + cssPath);
-            }
+              // Ajouter le fichier CSS
+              String cssPath = "/Front_java/SertissageNormal/loading/RemplirPause.css";
+              if (getClass().getResource(cssPath) != null) {
+                  loadingScene.getStylesheets().add(getClass().getResource(cssPath).toExternalForm());
+              } else {
+                  System.out.println("Fichier CSS introuvable : " + cssPath);
+              }
 
-            // Récupérer la fenêtre parente
-            Stage parentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+              // Récupérer la fenêtre parente
+              Stage parentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
 
-            // Cacher la fenêtre parente
-            parentStage.hide();
+              // Cacher la fenêtre parente
+              parentStage.hide();
 
-            // Créer la fenêtre de chargement
-            Stage loadingStage = new Stage();
-            loadingStage.setScene(loadingScene);
-            loadingStage.initStyle(StageStyle.UNDECORATED);
-            loadingStage.initModality(Modality.APPLICATION_MODAL);
-            loadingStage.initOwner(parentStage);
+              // Créer la fenêtre de chargement
+              Stage loadingStage = new Stage();
+              loadingStage.setScene(loadingScene);
+              loadingStage.initStyle(StageStyle.UNDECORATED);
+              loadingStage.initModality(Modality.APPLICATION_MODAL);
+              loadingStage.initOwner(parentStage);
 
-            // Ajouter une icône (facultatif)
-            String iconPath = "/logo_app.jpg";
-            if (getClass().getResource(iconPath) != null) {
-                loadingStage.getIcons().add(new Image(getClass().getResourceAsStream(iconPath)));
-            } else {
-                System.out.println("Icône introuvable : " + iconPath);
-            }
+              // Ajouter une icône (facultatif)
+              String iconPath = "/logo_app.jpg";
+              if (getClass().getResource(iconPath) != null) {
+                  loadingStage.getIcons().add(new Image(getClass().getResourceAsStream(iconPath)));
+              } else {
+                  System.out.println("Icône introuvable : " + iconPath);
+              }
 
-            // Permettre de déplacer la fenêtre avec la souris
-            loadingScene.setOnMousePressed(eventMouse -> {
-                xOffset = eventMouse.getSceneX();
-                yOffset = eventMouse.getSceneY();
-            });
+              // Permettre de déplacer la fenêtre avec la souris
+              loadingScene.setOnMousePressed(eventMouse -> {
+                  xOffset = eventMouse.getSceneX();
+                  yOffset = eventMouse.getSceneY();
+              });
 
-            loadingScene.setOnMouseDragged(eventMouse -> {
-                loadingStage.setX(eventMouse.getScreenX() - xOffset);
-                loadingStage.setY(eventMouse.getScreenY() - yOffset);
-            });
+              loadingScene.setOnMouseDragged(eventMouse -> {
+                  loadingStage.setX(eventMouse.getScreenX() - xOffset);
+                  loadingStage.setY(eventMouse.getScreenY() - yOffset);
+              });
 
-            // Afficher la fenêtre de chargement
-            loadingStage.show();
-        } catch (IOException ex) {
-            System.out.println("❌ Erreur lors du chargement de la fenêtre de chargement : " + ex.getMessage());
-            ex.printStackTrace();
-        }
+              // Afficher la fenêtre de chargement
+              loadingStage.show();
+          } catch (IOException ex) {
+              System.out.println("❌ Erreur lors du chargement de la fenêtre de chargement : " + ex.getMessage());
+              ex.printStackTrace();
+          }
     }
 
 
@@ -118,7 +118,7 @@ public class LoadingSertissageNormal {
         // Vérifier si le parentController n'est pas null avant d'appeler la mise à jour
         if (parentController != null) {
             parentController.actualiserFenetreMere();
-            parentController.afficherNotification("Veuillez remplir tous les champs obligatoires , afin de terminer la commande..");
+            parentController.afficherNotification("Veuillez remplir tous les champs obligatoires , afin de terminer la commande .");
         }
 
         // Fermer la fenêtre fille

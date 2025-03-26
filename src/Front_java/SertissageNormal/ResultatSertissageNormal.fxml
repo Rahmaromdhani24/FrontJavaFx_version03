@@ -176,16 +176,16 @@
                         </Label>
                <Label layoutX="840.0" layoutY="30.0" text="Numéro d'outil : ">
                 <font>
-                               <Font name="System" size="16.0" />
-                           </font>
-                        </Label>
+                      <Font name="System" size="16.0" />
+                 </font>
+               </Label>
                <Label fx:id="numOutil" layoutX="960.0" layoutY="30.0">
                 <font>
                     <Font name="System Bold" size="16.0" />
                  </font>
               </Label>
                <!--Label layoutX="500.0" layoutY="73.0" styleClass="matrix-grid-title" text="Numéro Courant : " />
-               <Label fx:id="nbrCycle" layoutX="700.0" layoutY="73.0" styleClass="matrix-grid-title" text="" /-->
+               <Label fx:id="nbrCycle" layoutX="700.0" layoutY="73.0" styleClass="matrix-grid-title" text="" /-->             
                <Label layoutX="560.0" layoutY="30.0" text="Numéro Contact :">
                   <font>
                      <Font size="16.0" />
