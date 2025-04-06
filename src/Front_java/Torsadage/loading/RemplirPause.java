@@ -410,7 +410,7 @@ private void ajouterPdekAvecTorsadage() {
 				torsadage.setLongueurBoutFinCdeC2(Integer.parseInt(TorsadageInformations.lognueurBoutFinC2));
 				torsadage.setLongueurFinalDebutCde(Integer.parseInt(TorsadageInformations.longueurFinalDebutCde));
 				torsadage.setLongueurFinalFinCde(Integer.parseInt(TorsadageInformations.longueurFinalFinCde));
-				torsadage.setLongueurPasFinCde(Integer.parseInt(TorsadageInformations.longueurPasFinCde));
+				torsadage.setLongueurPasFinCde(Double.parseDouble(TorsadageInformations.longueurPasFinCde));
 
 				// Conversion de l'objet SoudureDTO en JSON
 				ObjectMapper objectMapper = new ObjectMapper();

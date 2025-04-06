@@ -1,6 +1,9 @@
 package Front_java.Torsadage;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -10,6 +13,7 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import Front_java.Configuration.AppInformations;
 import Front_java.Configuration.SertissageNormaleInformations;
+import Front_java.Configuration.SoudureInformations;
 import Front_java.Modeles.OperateurInfo;
 import Front_java.Modeles.TorsadageDTO;
 import Front_java.Torsadage.loading.LoadingTorsadage;
@@ -364,7 +368,7 @@ public class RemplirTorsadage {
                 	TorsadageInformations.decalageFinC2 = decalageFinC2.getText(); 
                 	TorsadageInformations.numFils =numFils.getValue() ; 
                 	TorsadageInformations.longueurFinalFinCde = longueurFinalFinCde.getText() ; 
-                	TorsadageInformations.longueurPasFinCde = longueurFinalFinCde.getText() ; 
+                	TorsadageInformations.longueurPasFinCde = longueurPasFinCde.getText() ; 
                 	TorsadageInformations.ech1 = ech1.getText() ; 
                 	TorsadageInformations.ech2 = ech2.getText() ; 
                 	TorsadageInformations.ech3 = ech3.getText() ; 
@@ -374,7 +378,7 @@ public class RemplirTorsadage {
                 	TorsadageInformations.quantiteAtteint = quantiteAtteint.getText() ; 
                 	TorsadageInformations.numCourant = Integer.parseInt( nbrCycle.getText() ) ; 
 
-              ajouterPDEKTorsadage()  ; 
+             ajouterPDEKTorsadage()  ; 
 
 
                 // Affichage direct de la fenêtre SoudureResultat
@@ -748,24 +752,27 @@ public class RemplirTorsadage {
 	}
 
 
+	
+
 	private void loadNumeroCycleMax() {
 	    String dernierNumeroStr = fetchNumMaxCycle();
 
 	    // Vérifier si la réponse est un nombre valide
 	    try {
 	        int dernierNumeroCycle = Integer.parseInt(dernierNumeroStr);
-
-	        TorsadageInformations.numCourant = dernierNumeroCycle ; 
-	        if (dernierNumeroCycle == 8) {
-	            nbrCycle.setText("1");
-	        } else if (dernierNumeroCycle < 8) {
-	            nbrCycle.setText(String.valueOf(dernierNumeroCycle + 1));
+	        
+	        if (dernierNumeroCycle == 25) {
+	        	nbrCycle.setText("1");
+	           TorsadageInformations.numCourant  =  1 ; 
+	        } else if (dernierNumeroCycle < 25) {
+	        	nbrCycle.setText(String.valueOf(dernierNumeroCycle + 1));
+	        	 TorsadageInformations.numCourant = dernierNumeroCycle  + 1 ; 
 	        } else {
-	            nbrCycle.setText("Erreur");
+	        	nbrCycle.setText("Erreur");
 	            System.out.println("Erreur lors de la récupération du dernier numéro de cycle.");
 	        }
 	    } catch (NumberFormatException e) {
-	        nbrCycle.setText("Erreur");
+	    	nbrCycle.setText("Erreur");
 	        System.out.println("Impossible de convertir la réponse en nombre : " + dernierNumeroStr);
 	    }
 	}
@@ -1026,59 +1033,8 @@ public class RemplirTorsadage {
     }
 
 	/********************************************* Ajout PDEK  ***************************************************************/
-    private void ajouterPdekAvecTorsadage(String torsadageJson) {
-        Task<Void> task = new Task<>() {
-            @Override
-            protected Void call() throws Exception {
-                try {
-                    // Code pour l'ajout du PDEK
-                    String token = AppInformations.token;
-                    String encodedProjet = URLEncoder.encode(TorsadageInformations.projetSelectionner, StandardCharsets.UTF_8);
-
-                    String url = "http://localhost:8281/operations/torsadage/ajouterPDEK" + "?matriculeOperateur="
-                            + AppInformations.operateurInfo.getMatricule() + "&projet=" + encodedProjet;
-
-                    // Vérification si le JSON est vide ou invalide, et gestion des erreurs si nécessaire
-                    if (torsadageJson == null || torsadageJson.isEmpty()) {
-                        throw new Exception("Le JSON du torsadage est vide ou invalide.");
-                    }
-
-                    // Envoi de la requête avec le JSON passé en paramètre
-                    HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url))
-                            .header("Authorization", "Bearer " + token)
-                            .header("Content-Type", "application/json")
-                            .POST(HttpRequest.BodyPublishers.ofString(torsadageJson))
-                            .build();
-
-                    HttpClient client = HttpClient.newHttpClient();
-                    HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-                    if (response.statusCode() == 200) {
-                        System.out.println("Succès Ajout PDEK : " + response.body());
-                    } else {
-                        System.out.println("Erreur dans l'ajout PDEK, code : " + response.statusCode() + ", message : "
-                                + response.body());
-                        throw new Exception("Erreur dans l'ajout PDEK : " + response.body());
-                    }
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    throw new Exception("Erreur dans la méthode ajouterPdekAvecSoudure : " + e.getMessage());
-                }
-                return null;
-            }
-        };
-
-        task.setOnFailed(event -> {
-            Throwable exception = task.getException();
-            System.out.println("Erreur lors de l'ajout du PDEK : " + exception.getMessage());
-            showErrorDialog("Erreur", "Erreur lors de l'ajout du PDEK : " + exception.getMessage());
-        });
-
-        new Thread(task).start();
-    }
-
-  private void ajouterPDEKTorsadage() {
+  
+ private void ajouterPDEKTorsadage() {
 
 
 					// Récupération des valeurs saisies et création de l'objet SoudureDTO
@@ -1095,55 +1051,25 @@ public class RemplirTorsadage {
 					double moy = (x1 + x2 + x3 + x4 + x5) / 5.0;
 					int R = maxValue - minValue;
 
-					// Remplir l'objet SoudureDTO avec les valeurs
-					torsadage.setCode(TorsadageInformations.codeControleSelectionner);
-					torsadage.setNumeroCycle(TorsadageInformations.numCourant );
-					torsadage.setSpecificationMesure(TorsadageInformations.specificationsMesure);
-					torsadage.setDecalageMaxDebutCdec1(Integer.parseInt( decalageDebutC1.getText())); 					
-					torsadage.setDecalageMaxDebutCdec2(Integer.parseInt( decalageDebutC2.getText())); 					
-					torsadage.setDecalageMaxFinCdec1(Integer.parseInt(TorsadageInformations.decalageFinC1 )); 					
-					torsadage.setDecalageMaxFinCdec2(Integer.parseInt(TorsadageInformations.decalageFinC2 )); 									
-					torsadage.setEch1(x1);
-					torsadage.setEch2(x2);
-					torsadage.setEch3(x3);
-					torsadage.setEch4(x4 );
-					torsadage.setEch5(x5);		
-					torsadage.setMoyenne(moy);
+		
 					TorsadageInformations.moyenne = moy;
-					torsadage.setEtendu(R);
 					TorsadageInformations.ettendu = R;
-					LocalDate dateActuelle = Instant.now().atZone(ZoneId.systemDefault()).toLocalDate();
-					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-					torsadage.setDate(dateActuelle.format(formatter));
-					torsadage.setQuantiteAtteint(Integer.parseInt(TorsadageInformations.quantiteAtteint));
-					TorsadageInformations.quantiteAtteint = quantiteAtteint.getText();
-					torsadage.setQuantiteTotale(Integer.parseInt(quantiteTotal.getText()));
-					TorsadageInformations.quantiteTotal = quantiteTotal.getText();
-					torsadage.setNumerofil(numFils.getValue());
-					torsadage.setNumCommande(Integer.parseInt( numCommande.getText()));
-					torsadage.setLongueurBoutDebutCdeC1(Integer.parseInt( lognueurBoutDebutC1.getText()));
-					torsadage.setLongueurBoutDebutCdeC2(Integer.parseInt( lognueurBoutDebutC2.getText()));
-					torsadage.setLongueurBoutFinCdeC1(Integer.parseInt( lognueurBoutFinC1.getText()));
-					torsadage.setLongueurBoutFinCdeC2(Integer.parseInt( lognueurBoutFinC2.getText()));
-					torsadage.setLongueurFinalDebutCde(Integer.parseInt(longueurFinalDebutCde.getText()));
-					torsadage.setLongueurFinalFinCde(Integer.parseInt(TorsadageInformations.longueurFinalFinCde));
-					torsadage.setLongueurPasFinCde(Integer.parseInt(TorsadageInformations.longueurPasFinCde ));
-
+					
 				
 	}
   /************************************************* Recupertion dernier num cycle **************************/
-  private static final HttpClient httpClient = HttpClient.newHttpClient();
+  private  final HttpClient httpClient = HttpClient.newHttpClient();
 
   public String fetchNumMaxCycle() {
       try {
           // Encoder les paramètres pour éviter les erreurs d'URL
-          String sectionFilEncoded = URLEncoder.encode(SertissageNormaleInformations.sectionFil + " mm²", StandardCharsets.UTF_8);
-          String projetEncoded = URLEncoder.encode(SertissageNormaleInformations.projetSelectionner, StandardCharsets.UTF_8);
+          String sectionFilEncoded = URLEncoder.encode(TorsadageInformations.specificationsMesure, StandardCharsets.UTF_8);
+          String projetEncoded = URLEncoder.encode(TorsadageInformations.projetSelectionner, StandardCharsets.UTF_8);
           String nomPlantEncoded = URLEncoder.encode(AppInformations.operateurInfo.getPlant(), StandardCharsets.UTF_8);
 
           // Construire l'URL avec les paramètres encodés
-          String urlString = "http://localhost:8281/operations/Torsadage/dernier-numero-cycle?" +
-                  "sectionFilSelectionne=" + sectionFilEncoded +
+          String urlString = "http://localhost:8281/operations/torsadage/dernier-numero-cycle?" +
+                  "specificationMesureSelectionner=" + sectionFilEncoded +
                   "&segment=" + AppInformations.operateurInfo.getSegment() +
                   "&nomPlant=" + nomPlantEncoded +
                   "&projetName=" + projetEncoded;
@@ -1175,5 +1101,4 @@ public class RemplirTorsadage {
           return "Erreur de connexion à l'API";
       }
   }
-
 }

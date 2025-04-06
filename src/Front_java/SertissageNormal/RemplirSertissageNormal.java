@@ -1,11 +1,7 @@
 package Front_java.SertissageNormal;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.URL;
+import java.net.*;
 import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -13,6 +9,7 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import Front_java.Configuration.AppInformations;
 import Front_java.Configuration.SertissageNormaleInformations;
+import Front_java.Configuration.ToleranceParser;
 import Front_java.Modeles.OperateurInfo;
 import Front_java.SertissageNormal.loading.LoadingSertissageNormal;
 import javafx.animation.Timeline;
@@ -410,17 +407,23 @@ public class RemplirSertissageNormal {
      	            }
      	        }
      	  //// ligne 2 : largeur Sertissage 
-     	       double valLargeurSertissage = SertissageNormaleInformations.labelLargeurSertissage ; 
-   	        String toleranceStr = fetchToleranceLargeurSertissageFromAPI(
-   	        		SertissageNormaleInformations.numeroOutils,
-   	        		SertissageNormaleInformations.numeroContacts,
-   	        		SertissageNormaleInformations.sectionFil
-   	        		).replace("±", "").trim(); // Suppression du symbole ±
-   	        		double toleranceLargeurSertissage = Double.parseDouble(toleranceStr);
-   	        		
+     	    double valLargeurSertissage = SertissageNormaleInformations.labelLargeurSertissage ; 
+     	   ToleranceParser.Tolerance tol = ToleranceParser.parseTolerance(
+     			    fetchToleranceLargeurSertissageFromAPI(
+     			        SertissageNormaleInformations.numeroOutils,
+     			        SertissageNormaleInformations.numeroContacts,
+     			        SertissageNormaleInformations.sectionFil
+     			    )
+     			);
+     	   
+     	 double min = valLargeurSertissage - tol.lower;
+     	 double max = valLargeurSertissage + tol.upper;   	 
+     	 System.out.println("le min est ="+min) ;
+     	 System.out.println("le max est ="+max) ;
+
     	    	 if (areFieldsEqualDeuxChamps(largeurSertissage , largeurSertissageEchFin )) {
     	            colorBorderRed(largeurSertissage, largeurSertissageEchFin);
-    	            showErrorDialog("Les valeurs des échantillons de largeur de sertissage  doivent être différentes et ne dépasse pas ."+valLargeurSertissage+toleranceLargeurSertissage, "");
+    	            showErrorDialog("Les valeurs des échantillons de largeur de sertissage  doivent être différentes et ne dépasse pas ."+max, "");
     	            hasError = true;
     	        }
     	        // Vérification des valeurs hors limites
@@ -432,9 +435,9 @@ public class RemplirSertissageNormal {
     	        for (TextField field : largeurSertissageFields) {
     	            try {
     	                double valeur = Double.parseDouble(field.getText());
-    	                if (valeur < (valLargeurSertissage - toleranceLargeurSertissage) || valeur > ( valLargeurSertissage+ toleranceLargeurSertissage)) {
+    	                if ((valeur <  min) || (valeur >   max)) {
     	                    colorBorderRed(field);
-    	                    showErrorDialog("La valeur " + valeur + " dans  champs de largeur  de sertissage est hors limites. Elle doit être entre " +(valHauteurSertissage - toleranceLargeurSertissage)  + " et " + (valHauteurSertissage + toleranceLargeurSertissage)  + ".", "");
+    	                    showErrorDialog("La valeur " + valeur + " dans  champs de largeur  de sertissage est hors limites. Elle doit être entre " +( min)  + " et " + (max)  + ".", "");
     	                    hasError = true;
     	                }
     	            } catch (NumberFormatException e) {
@@ -479,16 +482,22 @@ public class RemplirSertissageNormal {
      	        }
      	       //// ligne 4  : largeur isolant 
       	       double valLargeurIsolant = SertissageNormaleInformations.labelLargeurIsolant ; 
-    	        String toleranceStrLargeurIsolant = fetchToleranceLargeurIsolantFromAPI(
-    	        		SertissageNormaleInformations.numeroOutils,
-    	        		SertissageNormaleInformations.numeroContacts,
-    	        		SertissageNormaleInformations.sectionFil
-    	        		).replace("±", "").trim(); // Suppression du symbole ±
-    	        		double toleranceLargeurIsolant = Double.parseDouble(toleranceStrLargeurIsolant);
-    	        		
+    	       	
+    	        		   ToleranceParser.Tolerance tolIsolant = ToleranceParser.parseTolerance(
+    	        				   fetchToleranceLargeurIsolantFromAPI(
+    	            			        SertissageNormaleInformations.numeroOutils,
+    	            			        SertissageNormaleInformations.numeroContacts,
+    	            			        SertissageNormaleInformations.sectionFil
+    	            			    )
+    	            			);
+    	            	   
+    	            	 double minTolIsol = valLargeurIsolant - tolIsolant.lower;
+    	            	 double maxTolIsol = valLargeurIsolant + tolIsolant.upper;   
+    	            	 System.out.println("le minTolIsol est ="+minTolIsol) ;
+    	             	 System.out.println("le maxTolIsol est ="+maxTolIsol) ;
      	    	 if (areFieldsEqualDeuxChamps(largeurIsolant , largeurIsolantEchFin )) {
      	            colorBorderRed(largeurIsolant, largeurIsolantEchFin);
-     	            showErrorDialog("Les valeurs des échantillons de largeur de isolant  doivent être différentes et ne dépasse pas ."+(valLargeurIsolant+toleranceLargeurIsolant), "");
+     	            showErrorDialog("Les valeurs des échantillons de largeur de isolant  doivent être différentes et ne dépasse pas ."+(maxTolIsol), "");
      	            hasError = true;
      	        }
      	        // Vérification des valeurs hors limites
@@ -500,9 +509,9 @@ public class RemplirSertissageNormal {
      	        for (TextField field : largeurIsolantFields) {
      	            try {
      	                double valeur = Double.parseDouble(field.getText());
-     	                if (valeur < (valLargeurIsolant - toleranceLargeurIsolant) || valeur > ( valLargeurIsolant+ toleranceLargeurIsolant)) {
+     	                if ((valeur < minTolIsol) ||( valeur >  maxTolIsol)) {
      	                    colorBorderRed(field);
-     	                    showErrorDialog("La valeur " + valeur + " dans  champs de hauteur de sertissage est hors limites. Elle doit être entre " +(valLargeurIsolant - toleranceLargeurIsolant)  + " et " + (valLargeurIsolant+ toleranceLargeurIsolant)  + ".", "");
+     	                    showErrorDialog("La valeur " + valeur + " dans  champs de hauteur de sertissage est hors limites. Elle doit être entre " +(minTolIsol)  + " et " + (maxTolIsol)  + ".", "");
      	                    hasError = true;
      	                }
      	            } catch (NumberFormatException e) {
@@ -565,7 +574,7 @@ public class RemplirSertissageNormal {
             	SertissageNormaleInformations.produit = listeProduits.getValue();
             	SertissageNormaleInformations.quantiteAtteint = quantiteCycle.getText();
             	SertissageNormaleInformations.machineTraction = listeMachineTraction.getValue();
-            	SertissageNormaleInformations.serieProduit = Integer.parseInt(serieProduit.getText()) ; 
+            	SertissageNormaleInformations.serieProduit = serieProduit.getText() ; 
             	    
                 // Affichage direct de la fenêtre SoudureResultat
                 try {
@@ -595,7 +604,7 @@ public class RemplirSertissageNormal {
         					  hauteurSertissageEch1, hauteurSertissageEch2, hauteurSertissageEch3, 
         					  largeurSertissage, hauteurIsolant, largeurIsolant, 
         					  traction, serieProduit , quantiteCycle , hauteurIsolantEchFin , hauteurIsolantEchFin,
-        					  hauteurSertissageEchFin , largeurIsolantEchFin , largeurSertissageEchFin
+        					  hauteurSertissageEchFin , largeurIsolantEchFin , largeurSertissageEchFin , tractionEchFin 
         				    );
         			 SertissageNormaleInformations.numCycle = Integer.parseInt( nbrCycle.getText()) ; 
                   	SertissageNormaleInformations.hauteurSertissageEch1 = Double.parseDouble(hauteurSertissageEch1.getText()); 
@@ -607,7 +616,7 @@ public class RemplirSertissageNormal {
                   	SertissageNormaleInformations.traction = traction.getText();
                   	SertissageNormaleInformations.produit = listeProduits.getValue();
                   	SertissageNormaleInformations.machineTraction = listeMachineTraction.getValue();
-                  	SertissageNormaleInformations.serieProduit = Integer.parseInt(serieProduit.getText()) ; 
+                  	SertissageNormaleInformations.serieProduit = serieProduit.getText() ; 
         			  try {
         	                FXMLLoader loader = new FXMLLoader(getClass().getResource("/Front_java/SertissageNormal/loading/LoadingSertissageNormal.fxml"));
         	                Scene loadingScene = new Scene(loader.load());
@@ -650,7 +659,7 @@ public class RemplirSertissageNormal {
         	                        	SertissageNormaleInformations.produit = listeProduits.getValue();
         	                        	SertissageNormaleInformations.quantiteAtteint = quantiteCycle.getText();
         	                        	SertissageNormaleInformations.machineTraction = listeMachineTraction.getValue();
-        	                        	SertissageNormaleInformations.serieProduit = Integer.parseInt(serieProduit.getText()) ; 
+        	                        	SertissageNormaleInformations.serieProduit = serieProduit.getText() ; 
 
         	                        	
         	                    	    // Chargement de la nouvelle fenêtre
@@ -820,7 +829,7 @@ public class RemplirSertissageNormal {
 			labelHauteurSertissage.setText(SertissageNormaleInformations.labelHauteurSertissage +"/±0.05 mm");
 			
 		
-			labelLargeurSertissage.setText(SertissageNormaleInformations.labelLargeurSertissage +"/"+toleranceLargeurSertissageString+" mm");
+			labelLargeurSertissage.setText(SertissageNormaleInformations.labelLargeurSertissage +"/"+toleranceLargeurSertissageString);
 			
 			labelHauteurIsolant.setText(SertissageNormaleInformations.labelHauteurIsolant +"/"+toleranceHauteurIsolant+" mm");
 			
@@ -1257,7 +1266,7 @@ public class RemplirSertissageNormal {
 
         try {
             // Construire l'URL avec les paramètres
-            String url = "http://localhost:8281/operations/SertissageNormal/hauteurSertissage"
+            String url = "http://localhost:8281/operations/SertissageNormal/hauteurIsolant"
                     + "?numeroOutil=" + numeroOutil
                     + "&numeroContact=" + numeroContact
                     + "&sectionFil=" + sectionFil;
@@ -1290,7 +1299,7 @@ public class RemplirSertissageNormal {
 
         try {
             // Construire l'URL avec les paramètres
-            String url = "http://localhost:8281/operations/SertissageNormal/largeurSertissage"
+            String url = "http://localhost:8281/operations/SertissageNormal/largeurIsolant"
                     + "?numeroOutil=" + numeroOutil
                     + "&numeroContact=" + numeroContact
                     + "&sectionFil=" + sectionFil;
@@ -1468,13 +1477,13 @@ public static int extractValue(String input) {
 public String fetchNumMaxCycle() {
     try {
         // Encoder les paramètres pour éviter les erreurs d'URL
-        String sectionFilEncoded = URLEncoder.encode(SertissageNormaleInformations.sectionFil + " mm²", StandardCharsets.UTF_8);
+        String sectionFilEncoded = URLEncoder.encode(SertissageNormaleInformations.sectionFil, StandardCharsets.UTF_8);
         String projetEncoded = URLEncoder.encode(SertissageNormaleInformations.projetSelectionner, StandardCharsets.UTF_8);
         String nomPlantEncoded = URLEncoder.encode(AppInformations.operateurInfo.getPlant(), StandardCharsets.UTF_8);
 
         // Construire l'URL avec les paramètres encodés
         String urlString = "http://localhost:8281/operations/SertissageNormal/dernier-numero-cycle?" +
-                "sectionFilSelectionne=" + sectionFilEncoded +
+                "sectionFil=" + sectionFilEncoded +
                 "&segment=" + AppInformations.operateurInfo.getSegment() +
                 "&nomPlant=" + nomPlantEncoded +
                 "&projetName=" + projetEncoded;

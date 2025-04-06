@@ -46,7 +46,7 @@ public class SertissageNormalData {
 
     private String produit ; 
 
-    private int serieProduit; 
+    private String serieProduit; 
 
     private int quantiteCycle; 
     

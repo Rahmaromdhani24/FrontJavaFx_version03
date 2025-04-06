@@ -8,7 +8,6 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
-
 import Front_java.Configuration.ActiveTextFieldManager;
 import Front_java.Configuration.AppInformations;
 import Front_java.Configuration.SertissageIDCInformations;
@@ -18,7 +17,6 @@ import Front_java.Modeles.OperateurInfo;
 import Front_java.SertissageIDC.loading.LoadingSertissageIDC;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
-import javafx.concurrent.Task;
 import javafx.event.*;
 import javafx.fxml.*;
 import javafx.geometry.Insets;
@@ -418,6 +416,7 @@ public class RemplirSertissageIDC {
 	                double hauteurSertissageEch2C1Value = parseDoubleWithCleanup(hauteurSertissageEch2C1.getText());
 	                double hauteurSertissageEch3C1Value = parseDoubleWithCleanup(hauteurSertissageEch3C1.getText());
 
+
 	                double hauteurSertissageEch1C2Value = parseDoubleWithCleanup(hauteurSertissageEch1C2.getText());
 	                double hauteurSertissageEch2C2Value = parseDoubleWithCleanup(hauteurSertissageEch2C2.getText());
 	                double hauteurSertissageEch3C2Value = parseDoubleWithCleanup(hauteurSertissageEch3C2.getText());
@@ -426,7 +425,12 @@ public class RemplirSertissageIDC {
 	            	SertissageIDCInformations.hauteurSertissageC1Ech1 = hauteurSertissageEch1C1Value;
 	           	    SertissageIDCInformations.hauteurSertissageC1Ech2 = hauteurSertissageEch2C1Value;
 	           	    SertissageIDCInformations.hauteurSertissageC1Ech3 = hauteurSertissageEch3C1Value ;
-	           	    
+	            	SertissageIDCInformations.hauteurSertissageC1EchFin =Double.parseDouble(hauteurSertissageEchFinC1.getText()) ;
+	            	SertissageIDCInformations.hauteurSertissageC2EchFin =Double.parseDouble(hauteurSertissageEchFinC2.getText()) ;
+	            	SertissageIDCInformations.forceTractionEchFinC1 =Integer.parseInt(forceTractionEchFinC1.getText()) ;
+	            	SertissageIDCInformations.forceTractionEchFinC2 =Integer.parseInt(forceTractionEchFinC2.getText()) ;
+
+	            	
 	           	    SertissageIDCInformations.forceTractionEch1C1 = Integer.parseInt(forceTractionEch1C1.getText()); 
 	     	        SertissageIDCInformations.forceTractionEch2C1 = Integer.parseInt(forceTractionEch2C1.getText()); 
 	     	        SertissageIDCInformations.forceTractionEch3C1 = Integer.parseInt(forceTractionEch3C1.getText()); 
@@ -442,6 +446,7 @@ public class RemplirSertissageIDC {
 	       	        SertissageIDCInformations.produit = produit.getText(); 
 	     	        SertissageIDCInformations.serieProduit = serieProduit.getText(); 
 	     	        SertissageIDCInformations.numeroMachine =  Integer.parseInt(numMachine.getText()); 
+	     	        SertissageIDCInformations.quantiteCycle= Integer.parseInt(quantiteCycle.getText()) ; 
             	    
                 // Affichage direct de la fenêtre SoudureResultat
                 try {
@@ -557,7 +562,11 @@ public class RemplirSertissageIDC {
                  	        SertissageIDCInformations.forceTractionEch2C2 = Integer.parseInt(forceTractionEch1C2.getText()); 
                  	        SertissageIDCInformations.forceTractionEch3C2 = Integer.parseInt(forceTractionEch3C2.getText());
                  	    
-                    	    
+                 	       SertissageIDCInformations.hauteurSertissageC1EchFin =Double.parseDouble(hauteurSertissageEchFinC1.getText()) ;
+       	            	   SertissageIDCInformations.hauteurSertissageC2EchFin =Double.parseDouble(hauteurSertissageEchFinC2.getText()) ;
+       	            	   SertissageIDCInformations.forceTractionEchFinC1 =Integer.parseInt(forceTractionEchFinC1.getText()) ;
+       	            	   SertissageIDCInformations.forceTractionEchFinC2 =Integer.parseInt(forceTractionEchFinC2.getText()) ;
+
                     	    SertissageIDCInformations.produit = produit.getText(); 
                     	    SertissageIDCInformations.serieProduit = serieProduit.getText(); 
                     	    SertissageIDCInformations.numeroMachine =  Integer.parseInt(numMachine.getText()); 
@@ -640,8 +649,8 @@ public class RemplirSertissageIDC {
 	@FXML
 	void logout(ActionEvent event) {
 
-    	AppInformations.reset();
-    
+		AppInformations.reset();
+    	SertissageIDCInformations.reset() ; 
 
 		Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
 		stage.close();
@@ -748,25 +757,23 @@ public class RemplirSertissageIDC {
 	private void loadNumeroCycleMax() {
 	    String dernierNumeroStr = fetchNumMaxCycle();
 
-	    // Vérifier si la réponse est un nombre valide
 	    try {
 	        int dernierNumeroCycle = Integer.parseInt(dernierNumeroStr);
-
-	        SertissageIDCInformations.numCycle = dernierNumeroCycle+"" ; 
+	        SertissageIDCInformations.numCycle = String.valueOf(dernierNumeroCycle);
+	        
 	        if (dernierNumeroCycle == 8) {
 	            nbrCycle.setText("1");
+	            SertissageIDCInformations.numCycle  =  "1" ; 
 	        } else if (dernierNumeroCycle < 8) {
 	            nbrCycle.setText(String.valueOf(dernierNumeroCycle + 1));
+	            SertissageIDCInformations.numCycle  =dernierNumeroCycle + 1+"" ; 
 	        } else {
-	            nbrCycle.setText("Erreur");
-	            System.out.println("Erreur lors de la récupération du dernier numéro de cycle.");
+	            nbrCycle.setText("1"); // Valeur par défaut si erreur
 	        }
 	    } catch (NumberFormatException e) {
-	        nbrCycle.setText("Erreur");
-	        System.out.println("Impossible de convertir la réponse en nombre : " + dernierNumeroStr);
+	        nbrCycle.setText("1"); // Valeur par défaut si conversion échoue
 	    }
 	}
-
 	/*********************************          Alerts        ***************************************/
 
 	private void showErrorDialog(String title, String message) {
@@ -1057,17 +1064,16 @@ public class RemplirSertissageIDC {
     }
     /************************************************* Recupertion dernier num cycle **************************/
     private static final HttpClient httpClient = HttpClient.newHttpClient();
-
     public String fetchNumMaxCycle() {
         try {
             // Encoder les paramètres pour éviter les erreurs d'URL
-            String sectionFilEncoded = URLEncoder.encode(SertissageNormaleInformations.sectionFil + " mm²", StandardCharsets.UTF_8);
-            String projetEncoded = URLEncoder.encode(SertissageNormaleInformations.projetSelectionner, StandardCharsets.UTF_8);
+            String sectionFilEncoded = URLEncoder.encode(SertissageIDCInformations.sectionFilSelectionner, StandardCharsets.UTF_8);
+            String projetEncoded = URLEncoder.encode(SertissageIDCInformations.projetSelectionner, StandardCharsets.UTF_8);
             String nomPlantEncoded = URLEncoder.encode(AppInformations.operateurInfo.getPlant(), StandardCharsets.UTF_8);
 
             // Construire l'URL avec les paramètres encodés
             String urlString = "http://localhost:8281/operations/SertissageIDC/dernier-numero-cycle?" +
-                    "sectionFilSelectionne=" + sectionFilEncoded +
+                    "sectionFil=" + sectionFilEncoded +
                     "&segment=" + AppInformations.operateurInfo.getSegment() +
                     "&nomPlant=" + nomPlantEncoded +
                     "&projetName=" + projetEncoded;
@@ -1099,5 +1105,6 @@ public class RemplirSertissageIDC {
             return "Erreur de connexion à l'API";
         }
     }
+
 
 }

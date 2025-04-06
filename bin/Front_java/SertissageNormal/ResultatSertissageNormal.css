@@ -106,7 +106,13 @@
     -fx-text-fill: #555;
     -fx-alignment: center;
 }
-
+.labelll2 {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #0355ba;
+    -fx-padding: 8px;
+    -fx-alignment: center;
+}
 
 .labelll {
     -fx-font-size: 14px;

@@ -1,64 +1,89 @@
 package Front_java;
 import javafx.application.Application;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.GridPane;
+import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
 public class Test extends Application {
 
     @Override
-    public void start(Stage primaryStage) {
-        // Création du GridPane
-        GridPane gridPane = new GridPane();
-        gridPane.setStyle("-fx-border-color: black; -fx-border-width: 2px; -fx-grid-lines-visible: true;");
+    public void start(Stage stage) {
+        stage.setTitle("La Moyenne X̄");
 
-        // Données des lignes
-        String[] labels = {
-            "Hauteur de sertissage (mm) - C1", 
-            "Hauteur de sertissage (mm) - C2", 
-            "Code", 
-            "N° de Cycle", 
-            "Produit", 
-            "Série Produite", 
-            "Quantité du cycle", 
-            "N° Machine", 
-            "Date", 
-            "Opérateur"
-        };
+        // Création des axes
+        CategoryAxis xAxis = new CategoryAxis();
+        NumberAxis yAxis = new NumberAxis(70, 130, 10);
+        xAxis.setLabel("Date");
+        yAxis.setLabel("Valeur");
 
-        // Ajouter les titres des colonnes
-        gridPane.add(new Label("Paramètres"), 0, 0);
-        gridPane.add(new Label("Échantillon 1"), 1, 0);
-        gridPane.add(new Label("Échantillon 2"), 2, 0);
-        gridPane.add(new Label("Échantillon 3"), 3, 0);
-        gridPane.add(new Label("Échantillon Fin"), 4, 0);
+        // Création du graphique
+        LineChart<String, Number> lineChart = new LineChart<>(xAxis, yAxis);
+        lineChart.setTitle("La Moyenne X̄");
+        lineChart.setLegendVisible(false);
 
-        // Remplir le tableau
-        for (int i = 0; i < labels.length; i++) {
-            // Ajouter les labels de paramètres
-            Label label = new Label(labels[i]);
-            label.setMinWidth(150);
-            label.setStyle("-fx-padding: 5px; -fx-border-color: black; -fx-border-width: 1px;");
-            gridPane.add(label, 0, i + 1);
+        // Ajouter les bandes colorées
+        addStripLines(lineChart);
 
-            // Ajouter les TextFields pour la saisie
-            for (int j = 1; j <= 4; j++) {
-                TextField textField = new TextField();
-                textField.setMinWidth(120);
-                textField.setId("textField" + i + "_" + j); // ID unique
-                textField.setStyle("-fx-border-color: black; -fx-border-width: 1px;");
-                gridPane.add(textField, j, i + 1);
+        // Série de données
+        XYChart.Series<String, Number> series = new XYChart.Series<>();
+        series.getData().add(new XYChart.Data<>("2025-10-23", 102));
+        series.getData().add(new XYChart.Data<>("2025-11-23", 109));
+        series.getData().add(new XYChart.Data<>("2025-12-23", 95));
+        series.getData().add(new XYChart.Data<>("2025-13-23", 106));
+        series.getData().add(new XYChart.Data<>("2025-14-23", 98));
+        series.getData().add(new XYChart.Data<>("2025-15-23", 102));
+        series.getData().add(new XYChart.Data<>("2025-16-23", 90));
+        series.getData().add(new XYChart.Data<>("2025-17-23", 105));
+        series.getData().add(new XYChart.Data<>("2025-18-23", 100));
+
+        lineChart.getData().add(series);
+
+        StackPane root = new StackPane();
+        root.getChildren().add(lineChart);
+
+        Scene scene = new Scene(root, 800, 600);
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    private void addStripLines(LineChart<String, Number> chart) {
+        chart.applyCss(); // Appliquer les styles CSS pour que lookup() fonctionne
+
+        Region plotArea = (Region) chart.lookup(".chart-plot-background");
+        if (plotArea != null) {
+            double chartHeight = plotArea.getHeight();
+            double yMin = 70, yMax = 130;
+
+            // Définition des bandes colorées
+            double[][] ranges = {
+                {70, 80, 0.43, 255, 0, 0},    // Rouge
+                {80, 88, 0.64, 255, 255, 0},  // Jaune
+                {88, 112, 0.53, 0, 200, 0},   // Vert
+                {112, 120, 0.64, 255, 255, 0},// Jaune
+                {120, 130, 0.43, 255, 0, 0}   // Rouge
+            };
+
+            for (double[] range : ranges) {
+                double start = range[0], end = range[1];
+                double opacity = range[2];
+                Color color = Color.rgb((int) range[3], (int) range[4], (int) range[5], opacity);
+
+                // Calculer la hauteur en fonction de l'échelle de l'axe Y
+                double rectHeight = ((end - start) / (yMax - yMin)) * chartHeight;
+                double translateY = ((yMax - end) / (yMax - yMin)) * chartHeight;
+
+                Rectangle rect = new Rectangle(plotArea.getWidth(), rectHeight, color);
+                rect.setTranslateY(translateY);
+                plotArea.getChildrenUnmodifiable().add(rect);  // Ajout de la bande colorée
             }
         }
-
-        // Définition de la scène
-        Scene scene = new Scene(gridPane, 800, 400);
-        primaryStage.setTitle("Tableau GridPane avec Bordures");
-        primaryStage.setScene(scene);
-        primaryStage.show();
     }
 
     public static void main(String[] args) {

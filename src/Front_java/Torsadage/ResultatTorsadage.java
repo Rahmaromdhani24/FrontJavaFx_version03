@@ -2,13 +2,11 @@ package Front_java.Torsadage;
 
 import java.io.IOException;
 import java.net.URI;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
-
 import Front_java.Configuration.AppInformations;
 import Front_java.Configuration.SoudureInformations;
 import Front_java.Modeles.OperateurInfo;
@@ -18,7 +16,6 @@ import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.*;
 import javafx.fxml.*;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.*;
 import javafx.scene.chart.StackedAreaChart;
@@ -27,7 +24,6 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -36,16 +32,12 @@ import javafx.scene.shape.Circle;
 import javafx.stage.*;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
-import java.util.concurrent.CompletableFuture;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXDialog;
 import com.jfoenix.controls.JFXDialogLayout;
-
 import Front_java.Configuration.TorsadageInformations;
 import javafx.animation.KeyFrame;
-import javafx.animation.PauseTransition;
 import javafx.util.Duration;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
@@ -568,10 +560,6 @@ public class ResultatTorsadage {
 						double moy = (x1 + x2 + x3 + x4 + x5) / 5.0;
 						int R = maxValue - minValue;
 
-						
-			
-		
-						
 						// Remplir l'objet SoudureDTO avec les valeurs
 						torsadage.setCode(TorsadageInformations.codeControleSelectionner);
 						torsadage.setNumeroCycle(TorsadageInformations.numCourant );
@@ -601,7 +589,7 @@ public class ResultatTorsadage {
 						torsadage.setLongueurBoutFinCdeC2(Integer.parseInt(TorsadageInformations.lognueurBoutFinC2));
 						torsadage.setLongueurFinalDebutCde(Integer.parseInt(TorsadageInformations.longueurFinalDebutCde));
 						torsadage.setLongueurFinalFinCde(Integer.parseInt(TorsadageInformations.longueurFinalFinCde));
-						torsadage.setLongueurPasFinCde(Integer.parseInt(TorsadageInformations.longueurPasFinCde));
+						torsadage.setLongueurPasFinCde(Double.parseDouble(TorsadageInformations.longueurPasFinCde));
 
 						// Conversion de l'objet SoudureDTO en JSON
 						ObjectMapper objectMapper = new ObjectMapper();
@@ -687,18 +675,20 @@ public class ResultatTorsadage {
 		}
 /************************ test Moyenne et etendu *************/
 		public static int extraireValeur(String input) {
+			
 		    return Integer.parseInt(input.replaceAll("(\\d+)\\s*mm.*", "$1"));
 		}
 
-		public void testerMoyenne(double moyenneEch) {
+		public void testerMoyenne(double moyenneEch) {//20.2
 		    
 			int pas =  extraireValeur(TorsadageInformations.specificationsMesure) ;  // 20
+			System.out.println("Pas sans mm = "+pas );
 			double valeurMaxRougeSuperieur = pas +2; //22
 			double valeurMaxRougeInferieur = pas - 2 ;  //18
-			double debutZoneJaune = (pas -2)-0.8 ;  //18.8==>fin zone jaune et debut zone vert 
-			double finZoneJaune = pas-0.8 ;         //21.2 ==> fin zone vert et debut zone jaune 
+			double debutZoneJaune = (pas -2)+0.8 ;  //18.8==>fin zone jaune et debut zone vert 
+			double finZoneJaune = (pas+2)-0.8 ;         //21.2 ==> fin zone vert et debut zone jaune 
 
-		    	if (((moyenneEch >= finZoneJaune )&&(moyenneEch < valeurMaxRougeSuperieur ) ) ||  (moyenneEch < valeurMaxRougeInferieur) && (moyenneEch <=  debutZoneJaune)  ) { // Zone jaune
+		    	if ((moyenneEch >= finZoneJaune )&&(moyenneEch < valeurMaxRougeSuperieur ) )  { // Zone jaune
 		    	    System.out.println("Zone jaune détectée");
 		    	    Platform.runLater(() -> {
 		    	        showWarningDialog("La valeur X dépasse les limites d'alarme (zone jaune). \nL'opérateur " 
@@ -707,7 +697,16 @@ public class ResultatTorsadage {
 		    	            + " doit informer son supérieur hiérarchique immédiatement.", "Attention - Limite dépassée");
 		    	    });
 		    	} 
-		        if ((moyenneEch <= valeurMaxRougeInferieur) ||  (moyenneEch >=  valeurMaxRougeSuperieur)) { // Zone rouge
+		    	if ((moyenneEch > valeurMaxRougeInferieur) && (moyenneEch <=  debutZoneJaune)  ) { // Zone jaune
+		    	    System.out.println("Zone jaune détectée");
+		    	    Platform.runLater(() -> {
+		    	        showWarningDialog("La valeur X dépasse les limites d'alarme (zone jaune). \nL'opérateur " 
+		    	            + AppInformations.operateurInfo.getPrenom() + " " 
+		    	            + AppInformations.operateurInfo.getNom() 
+		    	            + " doit informer son supérieur hiérarchique immédiatement.", "Attention - Limite dépassée");
+		    	    });
+		    	} 
+		        if ((moyenneEch <= valeurMaxRougeInferieur)) { // Zone rouge
 		            System.out.println("Zone rouge détectée");
 		    	    Platform.runLater(() -> {
 		            showErrorDialog("La valeur X dépasse la limite de contrôle (zone rouge). \nL'opérateur " 
@@ -715,7 +714,16 @@ public class ResultatTorsadage {
 		                + AppInformations.operateurInfo.getNom() 
 		                + " doit appliquer l'arrêt 1er défaut.", "Problème détecté");
 		    	    });
-		    	    } else {
+		    	    } 
+		        if ((moyenneEch >=  valeurMaxRougeSuperieur)) { // Zone rouge
+		            System.out.println("Zone rouge détectée");
+		    	    Platform.runLater(() -> {
+		            showErrorDialog("La valeur X dépasse la limite de contrôle (zone rouge). \nL'opérateur " 
+		                + AppInformations.operateurInfo.getPrenom() + " " 
+		                + AppInformations.operateurInfo.getNom() 
+		                + " doit appliquer l'arrêt 1er défaut.", "Problème détecté");
+		    	    });
+		    	    }else {
 		            System.out.println("Aucune alerte déclenchée");
 		        }
 		   

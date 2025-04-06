@@ -22,7 +22,7 @@ public class SertissageNormaleInformations {
 	public static double tractionFinEch ; 
 	public static int numCycle ; 
 	public static String produit  ; 
-	public static int serieProduit ; 
+	public static String serieProduit ; 
 	public static String quantiteAtteint ; 
 	public static String codeControleSelectionner ; 
 	public static String machineTraction ; 
@@ -57,7 +57,7 @@ public class SertissageNormaleInformations {
 	    traction = null;
 	    tractionFinEch = 0.0;
 	    produit = null;
-	    serieProduit = 0;
+	    serieProduit = null;
 	    quantiteAtteint = null;
 	    codeControleSelectionner = null;
 	    machineTraction = null;

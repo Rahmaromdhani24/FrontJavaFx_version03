@@ -568,12 +568,10 @@ public void initialiserDonneesPDEKEnregistrer() {
 					// Récupération des valeurs saisies et création de l'objet SoudureDTO
 					SertissageNormalData sertissageNormal = new SertissageNormalData();							
 
-					sertissageNormal.setSectionFil(SertissageNormaleInformations.sectionFil+" mm²");
+					sertissageNormal.setSectionFil(SertissageNormaleInformations.sectionFil);
 					LocalDate dateActuelle = LocalDate.now();
-					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 					sertissageNormal.setDate(dateActuelle.format(formatter)); 									
-                    sertissageNormal.setNumeroOutils(SertissageNormaleInformations.numeroOutils);
-                    sertissageNormal.setNumeroContacts(SertissageNormaleInformations.numeroContacts); 
                     sertissageNormal.setHauteurSertissageEch1(SertissageNormaleInformations.hauteurSertissageEch1); 					    
                     sertissageNormal.setHauteurSertissageEch2(SertissageNormaleInformations.hauteurSertissageEch2); 
                     sertissageNormal.setHauteurSertissageEch3(SertissageNormaleInformations.hauteurSertissageEch3); 

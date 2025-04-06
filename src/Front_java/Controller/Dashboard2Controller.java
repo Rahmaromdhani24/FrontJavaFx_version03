@@ -295,6 +295,7 @@ public class Dashboard2Controller {
                     	    // Fermeture de la fenêtre actuelle
                     	    Stage currentStage = (Stage) btnSuivant.getScene().getWindow();
                             currentStage.close();
+                            
 	                    } catch (IOException ex) {
 	                        System.out.println("Erreur lors du chargement de la fenêtre verification : " + ex.getMessage());
 	                        ex.printStackTrace();
@@ -426,9 +427,9 @@ public class Dashboard2Controller {
 	@FXML
 	void logout(ActionEvent event) {
 
-    	AppInformations.reset();
-    	SoudureInformations.reset();
-    	SoudureInformationsCodeB.reset();
+		AppInformations.reset();
+    	SertissageNormaleInformations.reset();
+    
 
 		Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
 		stage.close();
@@ -535,44 +536,6 @@ public class Dashboard2Controller {
 		new Thread(task).start();
 	}
 
-	/**** recuperation numero de cycle de pdek ****/
-	private int getNumeroCycleMaxFromApi() throws Exception {
-	    String token = AppInformations.token;
-
-	    // Encodage correct des paramètres pour éviter tout problème
-	    String encodedSectionFil = URLEncoder.encode(AppInformations.sectionFilSelectionner, StandardCharsets.UTF_8);
-	    String encodedNomProjet = URLEncoder.encode(AppInformations.projetSelectionner, StandardCharsets.UTF_8);
-	    String encodedSegmentPDEK = URLEncoder.encode(String.valueOf(AppInformations.operateurInfo.getSegment()), StandardCharsets.UTF_8);
-	    String encodedPlantPDEK = URLEncoder.encode(AppInformations.operateurInfo.getPlant(), StandardCharsets.UTF_8);
-
-	    String url = "http://localhost:8281/operations/soudure/numCycleMax?sectionFil=" + encodedSectionFil 
-	            + "&segment=" + encodedSegmentPDEK
-	            + "&nomPlant=" + encodedPlantPDEK  // Correction ici
-	            + "&nomProjet=" + encodedNomProjet;
-
-	    System.out.println("URL API : " + url); // Debugging pour vérifier l'URL générée
-
-	    HttpRequest request = HttpRequest.newBuilder()
-	            .uri(URI.create(url))
-	            .header("Authorization", "Bearer " + token)
-	            .build();
-
-	    HttpClient client = HttpClient.newHttpClient();
-	    HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-	    if (response.statusCode() == 200) {
-	        String responseBody = response.body().trim();
-	        System.out.println("Numéro de cycle reçu : " + responseBody);
-
-	        try {
-	            return Integer.parseInt(responseBody); // Conversion de la réponse en int
-	        } catch (NumberFormatException e) {
-	            throw new Exception("Réponse inattendue de l'API : " + responseBody);
-	        }
-	    } else {
-	        throw new Exception("Erreur lors de la récupération du numéro de cycle : " + response.statusCode() + " - " + response.body());
-	    }
-	}
 
 
 	private void loadNumeroCycleMax() {
@@ -581,12 +544,13 @@ public class Dashboard2Controller {
 	    // Vérifier si la réponse est un nombre valide
 	    try {
 	        int dernierNumeroCycle = Integer.parseInt(dernierNumeroStr);
-
-	        SoudureInformations.numerCyclePDEK = dernierNumeroCycle ; 
-	        if (dernierNumeroCycle == 8) {
+	        
+	        if (dernierNumeroCycle == 25) {
 	            valeurNumeroCycle.setText("1");
-	        } else if (dernierNumeroCycle < 8) {
+	            SoudureInformations.numeroCycle =  1 ; 
+	        } else if (dernierNumeroCycle < 25) {
 	            valeurNumeroCycle.setText(String.valueOf(dernierNumeroCycle + 1));
+	            SoudureInformations.numeroCycle = dernierNumeroCycle  + 1 ; 
 	        } else {
 	            valeurNumeroCycle.setText("Erreur");
 	            System.out.println("Erreur lors de la récupération du dernier numéro de cycle.");
@@ -791,7 +755,7 @@ public class Dashboard2Controller {
 					SoudureInformations.pliage = pliageCombo.getValue();
 					soudure.setDistanceBC(distanceCombo.getValue());
 					SoudureInformations.distanceBC = distanceCombo.getValue();
-					soudure.setTraction(tractionField.getText()+" N");
+					soudure.setTraction(tractionField.getText());
 					SoudureInformations.traction = tractionField.getText();
 					soudure.setPelageX1(x1);
 					SoudureInformations.pelageX1 = x1;
@@ -1004,13 +968,13 @@ public class Dashboard2Controller {
         });
     }
     /************************************************* Recupertion dernier num cycle **************************/
-    private static final HttpClient httpClient = HttpClient.newHttpClient();
+    private  final HttpClient httpClient = HttpClient.newHttpClient();
 
     public String fetchNumMaxCycle() {
         try {
             // Encoder les paramètres pour éviter les erreurs d'URL
-            String sectionFilEncoded = URLEncoder.encode(SertissageNormaleInformations.sectionFil + " mm²", StandardCharsets.UTF_8);
-            String projetEncoded = URLEncoder.encode(SertissageNormaleInformations.projetSelectionner, StandardCharsets.UTF_8);
+            String sectionFilEncoded = URLEncoder.encode(AppInformations.sectionFilSelectionner, StandardCharsets.UTF_8);
+            String projetEncoded = URLEncoder.encode(AppInformations.projetSelectionner, StandardCharsets.UTF_8);
             String nomPlantEncoded = URLEncoder.encode(AppInformations.operateurInfo.getPlant(), StandardCharsets.UTF_8);
 
             // Construire l'URL avec les paramètres encodés

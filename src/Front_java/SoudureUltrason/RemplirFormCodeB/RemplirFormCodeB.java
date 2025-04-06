@@ -10,6 +10,7 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,6 +40,7 @@ import javafx.scene.image.ImageView;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.stage.Window;
 import javafx.util.Duration;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -474,7 +476,7 @@ private void ajouterPdekAvecSoudure() {
 				SoudureInformations.nbrPelage = AppInformations.nbrPelage;
 				soudure.setPliage(SoudureInformations.pliage);
 				soudure.setDistanceBC(SoudureInformations.distanceBC);
-				soudure.setTraction(SoudureInformations.traction +"N");
+				soudure.setTraction(SoudureInformations.traction);
 				soudure.setPelageX1(x1);
 				soudure.setPelageX2(x2);
 				soudure.setPelageX3(x3);
@@ -535,93 +537,49 @@ void terminerRemplirFormCodeB(ActionEvent event) {
 
     SoudureInformationsCodeB.pelageX1 = Integer.parseInt(pelageX1.getText());
 
-    // 3. Si tous les champs sont remplis, afficher l'alerte de confirmation
     if (!pelageX1.getText().isEmpty()  && !quantiteField.getText().isEmpty()) {
-        // Préparer le message de confirmation avec les données saisies
         String message = "Veuillez confirmer les données saisies :\n\n" +
                 "Quantité Atteint : " + quantiteField.getText() + "\n" +              
-                "Pelage X1 : " + pelageX1.getText() + "\n"  ;
-               
+                "Pelage X1 : " + pelageX1.getText() + "\n";
 
-        // Appeler la méthode showConfirmationDialog
         showConfirmationDialog(message, "Confirmation", () -> {
-            // Si l'utilisateur confirme, exécuter la méthode ajoutPDEK()
-        	ajouterPdekAvecSoudure();
-
-            // Affichage direct de la fenêtre SoudureResultat
-            try {
-                FXMLLoader loader2 = new FXMLLoader(getClass().getResource("/Front_java/FXML/SoudureResultat.fxml"));
-                Scene resultScene = new Scene(loader2.load());
-                resultScene.getStylesheets().add(getClass().getResource("/Front_java/CSS/SoudureResultat.css").toExternalForm());
-                Stage resultStage = new Stage();
-                resultStage.setScene(resultScene);
-                resultStage.setMaximized(true);
-                resultStage.initStyle(StageStyle.UNDECORATED);
-                Image icon = new Image("/logo_app.jpg");
-                resultStage.getIcons().add(icon);
-                resultStage.show();
-                ((Stage) ((Node) event.getSource()).getScene().getWindow()).close();
-            } catch (IOException ex) {
-                System.out.println("Erreur lors du chargement de la fenêtre verification : " + ex.getMessage());
-                ex.printStackTrace();
-            }
+            ajouterPdekAvecSoudure();
+            ouvrirFenetreResultatEtFermerTout(event);
         });
     } else {
-    	SoudureInformationsCodeB.pelageX1 = Integer.parseInt(pelageX1.getText()); 
-    	SoudureInformationsCodeB.pelageX2 = null ;
-    	SoudureInformationsCodeB.pelageX3 =null ; 
-    	SoudureInformationsCodeB.pelageX4 = null ;
-    	SoudureInformationsCodeB.pelageX5 = null ;
-    	SoudureInformationsCodeB.pliage =SoudureInformations.pliage ;
-    	SoudureInformationsCodeB.distanceBC  =SoudureInformations.distanceBC; 
-    	SoudureInformationsCodeB.traction =SoudureInformations.traction; 
- 
-     
+        SoudureInformationsCodeB.pelageX1 = Integer.parseInt(pelageX1.getText()); 
+        SoudureInformationsCodeB.pelageX2 = null ;
+        SoudureInformationsCodeB.pelageX3 = null ; 
+        SoudureInformationsCodeB.pelageX4 = null ;
+        SoudureInformationsCodeB.pelageX5 = null ;
+        SoudureInformationsCodeB.pliage = SoudureInformations.pliage ;
+        SoudureInformationsCodeB.distanceBC  = SoudureInformations.distanceBC; 
+        SoudureInformationsCodeB.traction = SoudureInformations.traction; 
+
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/Front_java/Loading2/LoadingCodeB.fxml"));
             Scene loadingScene = new Scene(loader.load());
             String cssPath = "/Front_java/Loading2/LoadingCodeB.css";
             if (getClass().getResource(cssPath) != null) {
                 loadingScene.getStylesheets().add(getClass().getResource(cssPath).toExternalForm());
-            } else {
-                System.out.println("❌ Fichier CSS introuvable : " + cssPath);
             }
 
             LoadingCodeBController loadingController = loader.getController();
             loadingController.setParentControllerCodeB(this);
 
-            // Définir l'action à exécuter lorsque le bouton "Terminer" est cliqué
             loadingController.setOnTerminerAction(() -> {
-                // Rendre le champ "quantité atteinte" activé
-                quantiteField.setDisable(false); // Assurez-vous que ce champ est correctement initialisé
+                quantiteField.setDisable(false);
+                if (!pelageX1.getText().isEmpty() && !quantiteField.getText().isEmpty()) {
+                    SoudureInformationsCodeB.pelageX1 = Integer.parseInt(pelageX1.getText()); 
+                    SoudureInformationsCodeB.pelageX2 = null ;
+                    SoudureInformationsCodeB.pelageX3 = null ; 
+                    SoudureInformationsCodeB.pelageX4 = null ;
+                    SoudureInformationsCodeB.pelageX5 = null ;
+                    SoudureInformationsCodeB.pliage = SoudureInformations.pliage ;
+                    SoudureInformationsCodeB.distanceBC  = SoudureInformations.distanceBC; 
+                    SoudureInformationsCodeB.traction = SoudureInformations.traction ; 
 
-                // Si tous les champs sont remplis, passer à la fenêtre de résultats
-                if (pelageX1.getText().isEmpty()  && !quantiteField.getText().isEmpty()) {
-                    try {
-                    	SoudureInformationsCodeB.pelageX1 = Integer.parseInt(pelageX1.getText()); 
-                    	SoudureInformationsCodeB.pelageX2 = null ;
-                    	SoudureInformationsCodeB.pelageX3 =null ; 
-                    	SoudureInformationsCodeB.pelageX4 = null ;
-                    	SoudureInformationsCodeB.pelageX5 = null ;
-                    	SoudureInformationsCodeB.pliage =SoudureInformations.pliage ;
-                    	SoudureInformationsCodeB.distanceBC  =SoudureInformations.distanceBC; 
-                    	SoudureInformationsCodeB.traction =SoudureInformations.traction ; 
-
-                        FXMLLoader loader2 = new FXMLLoader(getClass().getResource("/Front_java/FXML/SoudureResultat.fxml"));
-                        Scene resultScene = new Scene(loader2.load());
-                        resultScene.getStylesheets().add(getClass().getResource("/Front_java/CSS/SoudureResultat.css").toExternalForm());
-                        Stage resultStage = new Stage();
-                        resultStage.setScene(resultScene);
-                        resultStage.setMaximized(true);
-                        resultStage.initStyle(StageStyle.UNDECORATED);
-                        Image icon = new Image("/logo_app.jpg");
-                        resultStage.getIcons().add(icon);
-                        resultStage.show();
-                        ((Stage) ((Node) event.getSource()).getScene().getWindow()).close();
-                    } catch (IOException ex) {
-                        System.out.println("Erreur lors du chargement de la fenêtre verification : " + ex.getMessage());
-                        ex.printStackTrace();
-                    }
+                    ouvrirFenetreResultatEtFermerTout(event);
                 }
             });
 
@@ -634,13 +592,37 @@ void terminerRemplirFormCodeB(ActionEvent event) {
             loadingStage.show();
 
         } catch (IOException ex) {
-            System.out.println("❌ Erreur lors du chargement de la fenêtre de chargement : " + ex.getMessage());
             ex.printStackTrace();
         }
     }
-
-
 }
+private void ouvrirFenetreResultatEtFermerTout(ActionEvent event) {
+    try {
+        FXMLLoader loader2 = new FXMLLoader(getClass().getResource("/Front_java/FXML/SoudureResultat.fxml"));
+        Scene resultScene = new Scene(loader2.load());
+        resultScene.getStylesheets().add(getClass().getResource("/Front_java/CSS/SoudureResultat.css").toExternalForm());
+
+        Stage resultStage = new Stage();
+        resultStage.setScene(resultScene);
+        resultStage.setMaximized(true);
+        resultStage.initStyle(StageStyle.UNDECORATED);
+        resultStage.getIcons().add(new Image("/logo_app.jpg"));
+        resultStage.show();
+
+        // Fermer toutes les autres fenêtres sauf celle-ci
+        List<Window> windows = new ArrayList<>(Window.getWindows());
+        for (Window window : windows) {
+            if (window instanceof Stage && window != resultStage) {
+                ((Stage) window).close();
+            }
+        }
+
+    } catch (IOException ex) {
+        System.out.println("Erreur lors du chargement de la fenêtre SoudureResultat : " + ex.getMessage());
+        ex.printStackTrace();
+    }
+}
+
 
 public void activerChampQuantiteAtteinte() {
     quantiteField.setDisable(false);

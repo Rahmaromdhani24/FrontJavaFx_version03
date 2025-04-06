@@ -2,6 +2,7 @@ package Front_java.Controller;
 
 import java.io.IOException;
 import Front_java.Configuration.AppInformations;
+import Front_java.Configuration.SertissageNormaleInformations;
 import Front_java.Configuration.SoudureInformations;
 import Front_java.Configuration.SoudureInformationsCodeB;
 import Front_java.Modeles.OperateurInfo;
@@ -244,13 +245,14 @@ public class SoudureResultat{
 
 	@FXML
 	void logout(ActionEvent event) {
-		
+
 		AppInformations.reset();
-    	SoudureInformations.reset();
-    	SoudureInformationsCodeB.reset();
-    	
-    	Stage currentStage = (Stage) btnLogout.getScene().getWindow();
-        currentStage.close();
+    	SertissageNormaleInformations.reset();
+    
+
+		Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+		stage.close();
+
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/Front_java/Login.fxml"));
 			Scene loginScene = new Scene(loader.load());
@@ -371,7 +373,7 @@ public class SoudureResultat{
 /*************************** 	  initialiser les informations ajouter precedament     **********************************/
    public void initialiserDonneesPDEKEnregistrer () {
 	   
-	   valeurNumeroCycle.setText(SoudureInformations.numerCyclePDEK +"");
+	   valeurNumeroCycle.setText(SoudureInformations.numeroCycle +"");
 	   valeurPliage.setText(SoudureInformations.pliage);
 	   valeurTraction.setText(SoudureInformations.traction +"N");
 	   valeurQuantite.setText(SoudureInformations.quantiteAtteint+"");

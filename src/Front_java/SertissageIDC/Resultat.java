@@ -600,7 +600,7 @@ public class Resultat {
 							sertissageIDC.setHauteurSertissageMax(11);
 							sertissageIDC.setHauteurSertissageMin(10.85); 	
 							LocalDate dateActuelle = LocalDate.now();
-							DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+							DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 							sertissageIDC.setDate(dateActuelle.format(formatter)); 									
 							sertissageIDC.setHauteurSertissageC1Ech1(SertissageIDCInformations.hauteurSertissageC1Ech1);
 							sertissageIDC.setHauteurSertissageC1Ech2(SertissageIDCInformations.hauteurSertissageC1Ech2);
